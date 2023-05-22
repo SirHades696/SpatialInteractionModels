@@ -97,7 +97,7 @@ class Estadisticas:
                 values[str(count)] = {"ORI": values_OD["ID_ORI"][i], "DEST": aux}
                 values_oi[str(count)] = {"OI": aux_v , "OI_SUM": oi[i]}
                 count += 1
-        print(values_oi)
+        #print(values_oi)
         return values, values_oi
 
     def extract_data(self, layer:object, name_attr: str) -> list:

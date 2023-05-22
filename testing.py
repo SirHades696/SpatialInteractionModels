@@ -22,7 +22,7 @@ params = {
         "VAL_REST": {
             "R_ORIG": {
                 "OPTION": 0,
-                "VALUE": [1],
+                "VALUE": [5000],
                        },
             "R_DEST": {
                 "OPTION": 0,
@@ -39,7 +39,7 @@ params = {
                     }
                 }
             },
-        "FRICTION_DISTANCE": -0.2,
+        "FRICTION_DISTANCE": 1.2,
         "OUTPUT":"/home/hades/Documentos/projects/SpatialInteractionModels/"
         }
 

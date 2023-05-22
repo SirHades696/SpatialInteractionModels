@@ -1,5 +1,7 @@
 import processing
 from qgis.core import *
+import random
+from PyQt5.QtGui import *
 
 try:
     from qgis.core import QVariant
@@ -81,6 +83,7 @@ class Capas:
 
     def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str) -> None:
         espg = matrix_OD[0][0].crs().authid()
+        self.lines_layers_name = []
         for i in range(len(matrix_OD)):
             origin_features = matrix_OD[i][0].getFeatures()
             destination_features = matrix_OD[i][1].getFeatures()
@@ -93,7 +96,9 @@ class Capas:
             fields.append(QgsField('ID_DEST', QVariant.String))
             fields.append(QgsField('OI_RO', QVariant.Double))
             fields.append(QgsField('OI_SUM', QVariant.Double))
-            lines_layer = QgsVectorLayer('LineString?crs='+espg, 'Lineas_RO_' + str(i+1), 'memory')
+            layer_name = 'Lineas_RO_' + str(i+1)
+            self.lines_layers_name.append(layer_name)
+            lines_layer = QgsVectorLayer('LineString?crs='+espg, layer_name, 'memory')
             lines_layer.dataProvider().addAttributes(fields)
             lines_layer.updateFields()
 
@@ -134,3 +139,19 @@ class Capas:
             layer = processing.run("native:mergevectorlayers",data)
             QgsProject.instance().addMapLayer(layer["OUTPUT"])
 
+    def thematic_lines(self, field_name:str) -> None:
+        for layer_name in self.lines_layers_name:
+            layer = QgsProject.instance().mapLayersByName(layer_name)[0]
+            field = field_name
+            random_color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            line_symbol = QgsLineSymbol.createSimple({'color': random_color.name()})
+            line_symbol.setOutputUnit(QgsUnitTypes.RenderMapUnits)
+            renderer = QgsSingleSymbolRenderer(line_symbol)
+            layer.setRenderer(renderer)
+            features = layer.getFeatures()
+            for feature in features:
+                valor_ancho_linea = feature.attribute(field)
+                line_symbol.setWidth(valor_ancho_linea)
+                layer.triggerRepaint()
+
+        QgsProject.instance().reloadAllLayers()

@@ -94,6 +94,8 @@ class Main:
 
         for_lines = capas.features_selector_OR(layers,values, self.id_origin, self.id_dest)
         capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest)
-        capas.merger_points(for_lines)
+        #capas.merger_points(for_lines)
+        capas.thematic_lines("OI_SUM")
+
 
 
