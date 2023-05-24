@@ -81,9 +81,9 @@ class Capas:
         matrix_OD = [list(par) for par in zip(origin_list, dest_list)]
         return matrix_OD
 
-    def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str) -> None:
+    def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str) -> list:
         espg = matrix_OD[0][0].crs().authid()
-        self.lines_layers_name = []
+        lines_layers_name = []
         for i in range(len(matrix_OD)):
             origin_features = matrix_OD[i][0].getFeatures()
             destination_features = matrix_OD[i][1].getFeatures()
@@ -97,8 +97,8 @@ class Capas:
             fields.append(QgsField('OI_RO', QVariant.Double))
             fields.append(QgsField('OI_SUM', QVariant.Double))
             layer_name = 'Lineas_RO_' + str(i+1)
-            self.lines_layers_name.append(layer_name)
             lines_layer = QgsVectorLayer('LineString?crs='+espg, layer_name, 'memory')
+            lines_layers_name.append(lines_layer.id())
             lines_layer.dataProvider().addAttributes(fields)
             lines_layer.updateFields()
 
@@ -127,6 +127,7 @@ class Capas:
                     QgsProject.instance().addMapLayer(lines_layer)
                     column +=1
                 row +=1
+        return lines_layers_name
 
     def merger_points(self, matrix_OD:list) -> None:
         for i in range(0, len(matrix_OD)):
@@ -135,23 +136,45 @@ class Capas:
                     "CRS": matrix_OD[i][0].crs().authid(),
                     "OUTPUT":"memory:Puntos_OR_"+ str(i+1)
                     }
-
             layer = processing.run("native:mergevectorlayers",data)
             QgsProject.instance().addMapLayer(layer["OUTPUT"])
 
-    def thematic_lines(self, field_name:str) -> None:
-        for layer_name in self.lines_layers_name:
-            layer = QgsProject.instance().mapLayersByName(layer_name)[0]
-            field = field_name
-            random_color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            line_symbol = QgsLineSymbol.createSimple({'color': random_color.name()})
-            line_symbol.setOutputUnit(QgsUnitTypes.RenderMapUnits)
-            renderer = QgsSingleSymbolRenderer(line_symbol)
-            layer.setRenderer(renderer)
-            features = layer.getFeatures()
-            for feature in features:
-                valor_ancho_linea = feature.attribute(field)
-                line_symbol.setWidth(valor_ancho_linea)
-                layer.triggerRepaint()
+    def thematic_lines(self, layers: list, field_name:str) -> None:
+        all_layers = QgsProject.instance().mapLayers()
+        for i in range(0, len(layers)):
+            if all_layers[layers[i]]:
+                layer = all_layers[layers[i]]
+                field = field_name
+                random_color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                line_symbol = QgsLineSymbol.createSimple({'color': random_color.name()})
+                line_symbol.setOutputUnit(QgsUnitTypes.RenderMapUnits)
+                renderer = QgsSingleSymbolRenderer(line_symbol)
+                layer.setRenderer(renderer)
+                features = layer.getFeatures()
+                for feature in features:
+                    valor_ancho_linea = feature.attribute(field)
+                    line_symbol.setWidth(valor_ancho_linea)
+                    layer.triggerRepaint()
 
         QgsProject.instance().reloadAllLayers()
+
+    def add_index(self, layer: object, values: list) -> None:
+        with edit(layer):
+            layer.addAttribute(QgsField("OI_SUM",QVariant.Double))
+            layer.updateFields()
+            features = layer.getFeatures()
+            for i, feature in enumerate(features):
+                feature["OI_SUM"] = values[i]
+                layer.updateFeature(feature)
+        QgsProject.instance().addMapLayer(layer)
+
+    def thematic_polygons(self, layer:object, field_name:str) -> None:
+        symbol = QgsFillSymbol()
+        clasificacion = [QgsGraduatedSymbolRenderer.Quantile]
+        style = QgsStyle().defaultStyle()
+        color_ramp = style.colorRampNames()
+        ramp = style.colorRamp(color_ramp[25]) #RdYlGn
+        field = field_name
+        renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
+        layer.setRenderer(renderer)
+

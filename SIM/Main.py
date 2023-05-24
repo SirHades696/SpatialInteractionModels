@@ -85,17 +85,23 @@ class Main:
                 "FD": self.friction_distance
                 }
 
-        values, values_oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
+        values, values_oi, oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
 
         layers = {
                 "ORIGIN":origin_centroids,
                 "DEST":destination_clon
                 }
 
+        capas.add_index(origin_clon,oi)
+        capas.thematic_polygons(origin_clon,"OI_SUM")
+
         for_lines = capas.features_selector_OR(layers,values, self.id_origin, self.id_dest)
-        capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest)
-        #capas.merger_points(for_lines)
-        capas.thematic_lines("OI_SUM")
+        layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest)
+
+
+        capas.merger_points(for_lines)
+        capas.thematic_lines(layers, "OI_SUM")
+
 
 
 
