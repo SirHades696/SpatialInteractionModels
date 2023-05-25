@@ -147,7 +147,7 @@ class Capas:
                 field = field_name
                 random_color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
                 line_symbol = QgsLineSymbol.createSimple({'color': random_color.name()})
-                line_symbol.setOutputUnit(QgsUnitTypes.RenderMapUnits)
+                line_symbol.setOutputUnit(QgsUnitTypes.RenderPixels)
                 renderer = QgsSingleSymbolRenderer(line_symbol)
                 layer.setRenderer(renderer)
                 features = layer.getFeatures()
