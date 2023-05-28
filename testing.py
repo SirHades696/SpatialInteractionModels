@@ -21,8 +21,8 @@ params = {
         "RESTR": 0,
         "VAL_REST": {
             "R_ORIG": {
-                "OPTION": 0,
-                "VALUE": [5000],
+                "OPTION": 1,
+                "VALUE": [500],
                        },
             "R_DEST": {
                 "OPTION": 0,
