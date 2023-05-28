@@ -22,7 +22,7 @@ class Capas:
         output_layer = processing.run("native:centroids", params)
         return output_layer['OUTPUT']
 
-    def features_selector_OR(self, layers:dict, values:dict, id_ori: str, id_dest:str) -> list:
+    def features_selector_OR(self, layers:dict, values:dict, id_ori: str, id_dest:str) -> tuple:
         origin = layers['ORIGIN']
         dest = layers['DEST']
 
@@ -51,7 +51,7 @@ class Capas:
                             "OUTPUT":"memory:"+str(values[str(i)]['ORI'])}
                     saved = processing.run("native:saveselectedfeatures",data2)
                     origin_list.append(saved["OUTPUT"])
-                    #QgsProject.instance().addMapLayer(saved["OUTPUT"])
+                    QgsProject.instance().addMapLayer(saved["OUTPUT"])
 
         # for destinations
         for field in dest_fields:
@@ -79,7 +79,7 @@ class Capas:
 
         # Matrix with Origins and Dest (filters)
         matrix_OD = [list(par) for par in zip(origin_list, dest_list)]
-        return matrix_OD
+        return matrix_OD, origin_list
 
     def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str) -> list:
         espg = matrix_OD[0][0].crs().authid()
@@ -129,33 +129,35 @@ class Capas:
                 row +=1
         return lines_layers_name
 
-    def merger_points(self, matrix_OD:list) -> None:
-        for i in range(0, len(matrix_OD)):
-            data = {
-                    "LAYERS":[matrix_OD[i][0],matrix_OD[i][1]],
-                    "CRS": matrix_OD[i][0].crs().authid(),
-                    "OUTPUT":"memory:Puntos_OR_"+ str(i+1)
+    def merge_layers(self, layers:list, name:str) -> object:
+        if type(layers[0]) == str:
+            crs = layers[0]
+        else:
+            crs = layers[0].crs().authid()
+        data = {
+                    "LAYERS":layers,
+                    "CRS": crs,
+                    "OUTPUT":"memory:" + name
                     }
-            layer = processing.run("native:mergevectorlayers",data)
-            QgsProject.instance().addMapLayer(layer["OUTPUT"])
+        layer = processing.run("native:mergevectorlayers",data)
+        QgsProject.instance().addMapLayer(layer["OUTPUT"])
 
-    def thematic_lines(self, layers: list, field_name:str) -> None:
-        all_layers = QgsProject.instance().mapLayers()
-        for i in range(0, len(layers)):
-            if all_layers[layers[i]]:
-                layer = all_layers[layers[i]]
-                field = field_name
-                random_color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-                line_symbol = QgsLineSymbol.createSimple({'color': random_color.name()})
-                line_symbol.setOutputUnit(QgsUnitTypes.RenderPixels)
-                renderer = QgsSingleSymbolRenderer(line_symbol)
-                layer.setRenderer(renderer)
-                features = layer.getFeatures()
-                for feature in features:
-                    valor_ancho_linea = feature.attribute(field)
-                    line_symbol.setWidth(valor_ancho_linea)
-                    layer.triggerRepaint()
+        return layer['OUTPUT']
 
+    def thematic_lines(self, layer: object, field_name:str) -> None:
+        field = field_name
+        values = layer.uniqueValues(layer.fields().indexFromName(field))
+        min_v = min(values)
+        max_v = max(values)
+        random_color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        line_symbol = QgsLineSymbol.createSimple({'color': random_color.name()})
+        line_symbol.setOutputUnit(QgsUnitTypes.RenderMillimeters)
+        renderer = QgsSingleSymbolRenderer(line_symbol)
+        layer.setRenderer(renderer)
+        exp = f'coalesce(scale_exp("{field}", {min_v}, {max_v}, 0.1, 1.5, 0.57), 0)'
+        layer.renderer().symbol().symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).setExpressionString(exp)
+        layer.renderer().symbol().symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).setActive(True)
+        layer.triggerRepaint()
         QgsProject.instance().reloadAllLayers()
 
     def add_index(self, layer: object, values: list) -> None:
@@ -177,4 +179,42 @@ class Capas:
         field = field_name
         renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
         layer.setRenderer(renderer)
+        QgsProject.instance().reloadAllLayers()
+
+
+    def thematic_points(self, layer:object, l_type:str) -> None:
+        if l_type == "ORI":
+            color = '78,124,185,255'
+            outline_color = '0,0,0,255'
+            outline_width = '0.2'
+            scale_method = 'area'
+        else:
+            color = '0,0,0,255'
+            outline_color = '255,255,255,255'
+            outline_width = '0.4'
+            scale_method = 'diameter'
+
+        data = {'angle': '0',
+                'cap_style': 'square',
+                'color': color,
+                'horizontal_anchor_point':'1',
+                'joinstyle': 'bevel',
+                'name': 'circle',
+                'offset': '0,0',
+                'offset_map_unit_scale':'3x:0,0,0,0,0,0',
+                'offset_unit': 'MM',
+                'outline_color': outline_color,
+                'outline_style': 'solid',
+                'outline_width': outline_width,
+                'outline_width_map_unit_scale': '3x:0,0,0,0,0,0',
+                'outline_width_unit': 'MM',
+                'scale_method': scale_method,
+                'size': '3',
+                'size_map_unit_scale': '3x:0,0,0,0,0,0',
+                'size_unit': 'MM',
+                'vertical_anchor_point': '1'}
+        symbol = QgsMarkerSymbol.createSimple(data)
+        layer.renderer().setSymbol(symbol)
+        layer.triggerRepaint()
+        QgsProject.instance().reloadAllLayers()
 

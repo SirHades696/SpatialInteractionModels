@@ -87,7 +87,7 @@ class Main:
 
         values, values_oi, oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
 
-        layers = {
+        data_layers = {
                 "ORIGIN":origin_centroids,
                 "DEST":destination_clon
                 }
@@ -95,12 +95,22 @@ class Main:
         capas.add_index(origin_clon,oi)
         capas.thematic_polygons(origin_clon,"OI_SUM")
 
-        for_lines = capas.features_selector_OR(layers,values, self.id_origin, self.id_dest)
+        for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest)
         layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest)
 
+        layer_RO = capas.merge_layers(layers, "Lineas_RO")
+        layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
+        capas.thematic_lines(layer_RO, "OI_SUM")
 
-        capas.merger_points(for_lines)
-        capas.thematic_lines(layers, "OI_SUM")
+        QgsProject.instance().addMapLayer(destination_clon)
+
+        capas.thematic_points(layer_RO_p,"ORI")
+        capas.thematic_points(destination_clon,"DEST")
+
+        gestor.destroy_layers(layers)
+        gestor.destroy_layers(or_list)
+
+
 
 
 

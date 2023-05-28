@@ -15,3 +15,7 @@ class GestorArchivos:
         mem_layer_data.addFeatures(feats)
 
         return mem_layer
+
+    def destroy_layers(self, layers:list):
+        for layer in layers:
+            QgsProject.instance().removeMapLayer(layer)
