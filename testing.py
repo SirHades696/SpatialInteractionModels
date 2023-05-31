@@ -4,25 +4,25 @@ from qgis.core import *
 sys.path.append('/home/hades/Documentos/projects/SpatialInteractionModels/SIM/')
 from Main import Main
 
-capa1 = r"/home/hades/Documentos/Datos 2SFCA/UTM/Manzanas_UTM_Corto.shp"
-capa2 = r"/home/hades/Documentos/Datos 2SFCA/UTM/Farmacias_UTM_Corto.shp"
+capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/L_ZMT_pob.shp"
+capa2 = r"/home/hades/Documentos/Datos_EDOMEX/CLUES_repro/CLUES.shp"
 
-origin = QgsVectorLayer(capa1,"Manzanas","ogr")
-destination = QgsVectorLayer(capa2,"Farmacias","ogr")
+origin = QgsVectorLayer(capa1,"ZMT","ogr")
+destination = QgsVectorLayer(capa2,"CLUES","ogr")
 
 params = {
         "ORIGIN": origin,
-        "ID_ORI": "clavegeo",
-        "VAR_ORI": "POB65_MAS",
+        "ID_ORI": "CVEGEO",
+        "VAR_ORI": "POB1",
         "DEST": destination,
-        "ID_DEST": "id",
-        "VAR_DEST": "peso",
+        "ID_DEST": "CLUES",
+        "VAR_DEST": "C1301",
         "UNIT": 0,
         "RESTR": 0,
         "VAL_REST": {
             "R_ORIG": {
-                "OPTION": 1,
-                "VALUE": [500],
+                "OPTION": 2,
+                "VALUE": [1000,2500],
                        },
             "R_DEST": {
                 "OPTION": 0,

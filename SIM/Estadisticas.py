@@ -1,10 +1,10 @@
 
 from qgis.core import *
-import math
+import numpy as np
 
 class Estadisticas:
 
-    def distanceMatrix(self, origin:object, destination:object, unit:int) -> list:
+    def distanceMatrix(self, origin:QgsVectorLayer, destination:QgsVectorLayer, unit:int) -> np.ndarray:
         distance = QgsDistanceArea()
         distance.setSourceCrs(origin.crs(), QgsProject.instance().transformContext())
         ellip = QgsProject.instance().ellipsoid()
@@ -12,9 +12,13 @@ class Estadisticas:
             ellip = "EPSG:7030"
         distance.setEllipsoid(ellip)
 
-        matrix = []
+        f_origin = origin.getFeatures()
+        f_dest = destination.getFeatures()
+        rows = len(list(f_origin))
+        columns = len(list(f_dest))
+        matrix = np.zeros((rows,columns))
+
         for f1 in origin.getFeatures():
-            row = []
             for f2 in destination.getFeatures():
                 punto1 = f1.geometry().asPoint()
                 punto2 = f2.geometry().asPoint()
@@ -30,58 +34,41 @@ class Estadisticas:
                     d = distance.measureLine(punto1, punto2)*3.28084
                 elif unit == 4:
                     d = distance.measureLine(punto1, punto2)/0.9144
-                row.append(d)
-            matrix.append(row)
+                matrix[f1.id()-1,f2.id()-1] = d
         return matrix
 
-    def origin_restriction(self, matrix:list, val_rest:dict, values_OD:dict ) -> tuple:
-        # filters and first step of SIM
+    def origin_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ) -> tuple:
         if val_rest['R_ORIG']['OPTION'] == 0:
-            for i in range(0, len(values_OD["ORIGIN"])):
-                for j in range(0, len(values_OD["DEST"])):
-                    if matrix[i][j] >= val_rest['R_ORIG']['VALUE'][0]: # >=
-                        matrix[i][j] = 1/(math.pow(matrix[i][j],values_OD["FD"]))
-                    else:
-                        matrix[i][j] = 0
+            matrix = np.where(matrix >= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
         elif val_rest['R_ORIG']['OPTION'] == 1:
-            for i in range(0, len(values_OD["ORIGIN"])):
-                for j in range(0, len(values_OD["DEST"])):
-                    if matrix[i][j] <= val_rest['R_ORIG']['VALUE'][0]: # <=
-                        matrix[i][j] = 1/(math.pow(matrix[i][j],values_OD["FD"]))
-                    else:
-                        matrix[i][j] = 0
+            matrix = np.where(matrix <= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
         elif val_rest['R_ORIG']['OPTION'] == 2:
-            for i in range(0, len(values_OD["ORIGIN"])):
-                for j in range(0, len(values_OD["DEST"])):
-                    if matrix[i][j] >= val_rest['R_ORIG']['VALUE'][0] and matrix[i][j] <= val_rest['R_ORIG']['VALUE'][1]: # Range
-                        matrix[i][j] = 1/(math.pow(matrix[i][j],values_OD["FD"]))
-                    else:
-                        matrix[i][j] = 0
+            matrix = np.where((matrix >= val_rest['R_ORIG']['VALUE'][0]) & (matrix <= val_rest['R_ORIG']['VALUE'][1]),1/(matrix**values_OD["FD"]),0)
 
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
-                matrix[i][j] = matrix[i][j] * values_OD["DEST"][j]
+                matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
 
         ai = []
         for i in range(0, len(values_OD["ORIGIN"])):
             suma = 0
             for j in range(0, len(values_OD["DEST"])):
-                suma += matrix[i][j]
+                suma += matrix[i,j]
             if suma != 0:
-                ai.append(1/suma)
+                ai.append(float(1/suma))
             else:
-                ai.append(0)
+                ai.append(float(0))
 
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
-                matrix[i][j] = matrix[i][j] * values_OD["ORIGIN"][i] * ai[i]
+                matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i] * ai[i]
 
         oi = []
         for i in range(0, len(values_OD["ORIGIN"])):
             suma = 0
             for j in range(0, len(values_OD["DEST"])):
-                suma += matrix[i][j]
-            oi.append(suma)
+                suma += matrix[i,j]
+            oi.append(float(suma))
 
         values = {}
         values_oi = {}
@@ -90,16 +77,16 @@ class Estadisticas:
             aux = []
             aux_v = []
             for j in range(0, len(values_OD["DEST"])):
-                if matrix[i][j] > 0:
+                if matrix[i,j] > 0:
                     aux.append(values_OD["ID_DEST"][j])
-                    aux_v.append(matrix[i][j])
+                    aux_v.append(float(matrix[i,j]))
             if len(aux) != 0 and len(aux_v) != 0:
                 values[str(count)] = {"ORI": values_OD["ID_ORI"][i], "DEST": aux}
-                values_oi[str(count)] = {"OI": aux_v , "OI_SUM": oi[i]}
+                values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i])}
                 count += 1
         return values, values_oi, oi
 
-    def extract_data(self, layer:object, name_attr: str) -> list:
+    def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
         values = []
         for feature in layer.getFeatures(request):

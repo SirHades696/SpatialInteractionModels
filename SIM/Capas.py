@@ -13,10 +13,10 @@ except ImportError:
 
 class Capas:
 
-    def centroid(self, layer:object) -> object:
+    def centroid(self, layer:QgsVectorLayer) -> QgsVectorLayer:
         params = {
                 "INPUT":layer,
-                "ALL_PARTS": True,
+                "ALL_PARTS": False,
                 "OUTPUT": "memory:"
                 }
         output_layer = processing.run("native:centroids", params)
@@ -89,7 +89,6 @@ class Capas:
             destination_features = matrix_OD[i][1].getFeatures()
             index_O = matrix_OD[i][0].fields().indexFromName(id_ori)
             index_D = matrix_OD[i][1].fields().indexFromName(id_dest)
-
             # Create a empty Linestring
             fields = QgsFields()
             fields.append(QgsField('ID_ORI', QVariant.String))
@@ -102,7 +101,6 @@ class Capas:
             lines_layer.dataProvider().addAttributes(fields)
             lines_layer.updateFields()
 
-            row = 0
             for origin_feature in origin_features:
                 column = 0
                 for destination_feature in destination_features:
@@ -126,10 +124,9 @@ class Capas:
                     # Agregar la capa al proyecto
                     QgsProject.instance().addMapLayer(lines_layer)
                     column +=1
-                row +=1
         return lines_layers_name
 
-    def merge_layers(self, layers:list, name:str) -> object:
+    def merge_layers(self, layers:list, name:str) -> QgsVectorLayer:
         if type(layers[0]) == str:
             crs = layers[0]
         else:
@@ -144,7 +141,7 @@ class Capas:
 
         return layer['OUTPUT']
 
-    def thematic_lines(self, layer: object, field_name:str) -> None:
+    def thematic_lines(self, layer:QgsVectorLayer, field_name:str) -> None:
         field = field_name
         values = layer.uniqueValues(layer.fields().indexFromName(field))
         min_v = min(values)
@@ -154,13 +151,13 @@ class Capas:
         line_symbol.setOutputUnit(QgsUnitTypes.RenderMillimeters)
         renderer = QgsSingleSymbolRenderer(line_symbol)
         layer.setRenderer(renderer)
-        exp = f'coalesce(scale_exp("{field}", {min_v}, {max_v}, 0.1, 1.5, 0.57), 0)'
+        exp = f'coalesce(scale_exp("{field}", {min_v}, {max_v}, 0.1, 2.5, 0.57), 0)'
         layer.renderer().symbol().symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).setExpressionString(exp)
         layer.renderer().symbol().symbolLayer(0).dataDefinedProperties().property(QgsSymbolLayer.PropertyStrokeWidth).setActive(True)
         layer.triggerRepaint()
         QgsProject.instance().reloadAllLayers()
 
-    def add_index(self, layer: object, values: list) -> None:
+    def add_index(self, layer:QgsVectorLayer, values: list) -> None:
         with edit(layer):
             layer.addAttribute(QgsField("OI_SUM",QVariant.Double))
             layer.updateFields()
@@ -170,7 +167,7 @@ class Capas:
                 layer.updateFeature(feature)
         QgsProject.instance().addMapLayer(layer)
 
-    def thematic_polygons(self, layer:object, field_name:str) -> None:
+    def thematic_polygons(self, layer:QgsVectorLayer, field_name:str) -> None:
         symbol = QgsFillSymbol()
         clasificacion = [QgsGraduatedSymbolRenderer.Quantile]
         style = QgsStyle().defaultStyle()
@@ -182,7 +179,7 @@ class Capas:
         QgsProject.instance().reloadAllLayers()
 
 
-    def thematic_points(self, layer:object, l_type:str) -> None:
+    def thematic_points(self, layer:QgsVectorLayer, l_type:str) -> None:
         if l_type == "ORI":
             color = '78,124,185,255'
             outline_color = '0,0,0,255'
