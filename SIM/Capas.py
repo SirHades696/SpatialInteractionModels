@@ -181,7 +181,7 @@ class Capas:
 
     def thematic_points(self, layer:QgsVectorLayer, l_type:str) -> None:
         if l_type == "ORI":
-            color = '78,124,185,255'
+            color = '1,200,255,255'
             outline_color = '0,0,0,255'
             outline_width = '0.2'
             scale_method = 'area'
