@@ -63,9 +63,13 @@ class Main:
         #Clonando los archivos de entrada
         origin_clon = gestor.clone_layer(self.origin)
         destination_clon = gestor.clone_layer(self.destination)
-
-        # calcula los centroides del archivo de origen (poligonos)
-        origin_centroids = capas.centroid(origin_clon)
+        flag = False
+        if origin_clon.geometryType() == 2: #Polygon
+            # calcula los centroides del archivo de origen (poligonos)
+            origin_centroids = capas.centroid(origin_clon)
+            flag = True
+        else:
+            origin_centroids = origin_clon
 
         #Calculando la matriz de distancia
         matrix = estadisticas.distanceMatrix(origin_centroids,destination_clon,self.unit)
@@ -104,14 +108,12 @@ class Main:
 
         QgsProject.instance().addMapLayer(destination_clon)
 
-        capas.thematic_points(layer_RO_p,"ORI")
-        capas.thematic_points(destination_clon,"DEST")
+        capas.thematic_points(layer_RO_p,"ORI",0)
+        capas.thematic_points(destination_clon,"DEST",0)
+
+        if flag == False:
+            capas.thematic_points(origin_clon,"",1)
 
         gestor.destroy_layers(layers)
         gestor.destroy_layers(or_list)
-
-
-
-
-
 

@@ -17,8 +17,9 @@ class Estadisticas:
         rows = len(list(f_origin))
         columns = len(list(f_dest))
         matrix = np.zeros((rows,columns))
-
+        i = 0
         for f1 in origin.getFeatures():
+            j = 0
             for f2 in destination.getFeatures():
                 punto1 = f1.geometry().asPoint()
                 punto2 = f2.geometry().asPoint()
@@ -34,7 +35,9 @@ class Estadisticas:
                     d = distance.measureLine(punto1, punto2)*3.28084
                 elif unit == 4:
                     d = distance.measureLine(punto1, punto2)/0.9144
-                matrix[f1.id()-1,f2.id()-1] = d
+                matrix[i,j] = d
+                j += 1
+            i += 1
         return matrix
 
     def origin_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ) -> tuple:

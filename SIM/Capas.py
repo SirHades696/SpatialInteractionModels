@@ -179,39 +179,57 @@ class Capas:
         QgsProject.instance().reloadAllLayers()
 
 
-    def thematic_points(self, layer:QgsVectorLayer, l_type:str) -> None:
-        if l_type == "ORI":
-            color = '1,200,255,255'
-            outline_color = '0,0,0,255'
-            outline_width = '0.2'
-            scale_method = 'area'
-        else:
-            color = '0,0,0,255'
-            outline_color = '255,255,255,255'
-            outline_width = '0.4'
-            scale_method = 'diameter'
+    def thematic_points(self, layer:QgsVectorLayer, l_type:str, l_render:int) -> None:
+        if l_render == 0:
+            if l_type == "ORI":
+                color = '1,200,255,255'
+                outline_color = '0,0,0,255'
+                outline_width = '0.2'
+                scale_method = 'area'
+            else:
+                color = '0,0,0,255'
+                outline_color = '255,255,255,255'
+                outline_width = '0.4'
+                scale_method = 'diameter'
 
-        data = {'angle': '0',
-                'cap_style': 'square',
-                'color': color,
-                'horizontal_anchor_point':'1',
-                'joinstyle': 'bevel',
-                'name': 'circle',
-                'offset': '0,0',
-                'offset_map_unit_scale':'3x:0,0,0,0,0,0',
-                'offset_unit': 'MM',
-                'outline_color': outline_color,
-                'outline_style': 'solid',
-                'outline_width': outline_width,
-                'outline_width_map_unit_scale': '3x:0,0,0,0,0,0',
-                'outline_width_unit': 'MM',
-                'scale_method': scale_method,
-                'size': '3',
-                'size_map_unit_scale': '3x:0,0,0,0,0,0',
-                'size_unit': 'MM',
-                'vertical_anchor_point': '1'}
-        symbol = QgsMarkerSymbol.createSimple(data)
-        layer.renderer().setSymbol(symbol)
-        layer.triggerRepaint()
-        QgsProject.instance().reloadAllLayers()
+            data = {'angle': '0',
+                    'cap_style': 'square',
+                    'color': color,
+                    'horizontal_anchor_point':'1',
+                    'joinstyle': 'bevel',
+                    'name': 'circle',
+                    'offset': '0,0',
+                    'offset_map_unit_scale':'3x:0,0,0,0,0,0',
+                    'offset_unit': 'MM',
+                    'outline_color': outline_color,
+                    'outline_style': 'solid',
+                    'outline_width': outline_width,
+                    'outline_width_map_unit_scale': '3x:0,0,0,0,0,0',
+                    'outline_width_unit': 'MM',
+                    'scale_method': scale_method,
+                    'size': '3',
+                    'size_map_unit_scale': '3x:0,0,0,0,0,0',
+                    'size_unit': 'MM',
+                    'vertical_anchor_point': '1'}
+            symbol = QgsMarkerSymbol.createSimple(data)
+            layer.renderer().setSymbol(symbol)
+            layer.triggerRepaint()
+            QgsProject.instance().reloadAllLayers()
+        else:
+            field_name = "OI_SUM"
+            values = layer.uniqueValues(layer.fields().indexFromName(field_name))
+            min_v = min(values)
+            max_v = max(values)
+            symbol = QgsMarkerSymbol()
+            exp = f'coalesce(scale_exp("{field_name}", {min_v}, {max_v}, 1, 10, 0.57), 0)'
+            symbol.symbolLayer(0).setDataDefinedProperty(QgsSymbolLayer.PropertySize, QgsProperty.fromExpression(exp))
+            clasificacion = [QgsGraduatedSymbolRenderer.Quantile]
+            style = QgsStyle().defaultStyle()
+            color_ramp = style.colorRampNames()
+            ramp = style.colorRamp(color_ramp[25]) #RdYlGn
+            field = field_name
+            renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
+            layer.setRenderer(renderer)
+            layer.triggerRepaint()
+            QgsProject.instance().reloadAllLayers()
 
