@@ -5,6 +5,9 @@ from Estadisticas import Estadisticas
 
 from qgis.core import *
 
+from qgis.utils import iface
+
+
 class Main:
     def __init__(self, params:dict) -> None:
         """
@@ -56,13 +59,29 @@ class Main:
         self.friction_distance = params["FRICTION_DISTANCE"]
 
     def run(self):
+
         gestor = GestorArchivos()
         capas = Capas()
         estadisticas = Estadisticas()
 
+        # Crear la barra de mensajes
+        messageBar = iface.messageBar()
+        messageBar.clearWidgets()
+        progressBar = QProgressBar()
+        progressBar.setMaximum(100)
+        # Agregar el widget de la barra de progreso a la barra de mensajes
+        messageBar.pushWidget(progressBar, Qgis.Info)
+
         #Clonando los archivos de entrada
         origin_clon = gestor.clone_layer(self.origin)
         destination_clon = gestor.clone_layer(self.destination)
+
+        progressBar.setValue(10)
+        #Validando que el origen cuente unicamente con valores mayores a 0
+        lys = capas.layer_filter(origin_clon,self.var_origin)
+        origin_clon = lys[0]
+        origin_VMenC = lys[1]
+
         flag = False
         if origin_clon.geometryType() == 2: #Polygon
             # calcula los centroides del archivo de origen (poligonos)
@@ -70,6 +89,8 @@ class Main:
             flag = True
         else:
             origin_centroids = origin_clon
+
+        progressBar.setValue(20)
 
         #Calculando la matriz de distancia
         matrix = estadisticas.distanceMatrix(origin_centroids,destination_clon,self.unit)
@@ -79,6 +100,9 @@ class Main:
         dests = estadisticas.extract_data(destination_clon,self.var_dest)
         id_origins = estadisticas.extract_data(origin_clon, self.id_origin)
         id_dests = estadisticas.extract_data(destination_clon, self.id_dest)
+
+
+        progressBar.setValue(40)
 
         # Construcción del dict que contiene los valores extraídos de la oferta/demanda y IDs
         values_OD = {
@@ -97,7 +121,10 @@ class Main:
                 }
 
         capas.add_index(origin_clon,oi)
-        capas.thematic_polygons(origin_clon,"OI_SUM")
+        capas.thematic_polygons(origin_clon,"OI_SUM",0)
+
+        progressBar.setValue(50)
+
 
         for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest)
         layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest)
@@ -113,7 +140,17 @@ class Main:
 
         if flag == False:
             capas.thematic_points(origin_clon,"",1)
+            capas.thematic_points(origin_VMenC,"VMenC",0)
+        else:
+            capas.thematic_polygons(origin_VMenC,"",1)
+
+
+        progressBar.setValue(80)
 
         gestor.destroy_layers(layers)
         gestor.destroy_layers(or_list)
+
+        progressBar.setValue(100)
+        messageBar.clearWidgets()
+        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success)
 

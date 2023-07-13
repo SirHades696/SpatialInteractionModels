@@ -4,8 +4,8 @@ from qgis.core import *
 sys.path.append('/home/hades/Documentos/projects/SpatialInteractionModels/SIM/')
 from Main import Main
 
-#capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/LZMT_C.shp"
-capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/LZMT_C_Puntos.shp"
+capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/LZMT_C.shp"
+#capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/LZMT_C_Puntos.shp"
 capa2 = r"/home/hades/Documentos/Datos_EDOMEX/CLUES_repro/CLUES.shp"
 
 origin = QgsVectorLayer(capa1,"ZMT","ogr")

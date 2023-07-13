@@ -13,6 +13,27 @@ except ImportError:
 
 class Capas:
 
+    def layer_filter(self, layer:QgsVectorLayer, field_name:str) -> list:
+        exprs = [f'"{field_name}" > 0',f'"{field_name}" <= 0']
+        layers = []
+        for i,expr in enumerate(exprs):
+            data_sl = {
+                "INPUT":layer,
+                "EXPRESSION":expr,
+                "METHOD":0 #new selection
+            }
+            selection = processing.run("qgis:selectbyexpression",data_sl)["OUTPUT"]
+            aux = "_VMC" if i == 0 else "_VMenC"
+            data_sv = {
+                "INPUT":selection,
+                "OUTPUT":"memory:" + layer.name() + aux}
+            saved = processing.run("native:saveselectedfeatures",data_sv)["OUTPUT"]
+            layers.append(saved)
+            QgsProject.instance().addMapLayer(saved)
+
+        return layers
+
+
     def centroid(self, layer:QgsVectorLayer) -> QgsVectorLayer:
         params = {
                 "INPUT":layer,
@@ -167,17 +188,36 @@ class Capas:
                 layer.updateFeature(feature)
         QgsProject.instance().addMapLayer(layer)
 
-    def thematic_polygons(self, layer:QgsVectorLayer, field_name:str) -> None:
-        symbol = QgsFillSymbol()
-        clasificacion = [QgsGraduatedSymbolRenderer.Quantile]
-        style = QgsStyle().defaultStyle()
-        color_ramp = style.colorRampNames()
-        ramp = style.colorRamp(color_ramp[25]) #RdYlGn
-        field = field_name
-        renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
-        layer.setRenderer(renderer)
-        QgsProject.instance().reloadAllLayers()
-
+    def thematic_polygons(self, layer:QgsVectorLayer, field_name:str, p_type:int) -> None:
+        if p_type == 0:
+            symbol = QgsFillSymbol()
+            clasificacion = [QgsGraduatedSymbolRenderer.Quantile]
+            style = QgsStyle().defaultStyle()
+            color_ramp = style.colorRampNames()
+            ramp = style.colorRamp(color_ramp[25]) #RdYlGn
+            field = field_name
+            renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
+            layer.setRenderer(renderer)
+            QgsProject.instance().reloadAllLayers()
+        else:
+            data = {
+            "border_width_map_unit_scale": "3x:0,0,0,0,0,0",
+            "color": "150,150,150,255",
+            "joinstyle":"bevel",
+            "offset": "0,0",
+            "offset_map_unit_scale": "3x:0,0,0,0,0,0",
+            "offset_unit": "MM",
+            "outline_color": "247,247,247,255",
+            "outline_style": "solid",
+            "outline_width": "0.26",
+            "outline_width_unit": "MM",
+            "style": "solid"
+            }
+            symbol = QgsFillSymbol.createSimple(data)
+            renderer = QgsSingleSymbolRenderer(symbol)
+            layer.setRenderer(renderer)
+            layer.triggerRepaint()
+            QgsProject.instance().reloadAllLayers()
 
     def thematic_points(self, layer:QgsVectorLayer, l_type:str, l_render:int) -> None:
         if l_render == 0:
@@ -186,11 +226,19 @@ class Capas:
                 outline_color = '0,0,0,255'
                 outline_width = '0.2'
                 scale_method = 'area'
+                size = '3'
+            elif l_type == "VMenC":
+                color = '83,83,83,255'
+                outline_color = '247,247,247,255'
+                outline_width = '0.4'
+                scale_method = 'diameter'
+                size = '4'
             else:
                 color = '0,0,0,255'
                 outline_color = '255,255,255,255'
                 outline_width = '0.4'
                 scale_method = 'diameter'
+                size = '3'
 
             data = {'angle': '0',
                     'cap_style': 'square',
@@ -207,12 +255,13 @@ class Capas:
                     'outline_width_map_unit_scale': '3x:0,0,0,0,0,0',
                     'outline_width_unit': 'MM',
                     'scale_method': scale_method,
-                    'size': '3',
+                    'size': size,
                     'size_map_unit_scale': '3x:0,0,0,0,0,0',
                     'size_unit': 'MM',
                     'vertical_anchor_point': '1'}
             symbol = QgsMarkerSymbol.createSimple(data)
-            layer.renderer().setSymbol(symbol)
+            renderer = QgsSingleSymbolRenderer(symbol)
+            layer.setRenderer(renderer)
             layer.triggerRepaint()
             QgsProject.instance().reloadAllLayers()
         else:
@@ -227,8 +276,7 @@ class Capas:
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()
             ramp = style.colorRamp(color_ramp[25]) #RdYlGn
-            field = field_name
-            renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
+            renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field_name, 5, clasificacion[0], symbol, ramp)
             layer.setRenderer(renderer)
             layer.triggerRepaint()
             QgsProject.instance().reloadAllLayers()
