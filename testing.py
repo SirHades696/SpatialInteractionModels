@@ -18,7 +18,7 @@ params = {
         "DEST": destination,
         "ID_DEST": "CLUES",
         "VAR_DEST": "C1301", #Medicina general
-        "UNIT": 0,
+        "UNIT": 0, # 0 - metros
         "RESTR": 0,
         "VAL_REST": {
             "R_ORIG": {

@@ -1,4 +1,5 @@
 from qgis.core import *
+import numpy as np
 
 class GestorArchivos:
 
@@ -15,6 +16,10 @@ class GestorArchivos:
 
         return mem_layer
 
-    def destroy_layers(self, layers:list):
+    def destroy_layers(self, layers:list) -> None:
         for layer in layers:
             QgsProject.instance().removeMapLayer(layer)
+
+    def read_csv_matrix(self, path:str) -> np.ndarray:
+        matrix = np.loadtxt(path, delimiter=",", dtype=float)
+        return matrix

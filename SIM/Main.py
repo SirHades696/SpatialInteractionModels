@@ -6,7 +6,9 @@ from Estadisticas import Estadisticas
 from qgis.core import *
 
 from qgis.utils import iface
-
+from qgis.gui import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtCore import *
 
 class Main:
     def __init__(self, params:dict) -> None:

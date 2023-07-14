@@ -26,18 +26,24 @@ class Estadisticas:
                 d = 0
                 # 0 - metros, 1 - kilometros, 2 - millas, 3 - pies, 4 - yardas
                 if unit == 0:
-                    d = distance.measureLine(punto1, punto2)
+                    d_aux = distance.measureLine(punto1, punto2)
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceMeters)
                 elif unit == 1:
-                    d = distance.measureLine(punto1, punto2)/1000
+                    d_aux = distance.measureLine(punto1, punto2)#/1000
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceKilometers)
                 elif unit == 2:
-                    d = distance.measureLine(punto1, punto2)/1609.344
+                    d_aux = distance.measureLine(punto1, punto2)#/1609.344
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceMiles)
                 elif unit == 3:
-                    d = distance.measureLine(punto1, punto2)*3.28084
+                    d_aux = distance.measureLine(punto1, punto2)#*3.28084
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceFeet)
                 elif unit == 4:
-                    d = distance.measureLine(punto1, punto2)/0.9144
+                    d_aux = distance.measureLine(punto1, punto2)#/0.9144
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.Yards)
                 matrix[i,j] = d
                 j += 1
             i += 1
+        #np.savetxt("matrix.csv", matrix, delimiter=',')
         return matrix
 
     def origin_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ) -> tuple:
