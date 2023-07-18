@@ -2,6 +2,7 @@
 from Capas import Capas
 from GestorArchivos import GestorArchivos
 from Estadisticas import Estadisticas
+from Reportes import Reportes
 
 from qgis.core import *
 
@@ -25,7 +26,7 @@ class Main:
         "ID_DEST": - Hace referrencia al ID o identificador unico del archivo de destino
         "VAR_DEST": - Hace referencia al atributo del archivo de destinos que identifica la oferta
         "UNIT": - Unidades de distancia en las que se evaluara la matriz de distancias: 0 - metros, 1 - kilometros, 2 - millas, 3 - pies, 4 - yardas
-        "RESTR" - Identifica la restricción que se va a utilizar: 0 - Restriccion en el origen, 1 - restriccion en el destino, 3 - Doblemente Restr
+        "RESTR" - Identifica la restricción que se va a utilizar: 0 - Restriccion en el origen, 1 - restriccion en el destino, 2 - Doblemente Restr
         "VAL_REST": { - Hace referencia a los parametros necesarios para cada restriccion
             "R_ORIG": { - Hace referencia a la restriccion en el origen
                 "OPTION": - Filtro para la restriccion, 0 - Mayor que, 1 - Menor que, 2 - Rango
@@ -50,6 +51,7 @@ class Main:
         "OUTPUT": - Hace referencia a la ruta de almacenamiento
         }
         """
+        self.params = params
         self.origin = params["ORIGIN"]
         self.id_origin = params["ID_ORI"]
         self.destination = params["DEST"]
@@ -59,12 +61,14 @@ class Main:
         self.unit = params["UNIT"]
         self.val_rest = params["VAL_REST"]
         self.friction_distance = params["FRICTION_DISTANCE"]
+        self.output = params["OUTPUT"]
 
     def run(self):
 
         gestor = GestorArchivos()
         capas = Capas()
         estadisticas = Estadisticas()
+        reportes = Reportes()
 
         # Crear la barra de mensajes
         messageBar = iface.messageBar()
@@ -155,4 +159,4 @@ class Main:
         progressBar.setValue(100)
         messageBar.clearWidgets()
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success)
-
+        reportes.report_html(values,values_oi,self.params)

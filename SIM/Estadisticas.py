@@ -79,8 +79,8 @@ class Estadisticas:
                 suma += matrix[i,j]
             oi.append(float(suma))
 
-        values = {}
-        values_oi = {}
+        values = {} #IDs
+        values_oi = {} #Values of OI, total and individual
         count = 0
         for i in range(0, len(values_OD["ORIGIN"])):
             aux = []
@@ -93,6 +93,8 @@ class Estadisticas:
                 values[str(count)] = {"ORI": values_OD["ID_ORI"][i], "DEST": aux}
                 values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i])}
                 count += 1
+        #print(values)
+        #print(values_oi)
         return values, values_oi, oi
 
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
