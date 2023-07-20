@@ -150,7 +150,7 @@ class Main:
         else:
             capas.thematic_polygons(origin_VMenC,"",1)
 
-
+        thematic_layers = [ layer_RO, layer_RO_p, destination_clon, origin_clon, origin_VMenC]
         progressBar.setValue(80)
 
         gestor.destroy_layers(layers)
@@ -158,5 +158,11 @@ class Main:
 
         progressBar.setValue(100)
         messageBar.clearWidgets()
-        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success)
         reportes.report_html(values,values_oi,self.params)
+        data = {
+                "GeoJSON": True,
+                "HD":True,
+                "Spatialite": True
+                }
+        gestor.save_data(thematic_layers,self.output,data)
+        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success)

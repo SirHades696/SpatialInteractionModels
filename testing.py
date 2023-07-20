@@ -41,7 +41,7 @@ params = {
                 }
             },
         "FRICTION_DISTANCE": 1.2,
-        "OUTPUT":"/home/hades/Documentos/projects/SpatialInteractionModels/"
+        "OUTPUT":"/home/hades/Documentos/projects/SpatialInteractionModels/test/"
         }
 
 run = Main(params)
