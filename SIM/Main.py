@@ -68,8 +68,6 @@ class Main:
         gestor = GestorArchivos()
         capas = Capas()
         estadisticas = Estadisticas()
-        reportes = Reportes()
-
         # Crear la barra de mensajes
         messageBar = iface.messageBar()
         messageBar.clearWidgets()
@@ -158,11 +156,16 @@ class Main:
 
         progressBar.setValue(100)
         messageBar.clearWidgets()
-        reportes.report_html(values,values_oi,self.params)
+        # instancia de los reportes
+        reportes = Reportes(values, values_oi, self.params)
+        reportes.report_HTML()
+        reportes.report_XLS()
+        reportes.report_ODS()
         data = {
-                "GeoJSON": True,
-                "HD":True,
-                "Spatialite": True
+                "GeoJSON": {"SAVE":False, "OPEN":False},
+                "HD": {"SAVE":False, "OPEN":False},
+                "Spatialite": {"SAVE":False, "OPEN":True},
+                "Memory": True
                 }
-        gestor.save_data(thematic_layers,self.output,data)
+        gestor.save_Layers(thematic_layers,self.output,data)
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success)

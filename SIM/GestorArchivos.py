@@ -25,8 +25,8 @@ class GestorArchivos:
         matrix = np.loadtxt(path, delimiter=",", dtype=float)
         return matrix
 
-    def save_data(self, layers:list, path:str, data:dict) -> None:
-        if data["GeoJSON"] == True:
+    def save_Layers(self, layers:list, path:str, data:dict) -> None:
+        if data["GeoJSON"]["SAVE"] == True:
             path_g = path + "GeoJSON/"
             if not os.path.exists(path_g):
                 os.makedirs(path_g)
@@ -34,17 +34,21 @@ class GestorArchivos:
             else:
                 print("La carpeta ya existe")
             for layer in layers:
+                output = path_g + layer.name()+".geojson"
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer,
-                                                                 path_g + layer.name()+".geojson",
+                                                                 output,
                                                                  "UTF-8",
                                                                  layer.crs(),
                                                                  driverName="GeoJSON")
                 if result[1] == "":
                     print(f"GEOJSON - La capa {layer.name()} exportada con éxito")
+                    if data["GeoJSON"]["OPEN"] == True:
+                        lyr = QgsVectorLayer(output,layer.name(),"ogr")
+                        QgsProject.instance().addMapLayer(lyr)
                 else:
                     print("GEOJSON - Hubo un error al exportar la capa {layer.name()}: ", result[1])
 
-        if data["Spatialite"] == True:
+        if data["Spatialite"]["SAVE"] == True:
             path_s = path + "Spatialite/"
             if not os.path.exists(path_s):
                 os.makedirs(path_s)
@@ -53,18 +57,22 @@ class GestorArchivos:
                 print("La carpeta ya existe")
 
             for layer in layers:
+                output = path_s + layer.name()+".sqlite"
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer,
-                                                                 path_s + layer.name()+".sqlite",
+                                                                 output,
                                                                  "UTF-8",
                                                                  layer.crs(),
                                                                  driverName="SQLite",
                                                                  datasourceOptions=["SPATIALITE=YES"])
                 if result[1] == "":
                     print(f"SPATIALITE - La capa {layer.name()} exportada con éxito")
+                    if data["Spatialite"]["OPEN"] == True:
+                        lyr = QgsVectorLayer(output,layer.name(),"ogr")
+                        QgsProject.instance().addMapLayer(lyr)
                 else:
                     print("SPATIALITE - Hubo un error al exportar la capa {layer.name()}: ", result[1])
 
-        if data["HD"] == True:
+        if data["HD"]["SAVE"] == True:
             path_hd = path + "Shapefiles/"
             if not os.path.exists(path_hd):
                 os.makedirs(path_hd)
@@ -73,13 +81,22 @@ class GestorArchivos:
                 print("La carpeta ya existe")
 
             for layer in layers:
+                output = path_hd + layer.name() + ".shp"
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer,
-                                                                 path_hd + layer.name() + ".shp",
+                                                                 output,
                                                                  "UTF-8",
                                                                  layer.crs(),
                                                                  driverName="ESRI Shapefile")
                 layer.saveNamedStyle(path_hd + layer.name() +".qml")
                 if result[1] == "":
                     print(f"SHAPEFILE - La capa {layer.name()} exportada con éxito")
+                    if data["HD"]["OPEN"] == True:
+                        lyr = QgsVectorLayer(output,layer.name(),"ogr")
+                        QgsProject.instance().addMapLayer(lyr)
+
                 else:
                     print("SHAPEFILE - Hubo un error al exportar la capa {layer.name()}: ", result[1])
+
+        if data["Memory"] == False:
+            self.destroy_layers(layers)
+
