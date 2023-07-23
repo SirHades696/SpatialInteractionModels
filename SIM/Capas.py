@@ -194,7 +194,8 @@ class Capas:
             clasificacion = [QgsGraduatedSymbolRenderer.Quantile]
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()
-            ramp = style.colorRamp(color_ramp[25]) #RdYlGn
+            ind_c = color_ramp.index("RdYlGn")
+            ramp = style.colorRamp(color_ramp[ind_c]) #RdYlGn
             field = field_name
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
             layer.setRenderer(renderer)

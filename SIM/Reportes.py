@@ -9,14 +9,12 @@ from html_template import html_string
 try:
     import pandas as pd
     from pyexcel_ods import save_data
-    import xlwt
 except:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pandas"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pyexcel-ods"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "xlwt"])
+    subprocess.call(["pip", "install", "pandas"])
+    subprocess.call(["pip", "install", "pyexcel-ods"])
+    subprocess.call(["pip", "install", "xlwt"])
     import pandas as pd
     from pyexcel_ods import save_data
-    import xlwt
 
 class Reportes:
 
