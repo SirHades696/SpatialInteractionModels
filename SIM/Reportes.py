@@ -33,6 +33,9 @@ class Reportes:
                            'OI_SUM':'ACC_TOT'}, inplace=True)
         pd.set_option('colheader_justify', 'center')
 
+        self.report_HTML()
+        self.save_calcs()
+
     def report_HTML(self) -> None:
         path = self.params["OUTPUT"] + 'ReporteMIE.html'
         html = self.df.to_html(classes='content-table',index=False)
@@ -99,13 +102,14 @@ class Reportes:
             #Pendiente
         return unit, tipo_rest, tipo_filt, values_r
 
-    def report_XLS(self) -> None:
-        path = self.params["OUTPUT"] + 'ReporteMIE.xls'
-        with pd.ExcelWriter(path) as writer: #type: ignore
-            self.df.to_excel(writer, index=False, sheet_name="Resultados")
+    def save_calcs(self):
+        if self.params["SAVE"]["XLS"] == True:
+            path_xls = self.params["OUTPUT"] + 'ReporteMIE.xls'
+            with pd.ExcelWriter(path_xls) as writer: #type: ignore
+                self.df.to_excel(writer, index=False, sheet_name="Resultados")
 
-    def report_ODS(self) -> None:
-        path = self.params["OUTPUT"] + 'ReporteMIE.ods'
-        headers = list(self.df.columns)
-        save_data(path, {"Resultados": [headers] + self.df.values.tolist()})
+        if self.params["SAVE"]["ODS"] == True:
+            path_ods = self.params["OUTPUT"] + 'ReporteMIE.ods'
+            headers = list(self.df.columns)
+            save_data(path_ods, {"Resultados": [headers] + self.df.values.tolist()})
 

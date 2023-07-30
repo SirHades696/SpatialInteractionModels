@@ -49,6 +49,16 @@ class Main:
             },
         "FRICTION_DISTANCE": - Hace referencia al parametro fricción de la distancia
         "OUTPUT": - Hace referencia a la ruta de almacenamiento
+        "EXPORTS": { - Permite guardar las capas en diferentes formatos, con las opciones de solo guardar o guardar y cargar automaticamente
+                "GeoJSON": {"SAVE":False, "OPEN":False},
+                "HD": {"SAVE":False, "OPEN":False},
+                "Spatialite": {"SAVE":False, "OPEN":False},
+                "Memory": True
+                },
+        "SAVE": { - Guarda las estadistiscas en hojas de calculo con extension XLS u ODS
+            "XLS":False,
+            "ODS":False
+            }
         }
         """
         self.params = params
@@ -74,7 +84,7 @@ class Main:
         progressBar = QProgressBar()
         progressBar.setMaximum(100)
         # Agregar el widget de la barra de progreso a la barra de mensajes
-        messageBar.pushWidget(progressBar, Qgis.Info)
+        messageBar.pushWidget(progressBar, Qgis.Info) #type:ignore
 
         #Clonando los archivos de entrada
         origin_clon = gestor.clone_layer(self.origin)
@@ -157,15 +167,6 @@ class Main:
         progressBar.setValue(100)
         messageBar.clearWidgets()
         # instancia de los reportes
-        reportes = Reportes(values, values_oi, self.params)
-        reportes.report_HTML()
-        reportes.report_XLS()
-        reportes.report_ODS()
-        data = {
-                "GeoJSON": {"SAVE":False, "OPEN":False},
-                "HD": {"SAVE":False, "OPEN":False},
-                "Spatialite": {"SAVE":False, "OPEN":True},
-                "Memory": True
-                }
-        gestor.save_Layers(thematic_layers,self.output,data)
-        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success)
+        Reportes(values, values_oi, self.params)
+        gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
+        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore

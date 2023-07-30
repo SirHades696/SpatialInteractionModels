@@ -27,19 +27,19 @@ class Estadisticas:
                 # 0 - metros, 1 - kilometros, 2 - millas, 3 - pies, 4 - yardas
                 if unit == 0:
                     d_aux = distance.measureLine(punto1, punto2)
-                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceMeters)
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceMeters) # type:ignore
                 elif unit == 1:
                     d_aux = distance.measureLine(punto1, punto2)#/1000
-                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceKilometers)
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceKilometers) # type:ignore
                 elif unit == 2:
                     d_aux = distance.measureLine(punto1, punto2)#/1609.344
-                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceMiles)
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceMiles) # type:ignore
                 elif unit == 3:
                     d_aux = distance.measureLine(punto1, punto2)#*3.28084
-                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceFeet)
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.DistanceFeet) # type:ignore
                 elif unit == 4:
                     d_aux = distance.measureLine(punto1, punto2)#/0.9144
-                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.Yards)
+                    d = distance.convertLengthMeasurement(d_aux, QgsUnitTypes.Yards) # type:ignore
                 matrix[i,j] = d
                 j += 1
             i += 1
@@ -98,7 +98,7 @@ class Estadisticas:
         return values, values_oi, oi
 
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
-        request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry)
+        request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore
         values = []
         for feature in layer.getFeatures(request):
             attribute_value = feature[name_attr]

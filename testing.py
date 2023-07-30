@@ -1,8 +1,8 @@
 import sys
-from qgis.core import *
+from qgis.core import * #type:ignore
 # Librerias adicionales
 sys.path.append('/home/hades/Documentos/projects/SpatialInteractionModels/SIM/')
-from Main import Main
+from Main import Main #type:ignore
 
 capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/LZMT_C.shp"
 #capa1 = r"/home/hades/Documentos/Datos_EDOMEX/Localidades_ZMT_pob_repro/LZMT_C_Puntos.shp"
@@ -41,7 +41,17 @@ params = {
                 }
             },
         "FRICTION_DISTANCE": 1.2,
-        "OUTPUT":"/home/hades/Documentos/projects/SpatialInteractionModels/test/"
+        "OUTPUT":"/home/hades/Documentos/projects/SpatialInteractionModels/test/",
+        "EXPORTS": {
+                "GeoJSON": {"SAVE":False, "OPEN":False},
+                "HD": {"SAVE":False, "OPEN":False},
+                "Spatialite": {"SAVE":False, "OPEN":True},
+                "Memory": True
+                },
+        "SAVE": {
+            "XLS":False,
+            "ODS":False
+            }
         }
 
 run = Main(params)
