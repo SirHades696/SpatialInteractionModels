@@ -46,7 +46,8 @@ params = {
                 "GeoJSON": {"SAVE":False, "OPEN":False},
                 "HD": {"SAVE":False, "OPEN":False},
                 "Spatialite": {"SAVE":False, "OPEN":True},
-                "Memory": True
+                "Memory": True,
+                "Geopackage": {"SAVE":True, "OPEN":True}
                 },
         "SAVE": {
             "XLS":False,

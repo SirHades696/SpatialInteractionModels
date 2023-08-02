@@ -1,6 +1,8 @@
 from qgis.core import *
 import numpy as np
 import os
+import processing
+from osgeo import ogr
 
 class GestorArchivos:
 
@@ -99,4 +101,31 @@ class GestorArchivos:
 
         if data["Memory"] == False:
             self.destroy_layers(layers)
+
+
+        if data["Geopackage"]["SAVE"] == True:
+            path_gp = path + "Geopackage/"
+            if not os.path.exists(path_gp):
+                os.makedirs(path_gp)
+                os.chmod(path_gp, 0o777)
+
+            aux = {
+                    "LAYERS":layers,
+                    "OUTPUT":path_gp + "MIE.gpkg",
+                    "OVERWRITE":False,
+                    "SAVE_STYLES":True,
+                    "SAVE_METADATA":True,
+                    "SELECTED_FEATURES_ONLY":False
+                    }
+            out = processing.run("native:package",aux)
+
+            if data["Geopackage"]["OPEN"] == True:
+                conn = ogr.Open(out["OUTPUT"])
+                root = QgsProject.instance().layerTreeRoot()
+                grupo = root.addGroup("MIE")
+
+                for i in conn:
+                    ly = QgsVectorLayer(f"{out['OUTPUT']}|layername={i.GetName()}", i.GetName(), 'ogr')
+                    QgsProject.instance().addMapLayer(ly, False)
+                    grupo.addLayer(ly)
 

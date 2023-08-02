@@ -164,9 +164,10 @@ class Main:
         gestor.destroy_layers(layers)
         gestor.destroy_layers(or_list)
 
-        progressBar.setValue(100)
+        progressBar.setValue(90)
         messageBar.clearWidgets()
         # instancia de los reportes
         Reportes(values, values_oi, self.params)
         gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
+        progressBar.setValue(100)
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
