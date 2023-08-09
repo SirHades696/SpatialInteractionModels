@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/plugins/spatial_interaction_models">
+    <file>folder.png</file>
+    <file>icon.png</file>
+  </qresource>
+</RCC>

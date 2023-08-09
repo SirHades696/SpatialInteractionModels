@@ -123,9 +123,7 @@ class GestorArchivos:
                 conn = ogr.Open(out["OUTPUT"])
                 root = QgsProject.instance().layerTreeRoot()
                 grupo = root.addGroup("MIE")
-
                 for i in conn:
                     ly = QgsVectorLayer(f"{out['OUTPUT']}|layername={i.GetName()}", i.GetName(), 'ogr')
                     QgsProject.instance().addMapLayer(ly, False)
                     grupo.addLayer(ly)
-

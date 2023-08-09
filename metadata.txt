@@ -1,0 +1,47 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Modelos de Interacción Espacial
+qgisMinimumVersion=3.0
+description=Este plugin calcula 3 modelos de interacción espacial y son: restricción en el origen, restricción en el destino y los doblemente restrictivos. 
+version=1.0
+author=Adonai Emmanuel Nicanor Bautista
+email=djnonasrm@gmail.com
+
+about=Este plugin calcula 3 modelos de interacción espacial, los cuales son: restricción en el origen, restricción en el destino y los doblemente restrictivos. Genera capas temáticas de puntos, líneas y polígonos de acuerdo a los insumos proporcionados por el usuario, también, almacena las estadísticas en archivos con extensión "xls" y "ods". Por default, estas estadísticas son almacenadas en un archivo HTML. Las capas vectoriales pueden ser exportadas en distintos formatos como Shapefile, Spatialite, GeoJSON y Geopackage.
+
+tracker=https://github.com/SirHades696/SpatialInteractionModels/issues
+repository=https://github.com/SirHades696/SpatialInteractionModels/
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python
+
+homepage=https://github.com/SirHades696/SpatialInteractionModels/
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+Category of the plugin: Raster, Vector, Database or Web
+# category=
+
+# If the plugin can run on QGIS Server.
+server=False
+

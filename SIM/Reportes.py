@@ -100,6 +100,7 @@ class Reportes:
         else:
             tipo_rest = "Doblemente restrictivo"
             #Pendiente
+            #Agregar cada unas de las  caracteristicas de los modelos doblemente restrictivos
         return unit, tipo_rest, tipo_filt, values_r
 
     def save_calcs(self):
