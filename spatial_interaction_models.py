@@ -24,13 +24,16 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.core import QgsMapLayerProxyModel, QgsFieldProxyModel
 
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .spatial_interaction_models_dialog import SpatialInteractionModelsDialog
 import os.path
-
+from qgis.core import *
+from PyQt5.QtWidgets import *
+from qgis.gui import *
 
 class SpatialInteractionModels:
     """QGIS Plugin Implementation."""
@@ -67,9 +70,8 @@ class SpatialInteractionModels:
         self.toolbar = self.iface.addToolBar(u'SpatialInteractionModels')
         self.toolbar.setObjectName(u'SpatialInteractionModels')
         self.dlg = SpatialInteractionModelsDialog()
-        # Check if plugin was started the first time in current QGIS session
-        # Must be set in initGui() to survive plugin reloads
-        # self.first_start = None
+        self.connections()
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -86,93 +88,8 @@ class SpatialInteractionModels:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('SpatialInteractionModels', message)
 
-
-    # def add_action(
-    #     self,
-    #     icon_path,
-    #     text,
-    #     callback,
-    #     enabled_flag=True,
-    #     add_to_menu=True,
-    #     add_to_toolbar=True,
-    #     status_tip=None,
-    #     whats_this=None,
-    #     parent=None):
-    #     """Add a toolbar icon to the toolbar.
-
-    #     :param icon_path: Path to the icon for this action. Can be a resource
-    #         path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
-    #     :type icon_path: str
-
-    #     :param text: Text that should be shown in menu items for this action.
-    #     :type text: str
-
-    #     :param callback: Function to be called when the action is triggered.
-    #     :type callback: function
-
-    #     :param enabled_flag: A flag indicating if the action should be enabled
-    #         by default. Defaults to True.
-    #     :type enabled_flag: bool
-
-    #     :param add_to_menu: Flag indicating whether the action should also
-    #         be added to the menu. Defaults to True.
-    #     :type add_to_menu: bool
-
-    #     :param add_to_toolbar: Flag indicating whether the action should also
-    #         be added to the toolbar. Defaults to True.
-    #     :type add_to_toolbar: bool
-
-    #     :param status_tip: Optional text to show in a popup when mouse pointer
-    #         hovers over the action.
-    #     :type status_tip: str
-
-    #     :param parent: Parent widget for the new action. Defaults None.
-    #     :type parent: QWidget
-
-    #     :param whats_this: Optional text to show in the status bar when the
-    #         mouse pointer hovers over the action.
-
-    #     :returns: The action that was created. Note that the action is also
-    #         added to self.actions list.
-    #     :rtype: QAction
-    #     """
-
-    #     icon = QIcon(icon_path)
-    #     action = QAction(icon, text, parent)
-    #     action.triggered.connect(callback)
-    #     action.setEnabled(enabled_flag)
-
-    #     if status_tip is not None:
-    #         action.setStatusTip(status_tip)
-
-    #     if whats_this is not None:
-    #         action.setWhatsThis(whats_this)
-
-    #     if add_to_toolbar:
-    #         # Adds plugin icon to Plugins toolbar
-    #         self.iface.addToolBarIcon(action)
-
-    #     if add_to_menu:
-    #         self.iface.addPluginToMenu(
-    #             self.menu,
-    #             action)
-
-    #     self.actions.append(action)
-
-    #     return action
-
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        # icon_path = ':/plugins/spatial_interaction_models/icon.png'
-        # self.add_action(
-        #     icon_path,
-        #     text=self.tr(u'Modelos de Interacción Espacial'),
-        #     callback=self.run,
-        #     parent=self.iface.mainWindow())
-
-        # # will be set False in run()
-        # self.first_start = True
         icon_path = ':/plugins/spatial_interaction_models/icon.png'
         icon = QIcon(icon_path)
         self.action = QAction(icon,u'&Modelos de Interacción Espacial',self.iface.mainWindow())
@@ -195,18 +112,136 @@ class SpatialInteractionModels:
     def run(self):
         """Run method that performs all the real work"""
 
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        # if self.first_start == True:
-        #     self.first_start = False
-        #     self.dlg = SpatialInteractionModelsDialog()
-
-        # show the dialog
+        self.clear_and_start()
         self.dlg.show()
-        # Run the dialog event loop
         result = self.dlg.exec_()
-        # See if OK was pressed
-        # if result:
-        #     # Do something useful here - delete the line containing pass and
-        #     # substitute with your code.
-        #     pass
+        if result:
+            # get all data
+            pass
+
+    def clear_and_start(self):
+        self.dlg.tabWidget.setCurrentIndex(0)
+        # Origin
+        self.dlg.origin_combobox.setFilters(QgsMapLayerProxyModel.PointLayer|QgsMapLayerProxyModel.PolygonLayer)
+        self.dlg.origin_combobox.setCurrentIndex(-1)
+        self.dlg.id_origin_combobox.setCurrentIndex(-1)
+        self.dlg.field_origin_combobox.setCurrentIndex(-1)
+
+        self.dlg.id_origin_combobox.setFilters(QgsFieldProxyModel.String|
+                                               QgsFieldProxyModel.Int|
+                                               QgsFieldProxyModel.Double|
+                                               QgsFieldProxyModel.Numeric|
+                                               QgsFieldProxyModel.LongLong)
+
+        self.dlg.field_origin_combobox.setFilters(QgsFieldProxyModel.Int|
+                                               QgsFieldProxyModel.Double|
+                                               QgsFieldProxyModel.Numeric|
+                                               QgsFieldProxyModel.LongLong)
+        # Dest
+        self.dlg.dest_combobox.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.dlg.dest_combobox.setCurrentIndex(-1)
+        self.dlg.id_dest_combobox.setCurrentIndex(-1)
+        self.dlg.field_dest_combobox.setCurrentIndex(-1)
+
+
+        self.dlg.id_dest_combobox.setFilters(QgsFieldProxyModel.String|
+                                               QgsFieldProxyModel.Int|
+                                               QgsFieldProxyModel.Double|
+                                               QgsFieldProxyModel.Numeric|
+                                               QgsFieldProxyModel.LongLong)
+
+        self.dlg.field_dest_combobox.setFilters(QgsFieldProxyModel.Int|
+                                               QgsFieldProxyModel.Double|
+                                               QgsFieldProxyModel.Numeric|
+                                               QgsFieldProxyModel.LongLong)
+
+        #----------Restrictions
+        self.dlg.filt_combobox.setCurrentIndex(0)
+        self.dlg.mesuare_combobox.setCurrentIndex(0)
+        self.dlg.tipo_filt_dist.setCurrentIndex(0)
+        self.dlg.tipo_filt_fluj.setCurrentIndex(0)
+        self.dlg.tipo_filt_dist.setEnabled(False)
+        self.dlg.tipo_filt_fluj.setEnabled(False)
+        self.dlg.val1_dist.setEnabled(False)
+        self.dlg.val1_dist.setReadOnly(False)
+        self.dlg.val2_dist.setEnabled(False)
+        self.dlg.val2_dist.setReadOnly(False)
+        self.dlg.val1_fluj.setEnabled(False)
+        self.dlg.val1_fluj.setReadOnly(False)
+        self.dlg.val2_fluj.setEnabled(False)
+        self.dlg.val2_fluj.setReadOnly(False)
+
+
+    def connections(self):
+        # view inputs
+        self.dlg.btn_sig1.clicked.connect(self.tab_restrictions)
+
+        # view restrictions
+        self.dlg.btn_reg2.clicked.connect(self.tab_inputs)
+        self.dlg.btn_sig2.clicked.connect(self.tab_outputs)
+
+        # view outputs
+        self.dlg.btn_reg3.clicked.connect(self.tab_restrictions)
+
+        # Restrictions
+        self.dlg.filt_combobox.currentIndexChanged.connect(self.restrictions)
+        self.dlg.tipo_filt_dist.currentIndexChanged.connect(self.restrictions_valuesD)
+        self.dlg.tipo_filt_fluj.currentIndexChanged.connect(self.restrictions_valuesF)
+
+    # ------ TABS
+    def tab_inputs(self):
+        self.dlg.tabWidget.setCurrentIndex(0)
+
+    def tab_restrictions(self):
+        self.dlg.tabWidget.setCurrentIndex(1)
+
+    def tab_outputs(self):
+        self.dlg.tabWidget.setCurrentIndex(2)
+
+    def restrictions(self):
+        index = self.dlg.filt_combobox.currentIndex()
+        if index != 0:
+            if index == 1:
+                self.dlg.tipo_filt_dist.setEnabled(True)
+                self.dlg.tipo_filt_fluj.setEnabled(False)
+            elif index == 2:
+                self.dlg.tipo_filt_dist.setEnabled(False)
+                self.dlg.tipo_filt_fluj.setEnabled(True)
+            elif index == 3:
+                self.dlg.tipo_filt_dist.setEnabled(True)
+                self.dlg.tipo_filt_fluj.setEnabled(True)
+        else:
+            self.dlg.tipo_filt_dist.setEnabled(False)
+            self.dlg.tipo_filt_fluj.setEnabled(False)
+            self.dlg.val1_dist.setEnabled(False)
+            self.dlg.val2_dist.setEnabled(False)
+            self.dlg.val1_fluj.setEnabled(False)
+            self.dlg.val2_fluj.setEnabled(False)
+
+    def restrictions_valuesD(self):
+        index = self.dlg.tipo_filt_dist.currentIndex()
+        if index != 0:
+            if index == 1 or index == 2:
+                self.dlg.val1_dist.setEnabled(True)
+                self.dlg.val2_dist.setEnabled(False)
+            elif index == 3:
+                self.dlg.val1_dist.setEnabled(True)
+                self.dlg.val2_dist.setEnabled(True)
+        else:
+            self.dlg.val1_dist.setEnabled(False)
+            self.dlg.val2_dist.setEnabled(False)
+
+
+    def restrictions_valuesF(self):
+        index = self.dlg.tipo_filt_fluj.currentIndex()
+        if index != 0:
+            if index == 1 or index == 2:
+                self.dlg.val1_fluj.setEnabled(True)
+                self.dlg.val2_fluj.setEnabled(False)
+            elif index == 3:
+                self.dlg.val1_fluj.setEnabled(True)
+                self.dlg.val2_fluj.setEnabled(True)
+        else:
+            self.dlg.val1_fluj.setEnabled(False)
+            self.dlg.val2_fluj.setEnabled(False)
+
