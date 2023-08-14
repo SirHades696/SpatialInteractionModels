@@ -33,7 +33,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="inputs">
       <attribute name="title">
@@ -644,10 +644,16 @@
        <string>Salidas</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_10">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="maximumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Introduce un prefijo para cada ejecución</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -675,72 +681,6 @@
          <property name="iconSize">
           <size>
            <width>27</width>
-           <height>27</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_11">
-         <property name="maximumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QLineEdit" name="prefijo">
-         <property name="placeholderText">
-          <string>Ejemplo: Ejec1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>Selecciona una ruta de salida</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_4">
-         <property name="title">
-          <string>Estadísticas</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="xls_check">
-            <property name="text">
-             <string>Generar XLS</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="ods_check">
-            <property name="text">
-             <string>Generar ODS</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLineEdit" name="output">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
            <height>27</height>
           </size>
          </property>
@@ -793,7 +733,7 @@
           <item row="1" column="1">
            <widget class="QCheckBox" name="sqlite_check_load">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Agregar a QGIS</string>
@@ -806,7 +746,7 @@
           <item row="2" column="1">
            <widget class="QCheckBox" name="geojson_check_load">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Agregar a QGIS</string>
@@ -816,7 +756,7 @@
           <item row="3" column="1">
            <widget class="QCheckBox" name="geopackage_check_load">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Agregar a QGIS</string>
@@ -826,7 +766,7 @@
           <item row="4" column="1">
            <widget class="QCheckBox" name="hd_check_load">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Agregar a QGIS</string>
@@ -834,6 +774,62 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Estadísticas</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="xls_check">
+            <property name="text">
+             <string>Generar XLS</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="ods_check">
+            <property name="text">
+             <string>Generar ODS</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="title">
+          <string>Salidas</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="check_projects">
+            <property name="text">
+             <string>Seleccionar proyecto actual</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="projects_combobox"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Introduce un prefijo para cada ejecución</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLineEdit" name="prefijo">
+         <property name="placeholderText">
+          <string>Ejemplo: Ejec1</string>
+         </property>
         </widget>
        </item>
        <item row="0" column="1">
@@ -901,6 +897,25 @@
          </layout>
         </widget>
        </item>
+       <item row="7" column="0">
+        <widget class="QLineEdit" name="output">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -930,12 +945,12 @@
    <slot>setLayer(QgsMapLayer*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>179</x>
-     <y>98</y>
+     <x>136</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
-     <x>178</x>
-     <y>154</y>
+     <x>136</x>
+     <y>209</y>
     </hint>
    </hints>
   </connection>
@@ -946,12 +961,12 @@
    <slot>setLayer(QgsMapLayer*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>331</x>
-     <y>90</y>
+     <x>136</x>
+     <y>154</y>
     </hint>
     <hint type="destinationlabel">
-     <x>310</x>
-     <y>204</y>
+     <x>136</x>
+     <y>264</y>
     </hint>
    </hints>
   </connection>
@@ -962,12 +977,12 @@
    <slot>setLayer(QgsMapLayer*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>246</x>
-     <y>260</y>
+     <x>136</x>
+     <y>355</y>
     </hint>
     <hint type="destinationlabel">
-     <x>248</x>
-     <y>308</y>
+     <x>136</x>
+     <y>410</y>
     </hint>
    </hints>
   </connection>
@@ -978,12 +993,12 @@
    <slot>setLayer(QgsMapLayer*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>393</x>
-     <y>266</y>
+     <x>136</x>
+     <y>355</y>
     </hint>
     <hint type="destinationlabel">
-     <x>379</x>
-     <y>366</y>
+     <x>136</x>
+     <y>465</y>
     </hint>
    </hints>
   </connection>
