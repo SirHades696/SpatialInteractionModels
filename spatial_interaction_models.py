@@ -21,6 +21,7 @@
  *                                                                         *
  ***************************************************************************/
 """
+from numpy import True_
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
@@ -171,6 +172,18 @@ class SpatialInteractionModels:
         self.dlg.val2_fluj.setEnabled(False)
         self.dlg.val2_fluj.setReadOnly(False)
 
+        self.dlg.val1_dist.setVisible(False)
+        self.dlg.val2_dist.setVisible(False)
+
+        self.dlg.val1_fluj.setVisible(False)
+        self.dlg.val2_fluj.setVisible(False)
+
+        #----------outputs
+        self.dlg.sqlite_check_load.setVisible(False)
+        self.dlg.geojson_check_load.setVisible(False)
+        self.dlg.geopackage_check_load.setVisible(False)
+        self.dlg.hd_check_load.setVisible(False)
+
 
     def connections(self):
         # view inputs
@@ -223,13 +236,19 @@ class SpatialInteractionModels:
         if index != 0:
             if index == 1 or index == 2:
                 self.dlg.val1_dist.setEnabled(True)
+                self.dlg.val1_dist.setVisible(True)
                 self.dlg.val2_dist.setEnabled(False)
+                self.dlg.val2_dist.setVisible(False)
             elif index == 3:
                 self.dlg.val1_dist.setEnabled(True)
+                self.dlg.val1_dist.setVisible(True)
                 self.dlg.val2_dist.setEnabled(True)
+                self.dlg.val2_dist.setVisible(True)
         else:
             self.dlg.val1_dist.setEnabled(False)
             self.dlg.val2_dist.setEnabled(False)
+            self.dlg.val1_dist.setVisible(False)
+            self.dlg.val2_dist.setVisible(False)
 
 
     def restrictions_valuesF(self):
@@ -237,11 +256,17 @@ class SpatialInteractionModels:
         if index != 0:
             if index == 1 or index == 2:
                 self.dlg.val1_fluj.setEnabled(True)
+                self.dlg.val1_fluj.setVisible(True)
                 self.dlg.val2_fluj.setEnabled(False)
+                self.dlg.val2_fluj.setVisible(False)
             elif index == 3:
                 self.dlg.val1_fluj.setEnabled(True)
+                self.dlg.val1_fluj.setVisible(True)
                 self.dlg.val2_fluj.setEnabled(True)
+                self.dlg.val2_fluj.setVisible(True)
         else:
             self.dlg.val1_fluj.setEnabled(False)
+            self.dlg.val1_fluj.setVisible(False)
             self.dlg.val2_fluj.setEnabled(False)
+            self.dlg.val2_fluj.setVisible(False)
 
