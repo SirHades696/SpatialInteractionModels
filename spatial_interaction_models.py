@@ -37,6 +37,9 @@ from PyQt5.QtWidgets import *
 from qgis.gui import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QSettings
+from PyQt5 import *
+
+from .about_dialog import Ui_DialogBase
 
 class SpatialInteractionModels:
     """QGIS Plugin Implementation."""
@@ -73,6 +76,7 @@ class SpatialInteractionModels:
         self.toolbar = self.iface.addToolBar(u'SpatialInteractionModels')
         self.toolbar.setObjectName(u'SpatialInteractionModels')
         self.dlg = SpatialInteractionModelsDialog()
+        self.dlg2 = Ui_DialogBase()
         self.connections()
 
 
@@ -165,6 +169,7 @@ class SpatialInteractionModels:
         self.dlg.tipo_filt_fluj.setCurrentIndex(0)
         self.dlg.tipo_filt_dist.setEnabled(False)
         self.dlg.tipo_filt_fluj.setEnabled(False)
+        self.dlg.friction_distance.setValidator(QDoubleValidator())
         self.dlg.val1_dist.setEnabled(False)
         self.dlg.val1_dist.setReadOnly(False)
         self.dlg.val1_dist.clear()
@@ -233,6 +238,11 @@ class SpatialInteractionModels:
         self.dlg.check_projects.stateChanged.connect(self.recent_projects)
         self.dlg.projects_combobox.currentIndexChanged.connect(self.set_project_output)
         self.dlg.btn_output.clicked.connect(self.select_output)
+
+        # Abouts
+        self.dlg.btn_about.clicked.connect(self.__about)
+        self.dlg.btn_about2.clicked.connect(self.__about)
+        self.dlg.btn_about3.clicked.connect(self.__about)
 
     # ------ TABS
     def tab_inputs(self):
@@ -318,16 +328,16 @@ class SpatialInteractionModels:
             if index == 1 or index == 2:
                 self.dlg.val1_fluj.setEnabled(True)
                 self.dlg.val1_fluj.setVisible(True)
-                self.dlg.val1_dist.setPlaceholderText("Ingresa un valor")
+                self.dlg.val1_fluj.setPlaceholderText("Ingresa un valor")
                 self.dlg.val2_fluj.setEnabled(False)
                 self.dlg.val2_fluj.setVisible(False)
             elif index == 3:
                 self.dlg.val1_fluj.setEnabled(True)
                 self.dlg.val1_fluj.setVisible(True)
-                self.dlg.val1_dist.setPlaceholderText("Valor inicial")
+                self.dlg.val1_fluj.setPlaceholderText("Valor inicial")
                 self.dlg.val2_fluj.setEnabled(True)
                 self.dlg.val2_fluj.setVisible(True)
-                self.dlg.val2_dist.setPlaceholderText("Valor final")
+                self.dlg.val2_fluj.setPlaceholderText("Valor final")
         else:
             self.dlg.val1_fluj.setEnabled(False)
             self.dlg.val1_fluj.setVisible(False)
@@ -395,10 +405,23 @@ class SpatialInteractionModels:
 
     def select_output(self):
         self.dlg.output.clear()
-        path = str(QFileDialog.getExistingDirectory(self.dlg, "Seleccionar ruta de salida"))
+        path = str(QFileDialog.getExistingDirectory(self.dlg, "Seleccionar carpeta"))
         if path != "":
             self.dlg.output.setText(path+"/")
         else:
             print("Error - Selecciona una carpeta")
 
+    def __about(self):
+        self.dlg2.show()
+
+    def set_message(self, title, text, tipo, error=None):
+        msjBox = QMessageBox()
+        msjBox.setIcon(tipo)
+        msjBox.setText(text)
+        msjBox.setInformativeText("")
+        msjBox.setWindowTitle(title)
+        if error != None:
+            msjBox.setDetailedText(error)
+        msjBox.setStandardButtons(QMessageBox.Ok)
+        msjBox.exec_()
 

@@ -7,30 +7,30 @@
     <x>0</x>
     <y>0</y>
     <width>624</width>
-    <height>564</height>
+    <height>583</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>624</width>
-    <height>564</height>
+    <height>583</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>624</width>
-    <height>564</height>
+    <height>583</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Modelos de Interacción Espacial</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset>
     <normaloff>:/plugins/spatial_interaction_models/icon.png</normaloff>:/plugins/spatial_interaction_models/icon.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="0" column="1">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
@@ -40,6 +40,38 @@
        <string>Entradas</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QPushButton" name="btn_ayuda1">
+         <property name="minimumSize">
+          <size>
+           <width>44</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>44</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>27</width>
+           <height>27</height>
+          </size>
+         </property>
+        </widget>
+       </item>
        <item row="12" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
@@ -112,6 +144,63 @@
               <width>16777215</width>
               <height>27</height>
              </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="16" column="0" colspan="2">
+        <widget class="QWidget" name="widget" native="true">
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="btn_sig1">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Siguiente</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_about">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Acerca de...</string>
             </property>
            </widget>
           </item>
@@ -196,99 +285,8 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="btn_ayuda1">
-         <property name="minimumSize">
-          <size>
-           <width>44</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>44</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>27</width>
-           <height>27</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="0" colspan="2">
-        <widget class="QWidget" name="widget" native="true">
-         <layout class="QGridLayout" name="gridLayout_9">
-          <item row="0" column="0">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="btn_sig1">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>27</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>27</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Siguiente</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="restrictions">
-      <attribute name="title">
-       <string>Restricción</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Selecciona el tipo de restricción</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>Selecciona las unidades de medida para la matriz de distancias</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <spacer name="verticalSpacer">
+       <item row="15" column="0">
+        <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -300,35 +298,13 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="btn_ayuda2">
-         <property name="minimumSize">
-          <size>
-           <width>44</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>44</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>27</width>
-           <height>27</height>
-          </size>
-         </property>
-        </widget>
-       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="restrictions">
+      <attribute name="title">
+       <string>Restricción</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="0" colspan="2">
         <widget class="QComboBox" name="filt_combobox">
          <property name="minimumSize">
@@ -365,53 +341,7 @@
          </item>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QComboBox" name="mesuare_combobox">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>27</height>
-          </size>
-         </property>
-         <item>
-          <property name="text">
-           <string>Elige una opción...</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Metros</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Kilómetros</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Millas</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Pies</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Yardas</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
+       <item row="6" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
           <string>Filtro de Distancias/Costos</string>
@@ -512,7 +442,178 @@
          </layout>
         </widget>
        </item>
-       <item row="5" column="0" colspan="2">
+       <item row="3" column="0" colspan="2">
+        <widget class="QComboBox" name="mesuare_combobox">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>27</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>Elige una opción...</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Metros</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Kilómetros</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Millas</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pies</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Yardas</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Selecciona el tipo de restricción</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="btn_ayuda2">
+         <property name="minimumSize">
+          <size>
+           <width>44</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>44</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>27</width>
+           <height>27</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0" colspan="2">
+        <widget class="QWidget" name="widget_2" native="true">
+         <layout class="QGridLayout" name="gridLayout_10">
+          <item row="0" column="3">
+           <widget class="QPushButton" name="btn_sig2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Siguiente</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="btn_reg2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Regresar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_about2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Acerca de...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
           <string>Filtro de Flujos</string>
@@ -604,25 +705,42 @@
          </layout>
         </widget>
        </item>
-       <item row="7" column="0" colspan="2">
-        <widget class="QWidget" name="widget_2" native="true">
-         <layout class="QGridLayout" name="gridLayout_10">
-          <item row="0" column="2">
-           <widget class="QPushButton" name="btn_sig2">
-            <property name="text">
-             <string>Siguiente</string>
-            </property>
-           </widget>
-          </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Introduce el valor para la fricción de la distancia</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Selecciona las unidades de medida para la matriz de distancias</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLineEdit" name="friction_distance"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="outputs">
+      <attribute name="title">
+       <string>Salidas</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="5" column="0" colspan="2">
+        <widget class="QLineEdit" name="prefijo">
+         <property name="placeholderText">
+          <string>Ejemplo: Ejec1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0" colspan="2">
+        <widget class="QWidget" name="widget_3" native="true">
+         <layout class="QGridLayout" name="gridLayout_11">
           <item row="0" column="1">
-           <widget class="QPushButton" name="btn_reg2">
-            <property name="text">
-             <string>Regresar</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <spacer name="horizontalSpacer_2">
+           <spacer name="horizontalSpacer_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -634,55 +752,70 @@
             </property>
            </spacer>
           </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="btn_reg3">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Regresar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="btn_aceptar">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Aceptar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_about3">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Acerca de...</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="outputs">
-      <attribute name="title">
-       <string>Salidas</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_11">
-         <property name="maximumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_10">
          <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QPushButton" name="btn_output">
-         <property name="minimumSize">
-          <size>
-           <width>44</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>44</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/plugins/spatial_interaction_models/folder.png</normaloff>:/plugins/spatial_interaction_models/folder.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>27</width>
-           <height>27</height>
-          </size>
+          <string>Introduce un prefijo para cada ejecución</string>
          </property>
         </widget>
        </item>
@@ -692,6 +825,23 @@
           <string>Formatos de Salida</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_7">
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="geojson_check">
+            <property name="text">
+             <string>Guardar en GeoJSON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="geopackage_check_load">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Agregar a QGIS</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="sqlite_check">
             <property name="text">
@@ -706,13 +856,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="geojson_check">
-            <property name="text">
-             <string>Guardar en GeoJSON</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QCheckBox" name="memory_check">
             <property name="text">
@@ -720,13 +863,6 @@
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QCheckBox" name="geopackage_check">
-            <property name="text">
-             <string>Guardar en Geopackage</string>
             </property>
            </widget>
           </item>
@@ -753,13 +889,10 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QCheckBox" name="geopackage_check_load">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="geopackage_check">
             <property name="text">
-             <string>Agregar a QGIS</string>
+             <string>Guardar en Geopackage</string>
             </property>
            </widget>
           </item>
@@ -774,6 +907,13 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string/>
+         </property>
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
@@ -799,39 +939,6 @@
          </layout>
         </widget>
        </item>
-       <item row="6" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string>Salidas</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_14">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="check_projects">
-            <property name="text">
-             <string>Seleccionar proyecto actual</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="projects_combobox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>Introduce un prefijo para cada ejecución</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QLineEdit" name="prefijo">
-         <property name="placeholderText">
-          <string>Ejemplo: Ejec1</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="QPushButton" name="btn_ayuda3">
          <property name="enabled">
@@ -853,7 +960,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset>
            <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
          </property>
          <property name="iconSize">
@@ -864,56 +971,77 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0" colspan="2">
-        <widget class="QWidget" name="widget_3" native="true">
-         <layout class="QGridLayout" name="gridLayout_11">
-          <item row="0" column="1">
-           <widget class="QPushButton" name="btn_reg3">
-            <property name="text">
-             <string>Regresar</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="btn_aceptar">
-            <property name="text">
-             <string>Aceptar</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+       <item row="6" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="title">
+          <string>Salidas</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="4" column="0">
+           <widget class="QLineEdit" name="output">
+            <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>0</width>
+              <height>27</height>
              </size>
             </property>
-           </spacer>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="btn_output">
+            <property name="minimumSize">
+             <size>
+              <width>44</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>44</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>:/plugins/spatial_interaction_models/folder.png</normaloff>:/plugins/spatial_interaction_models/folder.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>27</width>
+              <height>27</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QWidget" name="widget_4" native="true">
+            <layout class="QGridLayout" name="gridLayout_15">
+             <item row="0" column="1">
+              <widget class="QComboBox" name="projects_combobox"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="check_projects">
+               <property name="text">
+                <string>Seleccionar proyecto actual</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLineEdit" name="output">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
         </widget>
        </item>
       </layout>
