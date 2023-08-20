@@ -26,7 +26,7 @@
    <string>Modelos de Interacción Espacial</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="resources.qrc">
     <normaloff>:/plugins/spatial_interaction_models/icon.png</normaloff>:/plugins/spatial_interaction_models/icon.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -61,7 +61,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="resources.qrc">
            <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
          </property>
          <property name="iconSize">
@@ -443,7 +443,7 @@
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
-        <widget class="QComboBox" name="mesuare_combobox">
+        <widget class="QComboBox" name="measure_combobox">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -526,7 +526,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="resources.qrc">
            <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
          </property>
          <property name="iconSize">
@@ -815,7 +815,7 @@
        <item row="4" column="0">
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Introduce un prefijo para cada ejecución</string>
+          <string>Introduce un prefijo para cada ejecución [Opcional]</string>
          </property>
         </widget>
        </item>
@@ -919,7 +919,7 @@
        <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
-          <string>Estadísticas</string>
+          <string>Estadísticas [Opcional]</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
@@ -960,7 +960,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="resources.qrc">
            <normaloff>:/plugins/spatial_interaction_models/question_sq.png</normaloff>:/plugins/spatial_interaction_models/question_sq.png</iconset>
          </property>
          <property name="iconSize">
@@ -1014,7 +1014,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
+             <iconset resource="resources.qrc">
               <normaloff>:/plugins/spatial_interaction_models/folder.png</normaloff>:/plugins/spatial_interaction_models/folder.png</iconset>
             </property>
             <property name="iconSize">
@@ -1034,7 +1034,7 @@
              <item row="0" column="0">
               <widget class="QCheckBox" name="check_projects">
                <property name="text">
-                <string>Seleccionar proyecto actual</string>
+                <string>Seleccionar proyecto actual [Opcional]</string>
                </property>
               </widget>
              </item>

@@ -127,12 +127,21 @@ class SpatialInteractionModels:
             pass
 
     def clear_and_start(self):
+        # Clear all inputs
+        self.dlg.val2_dist.setStyleSheet("")
+        self.dlg.val2_fluj.setStyleSheet("")
+
+        # btns
+        self.dlg.btn_sig1.setEnabled(False)
+        self.dlg.btn_sig2.setEnabled(False)
+        self.dlg.btn_aceptar.setEnabled(False)
+
         self.dlg.tabWidget.setCurrentIndex(0)
         # Origin
         self.dlg.origin_combobox.setFilters(QgsMapLayerProxyModel.PointLayer|QgsMapLayerProxyModel.PolygonLayer)
         self.dlg.origin_combobox.setCurrentIndex(-1)
-        self.dlg.id_origin_combobox.setCurrentIndex(-1)
-        self.dlg.field_origin_combobox.setCurrentIndex(-1)
+        self.dlg.id_origin_combobox.setLayer(None)
+        self.dlg.field_origin_combobox.setLayer(None)
 
         self.dlg.id_origin_combobox.setFilters(QgsFieldProxyModel.String|
                                                QgsFieldProxyModel.Int|
@@ -147,9 +156,8 @@ class SpatialInteractionModels:
         # Dest
         self.dlg.dest_combobox.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.dlg.dest_combobox.setCurrentIndex(-1)
-        self.dlg.id_dest_combobox.setCurrentIndex(-1)
-        self.dlg.field_dest_combobox.setCurrentIndex(-1)
-
+        self.dlg.id_dest_combobox.setLayer(None)
+        self.dlg.field_dest_combobox.setLayer(None)
 
         self.dlg.id_dest_combobox.setFilters(QgsFieldProxyModel.String|
                                                QgsFieldProxyModel.Int|
@@ -164,7 +172,8 @@ class SpatialInteractionModels:
 
         #----------Restrictions
         self.dlg.filt_combobox.setCurrentIndex(0)
-        self.dlg.mesuare_combobox.setCurrentIndex(0)
+        self.dlg.measure_combobox.setCurrentIndex(0)
+        self.dlg.friction_distance.clear()
         self.dlg.tipo_filt_dist.setCurrentIndex(0)
         self.dlg.tipo_filt_fluj.setCurrentIndex(0)
         self.dlg.tipo_filt_dist.setEnabled(False)
@@ -173,19 +182,22 @@ class SpatialInteractionModels:
         self.dlg.val1_dist.setEnabled(False)
         self.dlg.val1_dist.setReadOnly(False)
         self.dlg.val1_dist.clear()
-        self.dlg.val1_dist.setValidator(QDoubleValidator())
+        validator = QDoubleValidator()
+        validator.setBottom(0)
+        self.dlg.val1_dist.setValidator(validator)
+
         self.dlg.val2_dist.setEnabled(False)
         self.dlg.val2_dist.setReadOnly(False)
         self.dlg.val2_dist.clear()
-        self.dlg.val2_dist.setValidator(QDoubleValidator())
+        self.dlg.val2_dist.setValidator(validator)
         self.dlg.val1_fluj.setEnabled(False)
         self.dlg.val1_fluj.setReadOnly(False)
         self.dlg.val1_fluj.clear()
-        self.dlg.val1_fluj.setValidator(QDoubleValidator())
+        self.dlg.val1_fluj.setValidator(validator)
         self.dlg.val2_fluj.setEnabled(False)
         self.dlg.val2_fluj.setReadOnly(False)
         self.dlg.val2_fluj.clear()
-        self.dlg.val2_fluj.setValidator(QDoubleValidator())
+        self.dlg.val2_fluj.setValidator(validator)
         self.dlg.val1_dist.setVisible(False)
         self.dlg.val2_dist.setVisible(False)
 
@@ -224,10 +236,29 @@ class SpatialInteractionModels:
         # view outputs
         self.dlg.btn_reg3.clicked.connect(self.tab_restrictions)
 
+        # Validate --------------- Inputs
+        self.dlg.origin_combobox.currentIndexChanged.connect(self.validate_inputs)
+        self.dlg.id_origin_combobox.currentIndexChanged.connect(self.validate_inputs)
+        self.dlg.field_origin_combobox.currentIndexChanged.connect(self.validate_inputs)
+        self.dlg.dest_combobox.currentIndexChanged.connect(self.validate_inputs)
+        self.dlg.id_dest_combobox.currentIndexChanged.connect(self.validate_inputs)
+        self.dlg.field_dest_combobox.currentIndexChanged.connect(self.validate_inputs)
+
         # Restrictions
         self.dlg.filt_combobox.currentIndexChanged.connect(self.restrictions)
         self.dlg.tipo_filt_dist.currentIndexChanged.connect(self.restrictions_valuesD)
         self.dlg.tipo_filt_fluj.currentIndexChanged.connect(self.restrictions_valuesF)
+
+        # Validate -------- Restrictions
+        self.dlg.filt_combobox.currentIndexChanged.connect(self.validate_restrictions)
+        self.dlg.measure_combobox.currentIndexChanged.connect(self.validate_restrictions)
+        self.dlg.friction_distance.textEdited.connect(self.validate_restrictions)
+        self.dlg.tipo_filt_dist.currentIndexChanged.connect(self.validate_restrictions)
+        self.dlg.val1_dist.textEdited.connect(self.validate_restrictions)
+        self.dlg.val2_dist.textEdited.connect(self.validate_restrictions)
+        self.dlg.tipo_filt_fluj.currentIndexChanged.connect(self.validate_restrictions)
+        self.dlg.val1_fluj.textEdited.connect(self.validate_restrictions)
+        self.dlg.val2_fluj.textEdited.connect(self.validate_restrictions)
 
         # Output
         self.dlg.sqlite_check.stateChanged.connect(self.hide_show_sqlite)
@@ -320,6 +351,8 @@ class SpatialInteractionModels:
             self.dlg.val2_dist.setEnabled(False)
             self.dlg.val1_dist.setVisible(False)
             self.dlg.val2_dist.setVisible(False)
+            self.dlg.val1_dist.clear()
+            self.dlg.val2_dist.clear()
 
 
     def restrictions_valuesF(self):
@@ -343,6 +376,9 @@ class SpatialInteractionModels:
             self.dlg.val1_fluj.setVisible(False)
             self.dlg.val2_fluj.setEnabled(False)
             self.dlg.val2_fluj.setVisible(False)
+            self.dlg.val1_fluj.clear()
+            self.dlg.val2_fluj.clear()
+
 
     def hide_show_sqlite(self, state):
         if state:
@@ -424,4 +460,113 @@ class SpatialInteractionModels:
             msjBox.setDetailedText(error)
         msjBox.setStandardButtons(QMessageBox.Ok)
         msjBox.exec_()
+
+    def validate_inputs(self):
+        if (
+                self.dlg.origin_combobox.currentLayer() and
+                self.dlg.id_origin_combobox.currentField() and
+                self.dlg.field_origin_combobox.currentField() and
+                self.dlg.dest_combobox.currentLayer() and
+                self.dlg.id_dest_combobox.currentField() and
+                self.dlg.field_dest_combobox.currentField()
+                ):
+            self.dlg.btn_sig1.setEnabled(True)
+        else:
+            self.dlg.btn_sig1.setEnabled(False)
+
+    def validate_restrictions(self):
+        self.dlg.val2_dist.setStyleSheet("")
+        self.dlg.val2_fluj.setStyleSheet("")
+        self.dlg.btn_sig2.setEnabled(False)
+
+        if (
+                self.dlg.filt_combobox.currentText() and
+                self.dlg.measure_combobox.currentText() and
+                self.dlg.friction_distance.text()
+                ):
+            # Origin restriction
+            if self.dlg.filt_combobox.currentIndex() == 1:
+                if self.dlg.tipo_filt_dist.currentIndex() == 1 or self.dlg.tipo_filt_dist.currentIndex() == 2:
+                    if self.dlg.val1_dist.text() != "":
+                        self.dlg.btn_sig2.setEnabled(True)
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+                elif self.dlg.tipo_filt_dist.currentIndex() == 3:
+                    if self.dlg.val1_dist.text() != "" and self.dlg.val2_dist.text() != "":
+                        try:
+                            if float(self.dlg.val1_dist.text()) < float(self.dlg.val2_dist.text()):
+                                self.dlg.btn_sig2.setEnabled(True)
+                            else:
+                                self.dlg.btn_sig2.setEnabled(False)
+                                self.dlg.val2_dist.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                                self.set_message("Error","Parámetro no válido", QMessageBox.Critical)
+                        except ValueError:
+                            pass
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+            # Dest Restriction
+            elif self.dlg.filt_combobox.currentIndex() == 2:
+                if self.dlg.tipo_filt_fluj.currentIndex() == 1 or self.dlg.tipo_filt_fluj.currentIndex() == 2:
+                    if self.dlg.val1_fluj.text() != "":
+                        self.dlg.btn_sig2.setEnabled(True)
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+                elif self.dlg.tipo_filt_fluj.currentIndex() == 3:
+                    if self.dlg.val1_fluj.text() != "" and self.dlg.val2_fluj.text() != "":
+                        try:
+                            if float(self.dlg.val1_fluj.text()) < float(self.dlg.val2_fluj.text()):
+                                self.dlg.btn_sig2.setEnabled(True)
+                            else:
+                                self.dlg.btn_sig2.setEnabled(False)
+                                self.dlg.val2_fluj.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                                self.set_message("Error","Parámetro no válido", QMessageBox.Critical)
+                        except ValueError:
+                            pass
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+            elif self.dlg.filt_combobox.currentIndex() == 3:
+                flag1, flag2 = False, False
+                if self.dlg.tipo_filt_dist.currentIndex() == 1 or self.dlg.tipo_filt_dist.currentIndex() == 2:
+                    if self.dlg.val1_dist.text() != "":
+                        self.dlg.btn_sig2.setEnabled(True)
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+                elif self.dlg.tipo_filt_dist.currentIndex() == 3:
+                    if self.dlg.val1_dist.text() != "" and self.dlg.val2_dist.text() != "":
+                        try:
+                            if float(self.dlg.val1_dist.text()) < float(self.dlg.val2_dist.text()):
+                                flag1 = True
+                            else:
+                                self.dlg.btn_sig2.setEnabled(False)
+                                self.dlg.val2_dist.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                                self.set_message("Error","Parámetro no válido", QMessageBox.Critical)
+                        except ValueError:
+                            pass
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+
+                if self.dlg.tipo_filt_fluj.currentIndex() == 1 or self.dlg.tipo_filt_fluj.currentIndex() == 2:
+                    if self.dlg.val1_fluj.text() != "":
+                        self.dlg.btn_sig2.setEnabled(True)
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+                elif self.dlg.tipo_filt_fluj.currentIndex() == 3:
+                    if self.dlg.val1_fluj.text() != "" and self.dlg.val2_fluj.text() != "":
+                        try:
+                            if float(self.dlg.val1_fluj.text()) < float(self.dlg.val2_fluj.text()):
+                                flag2 = True
+                            else:
+                                self.dlg.btn_sig2.setEnabled(False)
+                                self.dlg.val2_fluj.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                                self.set_message("Error","Parámetro no válido", QMessageBox.Critical)
+                        except ValueError:
+                            pass
+                    else:
+                        self.dlg.btn_sig2.setEnabled(False)
+
+                if flag1 and flag2:
+                    self.dlg.btn_sig2.setEnabled(True)
+
+        else:
+            self.dlg.btn_sig2.setEnabled(False)
 
