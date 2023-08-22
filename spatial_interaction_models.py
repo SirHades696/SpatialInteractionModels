@@ -121,10 +121,7 @@ class SpatialInteractionModels:
 
         self.clear_and_start()
         self.dlg.show()
-        result = self.dlg.exec_()
-        if result:
-            # get all data
-            pass
+        self.dlg.exec_()
 
     def clear_and_start(self):
         # Clear all inputs
@@ -134,7 +131,7 @@ class SpatialInteractionModels:
         # btns
         self.dlg.btn_sig1.setEnabled(False)
         self.dlg.btn_sig2.setEnabled(False)
-        self.dlg.btn_aceptar.setEnabled(False)
+        self.dlg.btn_aceptar.setEnabled(True)
 
         self.dlg.tabWidget.setCurrentIndex(0)
         # Origin
@@ -204,8 +201,6 @@ class SpatialInteractionModels:
         self.dlg.val1_fluj.setVisible(False)
         self.dlg.val2_fluj.setVisible(False)
 
-
-
         #----------outputs
         self.dlg.sqlite_check_load.setVisible(False)
         self.dlg.geojson_check_load.setVisible(False)
@@ -219,6 +214,7 @@ class SpatialInteractionModels:
 
         self.dlg.prefijo.clear()
         self.dlg.output.clear()
+        self.dlg.output.setStyleSheet("")
         self.dlg.check_projects.setChecked(False)
         self.dlg.projects_combobox.clear()
         self.dlg.projects_combobox.setEnabled(False)
@@ -231,7 +227,7 @@ class SpatialInteractionModels:
 
         # view restrictions
         self.dlg.btn_reg2.clicked.connect(self.tab_inputs)
-        self.dlg.btn_sig2.clicked.connect(self.tab_outputs)
+        self.dlg.btn_sig2.clicked.connect(self.tab_formats)
 
         # view outputs
         self.dlg.btn_reg3.clicked.connect(self.tab_restrictions)
@@ -270,6 +266,15 @@ class SpatialInteractionModels:
         self.dlg.projects_combobox.currentIndexChanged.connect(self.set_project_output)
         self.dlg.btn_output.clicked.connect(self.select_output)
 
+        # Validate ------------ outputs
+        self.dlg.memory_check.stateChanged.connect(self.validate_formats)
+        self.dlg.sqlite_check.stateChanged.connect(self.validate_formats)
+        self.dlg.geojson_check.stateChanged.connect(self.validate_formats)
+        self.dlg.geopackage_check.stateChanged.connect(self.validate_formats)
+
+        # Btn acept
+        self.dlg.btn_aceptar.clicked.connect(self.get_data)
+
         # Abouts
         self.dlg.btn_about.clicked.connect(self.__about)
         self.dlg.btn_about2.clicked.connect(self.__about)
@@ -282,7 +287,7 @@ class SpatialInteractionModels:
     def tab_restrictions(self):
         self.dlg.tabWidget.setCurrentIndex(1)
 
-    def tab_outputs(self):
+    def tab_formats(self):
         self.dlg.tabWidget.setCurrentIndex(2)
 
     def restrictions(self):
@@ -432,6 +437,7 @@ class SpatialInteractionModels:
             self.dlg.projects_combobox.addItem(pjts[str(i)]["PROJECT"],pjts[str(i)]["PATH"])
 
     def set_project_output(self):
+        self.dlg.output.setStyleSheet("")
         index = self.dlg.projects_combobox.currentIndex()
         if index != 0:
             pth = self.dlg.projects_combobox.itemData(index)
@@ -440,12 +446,10 @@ class SpatialInteractionModels:
             self.dlg.output.clear()
 
     def select_output(self):
-        self.dlg.output.clear()
+        self.dlg.output.setStyleSheet("")
         path = str(QFileDialog.getExistingDirectory(self.dlg, "Seleccionar carpeta"))
         if path != "":
             self.dlg.output.setText(path+"/")
-        else:
-            print("Error - Selecciona una carpeta")
 
     def __about(self):
         self.dlg2.show()
@@ -569,4 +573,105 @@ class SpatialInteractionModels:
 
         else:
             self.dlg.btn_sig2.setEnabled(False)
+
+    def validate_formats(self):
+        self.dlg.groupBox_3.setStyleSheet("")
+        if (
+                self.dlg.memory_check.isChecked() == True or
+                self.dlg.sqlite_check.isChecked() == True or
+                self.dlg.geojson_check.isChecked() == True or
+                self.dlg.geopackage_check.isChecked() == True or
+                self.dlg.hd_check.isChecked() == True
+                ):
+            self.dlg.btn_aceptar.setEnabled(True)
+        else:
+            self.dlg.btn_aceptar.setEnabled(False)
+            self.dlg.groupBox_3.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+            self.set_message("Error","Por favor, selecciona al menos un formato", QMessageBox.Critical)
+
+    def validate_outputPath(self):
+        self.dlg.output.setStyleSheet("")
+        if self.dlg.output.text() != "":
+            self.flag2 = True
+        else:
+            self.dlg.output.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+            self.set_message("Error","Por favor, selecciona una carpeta", QMessageBox.Critical)
+            self.dlg.btn_aceptar.setEnabled(False)
+
+
+
+    def get_data(self):
+        origin = self.dlg.origin_combobox.currentLayer()
+        id_origin = self.dlg.id_dest_combobox.currentField()
+        field_origin = self.dlg.field_origin_combobox.currentField()
+
+        dest = self.dlg.dest_combobox.currentLayer()
+        id_dist = self.dlg.id_dest_combobox.currentField()
+        field_dest = self.dlg.field_dest_combobox.currentField()
+
+        filtro = self.dlg.filt_combobox.currentText()
+        measure = self.dlg.measure_combobox.currentText()
+        friction_distance = self.dlg.friction_distance.text()
+
+        tipo_filt_dist = self.dlg.tipo_filt_dist.currentText()
+        val1_dist = self.dlg.val1_dist.text()
+        val2_dist = self.dlg.val2_dist.text()
+
+        tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentText()
+        val1_fluj = self.dlg.val1_fluj.text()
+        val2_fluj = self.dlg.val2_fluj.text()
+
+        memory_check = self.dlg.memory_check.isChecked()
+        sqlite_check = self.dlg.sqlite_check.isChecked()
+        sqlite_check_load = self.dlg.sqlite_check_load.isChecked()
+        geojson_check = self.dlg.geojson_check.isChecked()
+        geojson_check_load = self.dlg.geojson_check_load.isChecked()
+        geopackage_check = self.dlg.geopackage_check.isChecked()
+        geopackage_check_load = self.dlg.geopackage_check_load.isChecked()
+        hd_check = self.dlg.hd_check.isChecked()
+        hd_check_load = self.dlg.hd_check_load.isChecked()
+
+        xls_check = self.dlg.xls_check.isChecked()
+        ods_check = self.dlg.ods_check.isChecked()
+        csv_check = self.dlg.csv_check.isChecked()
+
+        prefijo = self.dlg.prefijo.text()
+
+        output = self.dlg.output.text()
+
+        if not output:
+            self.dlg.output.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+            self.set_message("Error","Por favor, selecciona una carpeta", QMessageBox.Critical)
+
+        print(f"origin: {origin}")
+        print(f"id_origin: {id_origin}")
+        print(f"field_origin: {field_origin}")
+        print(f"dest: {dest}")
+        print(f"id_dist: {id_dist}")
+        print(f"field_dest: {field_dest}")
+        print(f"filtro: {filtro}")
+        print(f"measure: {measure}")
+        print(f"friction_distance: {friction_distance}")
+        print(f"tipo_filt_dist: {tipo_filt_dist}")
+        print(f"val1_dist: {val1_dist}")
+        print(f"val2_dist: {val2_dist}")
+        print(f"tipo_filt_fluj: {tipo_filt_fluj}")
+        print(f"val1_fluj: {val1_fluj}")
+        print(f"val2_fluj: {val2_fluj}")
+        print(f"memory_check: {memory_check}")
+        print(f"sqlite_check: {sqlite_check}")
+        print(f"sqlite_check_load: {sqlite_check_load}")
+        print(f"geojson_check: {geojson_check}")
+        print(f"geojson_check_load: {geojson_check_load}")
+        print(f"geopackage_check: {geopackage_check}")
+        print(f"geopackage_check_load: {geopackage_check_load}")
+        print(f"hd_check: {hd_check}")
+        print(f"hd_check_load: {hd_check_load}")
+        print(f"xls_check: {xls_check}")
+        print(f"ods_check: {ods_check}")
+        print(f"csv_check: {csv_check}")
+        print(f"prefijo: {prefijo}")
+        print(f"output: {output}")
+
+
 
