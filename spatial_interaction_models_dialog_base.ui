@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/plugins/spatial_interaction_models/icon.png</normaloff>:/plugins/spatial_interaction_models/icon.png</iconset>
+    <normaloff>:/plugins/spatial_interaction_models/test1.png</normaloff>:/plugins/spatial_interaction_models/test1.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
@@ -859,7 +859,7 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="memory_check">
             <property name="text">
-             <string>Conservar capas temporales</string>
+             <string>Visualizar capas en el espacio de trabajo</string>
             </property>
             <property name="checked">
              <bool>true</bool>

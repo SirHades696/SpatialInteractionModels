@@ -17,6 +17,9 @@ class Ui_Dialog(object):
         Dialog.resize(400, 200)
         Dialog.setMinimumSize(QtCore.QSize(400, 200))
         Dialog.setMaximumSize(QtCore.QSize(400, 200))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/plugins/spatial_interaction_models/test1.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
         self.label_6 = QtWidgets.QLabel(Dialog)
@@ -59,13 +62,15 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Acerca de..."))
         self.label_6.setText(_translate("Dialog", "Versión: 1.0"))
         self.label_4.setText(_translate("Dialog", "Repo: <a href=\"https://github.com/SirHades696/SpatialInteractionModels/\">Modelos de Interacción Espacial</a>"))
-        self.label_7.setText(_translate("Dialog", "Maestría en Análisis Espacial y Geoinformática"))
+        self.label_7.setText(_translate("Dialog", "Maestría en Análisis Espacial y Geoinformática, 2022-2024"))
         self.label_3.setText(_translate("Dialog", "Dev: <a href=\"https://github.com/SirHades696\">Adonai Emmanuel Nicanor Bautista</a>"))
         self.label_2.setText(_translate("Dialog", "Facultad de Geografía"))
         self.label.setText(_translate("Dialog", "Universidad Autónoma del Estado de México"))
         self.label_5.setText(_translate("Dialog", "<html><head/><body><p>¿Hubó algún problema? <a href=\"https://github.com/SirHades696/SpatialInteractionModels/issues\"><span style=\" text-decoration: underline; color:#0000ff;\">Clic aquí</span></a></p></body></html>"))
         self.label_8.setText(_translate("Dialog", "Mail: djnonasrm@gmail.com"))
 
+# import resources_rc
+from .resources import *
 
 # if __name__ == "__main__":
 #     import sys

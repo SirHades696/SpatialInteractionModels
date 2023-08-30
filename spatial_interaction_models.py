@@ -97,7 +97,7 @@ class SpatialInteractionModels:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        icon_path = ':/plugins/spatial_interaction_models/icon.png'
+        icon_path = ':/plugins/spatial_interaction_models/test1.png'
         icon = QIcon(icon_path)
         self.action = QAction(icon,u'&Modelos de Interacción Espacial',self.iface.mainWindow())
         self.action.setEnabled(True)

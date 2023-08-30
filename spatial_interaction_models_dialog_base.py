@@ -18,7 +18,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         SpatialInteractionModelsDialogBase.setMinimumSize(QtCore.QSize(624, 583))
         SpatialInteractionModelsDialogBase.setMaximumSize(QtCore.QSize(624, 583))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/plugins/spatial_interaction_models/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/plugins/spatial_interaction_models/test1.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         SpatialInteractionModelsDialogBase.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(SpatialInteractionModelsDialogBase)
         self.gridLayout.setObjectName("gridLayout")
@@ -438,7 +438,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.geopackage_check_load.setText(_translate("SpatialInteractionModelsDialogBase", "Agregar a QGIS"))
         self.sqlite_check.setText(_translate("SpatialInteractionModelsDialogBase", "Guardar en SQLite"))
         self.hd_check.setText(_translate("SpatialInteractionModelsDialogBase", "Guardar en Shapefile"))
-        self.memory_check.setText(_translate("SpatialInteractionModelsDialogBase", "Conservar capas temporales"))
+        self.memory_check.setText(_translate("SpatialInteractionModelsDialogBase", "Visualizar capas en el espacio de trabajo"))
         self.sqlite_check_load.setText(_translate("SpatialInteractionModelsDialogBase", "Agregar a QGIS"))
         self.geojson_check_load.setText(_translate("SpatialInteractionModelsDialogBase", "Agregar a QGIS"))
         self.geopackage_check.setText(_translate("SpatialInteractionModelsDialogBase", "Guardar en Geopackage"))
@@ -453,6 +453,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
 from qgis import gui
 # import resources_rc
 from .resources import *
+
 
 # if __name__ == "__main__":
 #     import sys
