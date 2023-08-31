@@ -501,9 +501,39 @@ class SpatialInteractionModels:
                 combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
             else:
                 flags[i] = True
+
         if all(flags):
-            self.dlg.tabWidget.setTabEnabled(1,True)
-            self.dlg.tabWidget.setCurrentIndex(self.dlg.tabWidget.currentIndex()+1)
+            origin = self.dlg.origin_combobox.currentLayer()
+            dest = self.dlg.dest_combobox.currentLayer()
+            crs_capa1 = origin.crs()
+            crs_capa2 = dest.crs()
+            capa1_epsg = crs_capa1.authid()
+            capa2_epsg = crs_capa2.authid()
+            if len(capa1_epsg)>0:
+                epsg1 = capa1_epsg.split(":")[1]
+            else:
+                epsg1 = "Desconocido"
+
+            if len(capa2_epsg)>0:
+                epsg2 = capa2_epsg.split(":")[1]
+            else:
+                epsg2 = "Desconocido"
+            if crs_capa1.mapUnits() != crs_capa2.mapUnits(): #0 son metros
+                flags[0] = False
+                flags[3] = False
+                comboboxes[0].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                comboboxes[3].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen: EPSG:{epsg1}\nDestino:EPSG:{epsg2}", QMessageBox.Critical)
+            else:
+                if epsg1 != epsg2:
+                    flags[0] = False
+                    flags[3] = False
+                    comboboxes[0].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                    comboboxes[3].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                    self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen:   EPSG:{epsg1}\nDestino: EPSG:{epsg2}", QMessageBox.Critical)
+                else:
+                    self.dlg.tabWidget.setTabEnabled(1,True)
+                    self.dlg.tabWidget.setCurrentIndex(self.dlg.tabWidget.currentIndex()+1)
         else:
             self.set_message("Error",f"Por favor, completa todos los campos", QMessageBox.Critical)
 

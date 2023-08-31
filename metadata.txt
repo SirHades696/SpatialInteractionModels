@@ -5,7 +5,7 @@
 [general]
 name=Modelos de Interacción Espacial
 qgisMinimumVersion=3.0
-description=Este plugin calcula 3 modelos de interacción espacial y son: restricción en el origen, restricción en el destino y los doblemente restrictivos. 
+description=Este plugin calcula 3 modelos de interacción espacial y son: restricción en el origen, restricción en el destino y los doblemente restrictivos.
 version=1.0
 author=Adonai Emmanuel Nicanor Bautista
 email=djnonasrm@gmail.com
@@ -27,7 +27,7 @@ tags=python
 
 homepage=https://github.com/SirHades696/SpatialInteractionModels/
 category=Plugins
-icon=icon.png
+icon=test1.png
 # experimental flag
 experimental=False
 
