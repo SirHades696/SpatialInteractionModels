@@ -1,5 +1,6 @@
 html_string = '''<!doctype html>
 <html>
+    <link rel="icon" href="{path}/test1.png" type="image/x-icon" />
     <head>
         <title>Reporte - Modelos de Interacción Espacial</title>
     </head>
@@ -76,6 +77,7 @@ html_string = '''<!doctype html>
             <p align="left"><b>Tipo de filtro: </b>{tipo_filt}</p>
             <p align="left"><b>Valor(es): </b>{values}</p>
             <p align="left"><b>Ruta de almacenamiento: </b>{output}</p>
+            <p align="left"><b>CVE_ORI</b>=Clave de Orígen, <b>CVE_DEST</b>=Clave de Destino, <b>ACC_IND</b>=Accesibilidad Individual (por unidad), <b>ACC_TOT</b>=Accesibilidad Total (suma de todas las unidades), <b>ACC_PROM</b>=Accesibilidad promedio, <b>ACC_STD</b>=Accesibilidad (Desviación Estándar), <b>TOT_DEST</b>=Total de destinos</p>
         </div>
         {table}
     </body>

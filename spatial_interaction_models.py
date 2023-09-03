@@ -286,6 +286,7 @@ class SpatialInteractionModels:
         self.dlg.geopackage_check.stateChanged.connect(self.clear_outputs)
 
         # Btn acept
+        self.dlg.tabWidget.tabBarClicked.connect(self.validate_tabs)
         self.dlg.btn_aceptar.clicked.connect(self.validate_outputs)
 
         # Abouts
@@ -296,12 +297,22 @@ class SpatialInteractionModels:
     # ------ TABS
     def tab_inputs(self):
         self.dlg.tabWidget.setCurrentIndex(0)
+        self.dlg.tabWidget.setTabEnabled(0,True)
+        self.dlg.tabWidget.setTabEnabled(1, False)
+        self.dlg.tabWidget.setTabEnabled(2,False)
 
     def tab_restrictions(self):
+        self.dlg.tabWidget.setTabEnabled(0, False)
         self.dlg.tabWidget.setCurrentIndex(1)
+        self.dlg.tabWidget.setTabEnabled(1, True)
+        self.dlg.tabWidget.setTabEnabled(2, False)
+
 
     def tab_formats(self):
+        self.dlg.tabWidget.setTabEnabled(0, False)
+        self.dlg.tabWidget.setTabEnabled(1, False)
         self.dlg.tabWidget.setCurrentIndex(2)
+        self.dlg.tabWidget.setTabEnabled(2, True)
 
     def restrictions(self):
         index = self.dlg.filt_combobox.currentIndex()
@@ -533,7 +544,9 @@ class SpatialInteractionModels:
                     self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen:   EPSG:{epsg1}\nDestino: EPSG:{epsg2}", QMessageBox.Critical)
                 else:
                     self.dlg.tabWidget.setTabEnabled(1,True)
-                    self.dlg.tabWidget.setCurrentIndex(self.dlg.tabWidget.currentIndex()+1)
+                    self.dlg.tabWidget.setTabEnabled(0,False)
+                    self.dlg.tabWidget.setTabEnabled(2,False)
+                    self.dlg.tabWidget.setCurrentIndex(1)
         else:
             self.set_message("Error",f"Por favor, completa todos los campos", QMessageBox.Critical)
 
@@ -680,7 +693,9 @@ class SpatialInteractionModels:
 
         if flag1 and flag3 and flag4 and flag5:
             self.dlg.tabWidget.setTabEnabled(2,True)
-            self.dlg.tabWidget.setCurrentIndex(self.dlg.tabWidget.currentIndex()+1)
+            self.dlg.tabWidget.setTabEnabled(0,False)
+            self.dlg.tabWidget.setTabEnabled(1,False)
+            self.dlg.tabWidget.setCurrentIndex(2)
         else:
             self.set_message("Error",f"Por favor, completa todos los campos", QMessageBox.Critical)
 
@@ -713,35 +728,20 @@ class SpatialInteractionModels:
         else:
             self.dlg.output.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
         if flag1 and flag2:
+            self.dlg.tabWidget.setTabEnabled(0,False)
+            self.dlg.tabWidget.setTabEnabled(1,False)
             print("Ejecuta")
         else:
             self.set_message("Error",f"Por favor, completa todos los campos", QMessageBox.Critical)
 
-    # def validate_formats(self):
-    #     self.dlg.groupBox_3.setStyleSheet("")
-    #     if (
-    #             self.dlg.memory_check.isChecked() == True or
-    #             self.dlg.sqlite_check.isChecked() == True or
-    #             self.dlg.geojson_check.isChecked() == True or
-    #             self.dlg.geopackage_check.isChecked() == True or
-    #             self.dlg.hd_check.isChecked() == True
-    #             ):
-    #         self.dlg.btn_aceptar.setEnabled(True)
-    #     else:
-    #         self.dlg.btn_aceptar.setEnabled(False)
-    #         self.dlg.groupBox_3.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-    #         self.set_message("Error","Por favor, selecciona al menos un formato", QMessageBox.Critical)
-
-    # def validate_outputPath(self):
-    #     self.dlg.output.setStyleSheet("")
-    #     if self.dlg.output.text() != "":
-    #         self.flag2 = True
-    #     else:
-    #         self.dlg.output.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-    #         self.set_message("Error","Por favor, selecciona una carpeta", QMessageBox.Critical)
-    #         self.dlg.btn_aceptar.setEnabled(False)
-
-
+    def validate_tabs(self, index):
+        if index == 0:
+            self.validate_inputs()
+        elif index == 1:
+            self.validate_restrictions()
+        elif index == 2:
+            self.validate_outputs()
+        print(index)
 
     def get_data(self):
         origin = self.dlg.origin_combobox.currentLayer()

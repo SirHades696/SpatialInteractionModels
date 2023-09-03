@@ -37,6 +37,9 @@ class Reportes:
         self.save_calcs()
 
     def report_HTML(self) -> None:
+        path_file = os.path.dirname(os.path.abspath(__file__))
+        path_icon = path_file.split("SIM")[0]
+
         path = self.params["OUTPUT"] + 'ReporteMIE.html'
         html = self.df.to_html(classes='content-table',index=False)
 
@@ -44,6 +47,7 @@ class Reportes:
 
         with open(path,'w') as f:
             f.write(html_string.format(
+                path=path_icon,
                 table=html,
                 origin=self.params["ORIGIN"].source(),
                 id_ori=self.params["ID_ORI"],
@@ -113,4 +117,8 @@ class Reportes:
             path_ods = self.params["OUTPUT"] + 'ReporteMIE.ods'
             headers = list(self.df.columns)
             save_data(path_ods, {"Resultados": [headers] + self.df.values.tolist()})
+
+        if self.params["SAVE"]["CSV"] == True:
+            path_csv = self.params["OUTPUT"] + 'ReporteMIE.csv'
+            self.df.to_csv(path_csv, index=False)
 

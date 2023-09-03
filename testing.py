@@ -41,17 +41,18 @@ params = {
                 }
             },
         "FRICTION_DISTANCE": 1.2,
-        "OUTPUT":"/home/hades/Documentos/projects/SpatialInteractionModels/test/",
+        "OUTPUT":"/home/hades/Documentos/test/",
         "EXPORTS": {
                 "GeoJSON": {"SAVE":False, "OPEN":False},
                 "HD": {"SAVE":False, "OPEN":False},
                 "Spatialite": {"SAVE":False, "OPEN":True},
                 "Memory": True,
-                "Geopackage": {"SAVE":True, "OPEN":True}
+                "Geopackage": {"SAVE":False, "OPEN":True}
                 },
         "SAVE": {
-            "XLS":False,
-            "ODS":False
+            "XLS":True,
+            "ODS":True,
+            "CSV":True
             }
         }
 
