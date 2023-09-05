@@ -77,8 +77,39 @@ html_string = '''<!doctype html>
             <p align="left"><b>Tipo de filtro: </b>{tipo_filt}</p>
             <p align="left"><b>Valor(es): </b>{values}</p>
             <p align="left"><b>Ruta de almacenamiento: </b>{output}</p>
-            <p align="left"><b>CVE_ORI</b>=Clave de Orígen, <b>CVE_DEST</b>=Clave de Destino, <b>ACC_IND</b>=Accesibilidad Individual (por unidad), <b>ACC_TOT</b>=Accesibilidad Total (suma de todas las unidades), <b>ACC_PROM</b>=Accesibilidad promedio, <b>ACC_STD</b>=Accesibilidad (Desviación Estándar), <b>TOT_DEST</b>=Total de destinos</p>
         </div>
+        <div>
+            <table border="1" class="dataframe content-table">
+                <tbody>
+                <tr>
+                <th>CVE_ORI</th>
+                <td>Clave de Orígen</td>
+                <th>ACC_PROM</th>
+                <td>Accesibilidad promedio</td>
+                </tr>
+                <tr>
+                <th>CVE_DEST</th>
+                <td>Clave de Destino</td>
+                <th>ACC_STD</th>
+                <td>Accesibilidad (Desviación Estándar)</td>
+                </tr>
+                <tr>
+                <th>ACC_IND</th>
+                <td>Accesibilidad Individual (por unidad)</td>
+                <th>TOT_DEST</th>
+                <td>Total de destinos</td>
+                </tr>
+                <tr>
+                <th>ACC_TOT</th>
+                <td>Accesibilidad Total (suma de todas las unidades)</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
         {table}
+        </div>
     </body>
 </html>'''

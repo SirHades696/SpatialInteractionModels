@@ -110,8 +110,11 @@ class Reportes:
     def save_calcs(self):
         if self.params["SAVE"]["XLS"] == True:
             path_xls = self.params["OUTPUT"] + 'ReporteMIE.xls'
-            with pd.ExcelWriter(path_xls) as writer: #type: ignore
-                self.df.to_excel(writer, index=False, sheet_name="Resultados")
+            chunk_size = 65500
+            chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
+            with pd.ExcelWriter(path_xls) as writer: #type:ignore
+                for i, chunk in enumerate(chunks):
+                    chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
 
         if self.params["SAVE"]["ODS"] == True:
             path_ods = self.params["OUTPUT"] + 'ReporteMIE.ods'

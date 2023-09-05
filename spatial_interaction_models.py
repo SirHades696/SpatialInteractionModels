@@ -128,6 +128,7 @@ class SpatialInteractionModels:
 
     def clear_and_start(self):
         # TABS
+        self.dlg.tabWidget.setTabEnabled(0,True)
         self.dlg.tabWidget.setTabEnabled(1,False)
         self.dlg.tabWidget.setTabEnabled(2,False)
 
@@ -819,7 +820,6 @@ class SpatialInteractionModels:
                     "CSV":csv_check
                     }
                 }
-        print(params)
         self.dlg.hide()
         run = Main(params)
         run.run()

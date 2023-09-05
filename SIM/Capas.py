@@ -103,7 +103,7 @@ class Capas:
         return matrix_OD, origin_list
 
     def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str) -> list:
-        espg = matrix_OD[0][0].crs().authid()
+        epsg = matrix_OD[0][0].crs().authid()
         lines_layers_name = []
         for i in range(len(matrix_OD)):
             origin_features = matrix_OD[i][0].getFeatures()
@@ -117,7 +117,7 @@ class Capas:
             fields.append(QgsField('OI_RO', QVariant.Double))
             fields.append(QgsField('OI_SUM', QVariant.Double))
             layer_name = 'Lineas_RO_' + str(i+1)
-            lines_layer = QgsVectorLayer('LineString?crs='+espg, layer_name, 'memory')
+            lines_layer = QgsVectorLayer('LineString?crs='+epsg, layer_name, 'memory')
             lines_layers_name.append(lines_layer.id())
             lines_layer.dataProvider().addAttributes(fields)
             lines_layer.updateFields()
