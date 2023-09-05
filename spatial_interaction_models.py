@@ -21,7 +21,6 @@
  *                                                                         *
  ***************************************************************************/
 """
-from numpy import True_
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
@@ -32,14 +31,18 @@ from .resources import *
 # Import the code for the dialog
 from .spatial_interaction_models_dialog import SpatialInteractionModelsDialog
 import os.path
-from qgis.core import *
-from PyQt5.QtWidgets import *
-from qgis.gui import *
-from PyQt5.QtGui import *
+from qgis.core import * #type:ignore
+from PyQt5.QtWidgets import * #type:ignore
+from qgis.gui import * #type:ignore
+from PyQt5.QtGui import * #type:ignore
 from PyQt5.QtCore import QSettings
-from PyQt5 import *
-
+from PyQt5 import * #type:ignore
+import sys
+import os
 from .about_dialog import Ui_DialogBase
+
+sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM/")
+from Main import Main #type:ignore
 
 class SpatialInteractionModels:
     """QGIS Plugin Implementation."""
@@ -231,15 +234,10 @@ class SpatialInteractionModels:
 
 
     def connections(self):
-        # # view inputs
-
         # # view restrictions
         self.dlg.btn_reg2.clicked.connect(self.tab_inputs)
-        # self.dlg.btn_sig2.clicked.connect(self.tab_formats)
-
         # # view outputs
         self.dlg.btn_reg3.clicked.connect(self.tab_restrictions)
-
         # Validate ---------- Inputs
         self.dlg.origin_combobox.currentIndexChanged.connect(self.clear_inputs)
         self.dlg.id_origin_combobox.currentIndexChanged.connect(self.clear_inputs)
@@ -249,13 +247,10 @@ class SpatialInteractionModels:
         self.dlg.id_dest_combobox.currentIndexChanged.connect(self.clear_inputs)
         self.dlg.field_dest_combobox.currentIndexChanged.connect(self.clear_inputs)
         self.dlg.btn_sig1.clicked.connect(self.validate_inputs)
-
-
         # Restrictions
         self.dlg.filt_combobox.currentIndexChanged.connect(self.restrictions)
         self.dlg.tipo_filt_dist.currentIndexChanged.connect(self.restrictions_valuesD)
         self.dlg.tipo_filt_fluj.currentIndexChanged.connect(self.restrictions_valuesF)
-
         # Validate -------- Restrictions
         self.dlg.filt_combobox.currentIndexChanged.connect(self.clear_restrictions)
         self.dlg.measure_combobox.currentIndexChanged.connect(self.clear_restrictions)
@@ -266,9 +261,7 @@ class SpatialInteractionModels:
         self.dlg.tipo_filt_fluj.currentIndexChanged.connect(self.clear_restrictions)
         self.dlg.val1_fluj.textEdited.connect(self.clear_restrictions)
         self.dlg.val2_fluj.textEdited.connect(self.clear_restrictions)
-
         self.dlg.btn_sig2.clicked.connect(self.validate_restrictions)
-
         # Output
         self.dlg.sqlite_check.stateChanged.connect(self.hide_show_sqlite)
         self.dlg.geojson_check.stateChanged.connect(self.hide_show_geojson)
@@ -730,7 +723,7 @@ class SpatialInteractionModels:
         if flag1 and flag2:
             self.dlg.tabWidget.setTabEnabled(0,False)
             self.dlg.tabWidget.setTabEnabled(1,False)
-            print("Ejecuta")
+            self.get_data_and_run()
         else:
             self.set_message("Error",f"Por favor, completa todos los campos", QMessageBox.Critical)
 
@@ -741,26 +734,25 @@ class SpatialInteractionModels:
             self.validate_restrictions()
         elif index == 2:
             self.validate_outputs()
-        print(index)
 
-    def get_data(self):
+    def get_data_and_run(self):
         origin = self.dlg.origin_combobox.currentLayer()
-        id_origin = self.dlg.id_dest_combobox.currentField()
+        id_origin = self.dlg.id_origin_combobox.currentField()
         field_origin = self.dlg.field_origin_combobox.currentField()
 
         dest = self.dlg.dest_combobox.currentLayer()
-        id_dist = self.dlg.id_dest_combobox.currentField()
+        id_dest = self.dlg.id_dest_combobox.currentField()
         field_dest = self.dlg.field_dest_combobox.currentField()
 
-        filtro = self.dlg.filt_combobox.currentText()
-        measure = self.dlg.measure_combobox.currentText()
-        friction_distance = self.dlg.friction_distance.text()
+        filtro = self.dlg.filt_combobox.currentIndex() - 1
+        measure = self.dlg.measure_combobox.currentIndex() - 1
+        friction_distance = float(self.dlg.friction_distance.text())
 
-        tipo_filt_dist = self.dlg.tipo_filt_dist.currentText()
-        val1_dist = self.dlg.val1_dist.text()
-        val2_dist = self.dlg.val2_dist.text()
+        tipo_filt_dist = self.dlg.tipo_filt_dist.currentIndex() - 1
+        val1_dist = float(self.dlg.val1_dist.text())
+        val2_dist = float(self.dlg.val2_dist.text())
 
-        tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentText()
+        tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentIndex() - 1
         val1_fluj = self.dlg.val1_fluj.text()
         val2_fluj = self.dlg.val2_fluj.text()
 
@@ -782,39 +774,53 @@ class SpatialInteractionModels:
 
         output = self.dlg.output.text()
 
-        if not output:
-            self.dlg.output.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-            self.set_message("Error","Por favor, selecciona una carpeta", QMessageBox.Critical)
-
-        print(f"origin: {origin}")
-        print(f"id_origin: {id_origin}")
-        print(f"field_origin: {field_origin}")
-        print(f"dest: {dest}")
-        print(f"id_dist: {id_dist}")
-        print(f"field_dest: {field_dest}")
-        print(f"filtro: {filtro}")
-        print(f"measure: {measure}")
-        print(f"friction_distance: {friction_distance}")
-        print(f"tipo_filt_dist: {tipo_filt_dist}")
-        print(f"val1_dist: {val1_dist}")
-        print(f"val2_dist: {val2_dist}")
-        print(f"tipo_filt_fluj: {tipo_filt_fluj}")
-        print(f"val1_fluj: {val1_fluj}")
-        print(f"val2_fluj: {val2_fluj}")
-        print(f"memory_check: {memory_check}")
-        print(f"sqlite_check: {sqlite_check}")
-        print(f"sqlite_check_load: {sqlite_check_load}")
-        print(f"geojson_check: {geojson_check}")
-        print(f"geojson_check_load: {geojson_check_load}")
-        print(f"geopackage_check: {geopackage_check}")
-        print(f"geopackage_check_load: {geopackage_check_load}")
-        print(f"hd_check: {hd_check}")
-        print(f"hd_check_load: {hd_check_load}")
-        print(f"xls_check: {xls_check}")
-        print(f"ods_check: {ods_check}")
-        print(f"csv_check: {csv_check}")
-        print(f"prefijo: {prefijo}")
-        print(f"output: {output}")
-
-
+        params = {
+                "ORIGIN": origin,
+                "ID_ORI": id_origin,
+                "VAR_ORI": field_origin,
+                "DEST": dest,
+                "ID_DEST": id_dest,
+                "VAR_DEST": field_dest, #Medicina general
+                "UNIT": measure, # 0 - metros
+                "RESTR": filtro,
+                "VAL_REST": {
+                    "R_ORIG": {
+                        "OPTION": tipo_filt_dist,
+                        "VALUE": [val1_dist,val2_dist],
+                               },
+                    "R_DEST": {
+                        "OPTION": tipo_filt_fluj,
+                        "VALUE": [val1_fluj, val2_fluj],
+                        },
+                    "D_REST":{
+                        "RORIG": {
+                            "OPTION": tipo_filt_dist,
+                            "VALUE": [val1_dist, val2_dist],
+                            },
+                        "RDEST": {
+                            "OPTION": tipo_filt_fluj,
+                            "VALUE": [val1_fluj, val2_fluj],
+                            }
+                        }
+                    },
+                "FRICTION_DISTANCE": friction_distance,
+                "OUTPUT":output,
+                "PREFIJO": prefijo,
+                "EXPORTS": {
+                        "GeoJSON": {"SAVE":geojson_check, "OPEN":geojson_check_load},
+                        "HD": {"SAVE":hd_check, "OPEN":hd_check_load},
+                        "Spatialite": {"SAVE":sqlite_check, "OPEN":sqlite_check_load},
+                        "Memory": memory_check,
+                        "Geopackage": {"SAVE":geopackage_check, "OPEN":geopackage_check_load}
+                        },
+                "SAVE": {
+                    "XLS":xls_check,
+                    "ODS":ods_check,
+                    "CSV":csv_check
+                    }
+                }
+        print(params)
+        self.dlg.hide()
+        run = Main(params)
+        run.run()
 
