@@ -39,6 +39,7 @@ from PyQt5.QtCore import QSettings
 from PyQt5 import * #type:ignore
 import sys
 import os
+import time
 from .about_dialog import Ui_DialogBase
 
 sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM/")
@@ -821,6 +822,9 @@ class SpatialInteractionModels:
                     }
                 }
         self.dlg.hide()
+        start = time.time()
         run = Main(params)
         run.run()
+        end = time.time()
+        print(f'Tiempo de ejecución: {end - start} segundos')
 

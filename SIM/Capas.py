@@ -1,10 +1,13 @@
-import processing
-from qgis.core import *
+import processing #type:ignore
+from qgis.core import * #type:ignore
 import random
-from PyQt5.QtGui import *
+from PyQt5.QtGui import * #type:ignore
+import tempfile
+from datetime import datetime
+import os
 
 try:
-    from qgis.core import QVariant
+    from qgis.core import QVariant #type:ignore
 except ImportError:
     try:
         from PyQt5.QtCore import QVariant
@@ -12,6 +15,20 @@ except ImportError:
         print("Error")
 
 class Capas:
+
+    tempdir = tempfile.gettempdir() + "/"
+    ahora = datetime.now()
+
+    fecha_hora_str = ahora.strftime('%Y-%m-%d %H:%M:%S')
+    aux1 = fecha_hora_str.replace("-","")
+    aux2 = aux1.replace(":","")
+    folder = aux2.replace(" ","")
+
+    temp_path = tempdir + folder + "/"
+
+    if not os.path.exists(temp_path):
+        os.makedirs(temp_path)
+        os.chmod(temp_path, 0o777)
 
     def layer_filter(self, layer:QgsVectorLayer, field_name:str) -> list:
         exprs = [f'"{field_name}" > 0',f'"{field_name}" <= 0']
@@ -72,7 +89,7 @@ class Capas:
                             "OUTPUT":"memory:"+str(values[str(i)]['ORI'])}
                     saved = processing.run("native:saveselectedfeatures",data2)
                     origin_list.append(saved["OUTPUT"])
-                    QgsProject.instance().addMapLayer(saved["OUTPUT"])
+                    #QgsProject.instance().addMapLayer(saved["OUTPUT"])
 
         # for destinations
         for field in dest_fields:
@@ -118,7 +135,8 @@ class Capas:
             fields.append(QgsField('OI_SUM', QVariant.Double))
             layer_name = 'Lineas_RO_' + str(i+1)
             lines_layer = QgsVectorLayer('LineString?crs='+epsg, layer_name, 'memory')
-            lines_layers_name.append(lines_layer.id())
+            #lines_layers_name.append(lines_layer.id())
+            lines_layers_name.append(self.temp_path + layer_name + ".shp")
             lines_layer.dataProvider().addAttributes(fields)
             lines_layer.updateFields()
 
@@ -143,7 +161,9 @@ class Capas:
                     lines_layer.dataProvider().addFeatures([line_feature])
 
                     # Agregar la capa al proyecto
-                    QgsProject.instance().addMapLayer(lines_layer)
+                    #QgsProject.instance().addMapLayer(lines_layer)
+                    layer_path = self.temp_path + layer_name + ".shp"
+                    QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
                     column +=1
         return lines_layers_name
 

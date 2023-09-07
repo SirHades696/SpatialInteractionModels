@@ -171,3 +171,6 @@ class Main:
         gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
         progressBar.setValue(100)
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
+        gestor.remove_folder(capas.temp_path)
+
+
