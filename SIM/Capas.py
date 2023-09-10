@@ -2,9 +2,7 @@ import processing #type:ignore
 from qgis.core import * #type:ignore
 import random
 from PyQt5.QtGui import * #type:ignore
-import tempfile
 from datetime import datetime
-import os
 
 try:
     from qgis.core import QVariant #type:ignore
@@ -15,20 +13,6 @@ except ImportError:
         print("Error")
 
 class Capas:
-
-    tempdir = tempfile.gettempdir() + "/"
-    ahora = datetime.now()
-
-    fecha_hora_str = ahora.strftime('%Y-%m-%d %H:%M:%S')
-    aux1 = fecha_hora_str.replace("-","")
-    aux2 = aux1.replace(":","")
-    folder = aux2.replace(" ","")
-
-    temp_path = tempdir + folder + "/"
-
-    if not os.path.exists(temp_path):
-        os.makedirs(temp_path)
-        os.chmod(temp_path, 0o777)
 
     def layer_filter(self, layer:QgsVectorLayer, field_name:str) -> list:
         exprs = [f'"{field_name}" > 0',f'"{field_name}" <= 0']
@@ -119,7 +103,7 @@ class Capas:
         matrix_OD = [list(par) for par in zip(origin_list, dest_list)]
         return matrix_OD, origin_list
 
-    def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str) -> list:
+    def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str, temp_path:str) -> list:
         epsg = matrix_OD[0][0].crs().authid()
         lines_layers_name = []
         for i in range(len(matrix_OD)):
@@ -136,7 +120,7 @@ class Capas:
             layer_name = 'Lineas_RO_' + str(i+1)
             lines_layer = QgsVectorLayer('LineString?crs='+epsg, layer_name, 'memory')
             #lines_layers_name.append(lines_layer.id())
-            lines_layers_name.append(self.temp_path + layer_name + ".shp")
+            lines_layers_name.append(temp_path + layer_name + ".shp")
             lines_layer.dataProvider().addAttributes(fields)
             lines_layer.updateFields()
 
@@ -162,7 +146,7 @@ class Capas:
 
                     # Agregar la capa al proyecto
                     #QgsProject.instance().addMapLayer(lines_layer)
-                    layer_path = self.temp_path + layer_name + ".shp"
+                    layer_path = temp_path + layer_name + ".shp"
                     QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
                     column +=1
         return lines_layers_name

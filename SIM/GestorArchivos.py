@@ -24,10 +24,6 @@ class GestorArchivos:
         for layer in layers:
             QgsProject.instance().removeMapLayer(layer)
 
-    def remove_folder(self, temp_path:str) -> None:
-        if os.path.exists(temp_path):
-            shutil.rmtree(temp_path)
-
     def read_csv_matrix(self, path:str) -> np.ndarray:
         matrix = np.loadtxt(path, delimiter=",", dtype=float)
         return matrix

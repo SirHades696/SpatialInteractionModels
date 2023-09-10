@@ -11,6 +11,8 @@ from qgis.gui import *
 from qgis.PyQt.QtWidgets import *
 from qgis.PyQt.QtCore import *
 
+import tempfile
+
 class Main:
     def __init__(self, params:dict) -> None:
         """
@@ -141,9 +143,12 @@ class Main:
 
 
         for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest)
-        layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest)
 
-        layer_RO = capas.merge_layers(layers, "Lineas_RO")
+        with tempfile.TemporaryDirectory() as dir:
+            temp_path = dir + "/"
+            layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path)
+            layer_RO = capas.merge_layers(layers, "Lineas_RO")
+
         layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
         capas.thematic_lines(layer_RO, "OI_SUM")
 
@@ -171,6 +176,5 @@ class Main:
         gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
         progressBar.setValue(100)
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
-        gestor.remove_folder(capas.temp_path)
 
 
