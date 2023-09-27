@@ -74,6 +74,7 @@ class Main:
         self.val_rest = params["VAL_REST"]
         self.friction_distance = params["FRICTION_DISTANCE"]
         self.output = params["OUTPUT"]
+        self.prefijo = params["PREFIJO"]
 
     def run(self):
 
@@ -129,52 +130,65 @@ class Main:
                 "FD": self.friction_distance
                 }
 
-        values, values_oi, oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
-
-        data_layers = {
+        # -------------------- General process finished
+        if self.params["RESTR"] == 0:
+            values, values_oi, oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
+            data_layers = {
                 "ORIGIN":origin_centroids,
                 "DEST":destination_clon
                 }
 
-        capas.add_index(origin_clon,oi)
-        capas.thematic_polygons(origin_clon,"OI_SUM",0)
+            capas.add_index(origin_clon,oi, "OI_SUM")
+            capas.thematic_polygons(origin_clon,"OI_SUM",0)
 
-        progressBar.setValue(50)
+            progressBar.setValue(50)
 
 
-        for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest)
+            for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest)
 
-        with tempfile.TemporaryDirectory() as dir:
-            temp_path = dir + "/"
-            layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path)
-            layer_RO = capas.merge_layers(layers, "Lineas_RO")
+            with tempfile.TemporaryDirectory() as dir:
+                temp_path = dir + "/"
+                layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path)
+                layer_RO = capas.merge_layers(layers, "Lineas_RO")
 
-        layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
-        capas.thematic_lines(layer_RO, "OI_SUM")
+            layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
+            capas.thematic_lines(layer_RO, "OI_SUM")
 
-        QgsProject.instance().addMapLayer(destination_clon)
+            QgsProject.instance().addMapLayer(destination_clon)
 
-        capas.thematic_points(layer_RO_p,"ORI",0)
-        capas.thematic_points(destination_clon,"DEST",0)
+            capas.thematic_points(layer_RO_p,"ORI",0,"")
+            capas.thematic_points(destination_clon,"DEST",0,"")
 
-        if flag == False:
-            capas.thematic_points(origin_clon,"",1)
-            capas.thematic_points(origin_VMenC,"VMenC",0)
-        else:
-            capas.thematic_polygons(origin_VMenC,"",1)
+            if flag == False:
+                capas.thematic_points(origin_clon,"",1,"OI_SUM")
+                capas.thematic_points(origin_VMenC,"VMenC",0,"")
+            else:
+                capas.thematic_polygons(origin_VMenC,"",1)
 
-        thematic_layers = [ layer_RO, layer_RO_p, destination_clon, origin_clon, origin_VMenC]
-        progressBar.setValue(80)
+            thematic_layers = [ layer_RO, layer_RO_p, destination_clon, origin_clon, origin_VMenC]
+            progressBar.setValue(80)
 
-        gestor.destroy_layers(layers)
-        gestor.destroy_layers(or_list)
+            gestor.destroy_layers(layers)
+            gestor.destroy_layers(or_list)
 
-        progressBar.setValue(90)
-        messageBar.clearWidgets()
-        # instancia de los reportes
-        Reportes(values, values_oi, self.params)
-        gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
-        progressBar.setValue(100)
-        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
+            progressBar.setValue(90)
+            messageBar.clearWidgets()
+            # instancia de los reportes
+            Reportes(values, values_oi, self.params)
+            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
+            progressBar.setValue(100)
+            messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
+
+        elif self.params["RESTR"] == 1:
+            dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
+            capas.add_index(destination_clon,dj, "DJ_SUM")
+            capas.thematic_points(destination_clon,"",1,"DJ_SUM")
+        elif self.params["RESTR"] == 2:
+            pass
+
+
+
+        #------ dest restriction
+
 
 

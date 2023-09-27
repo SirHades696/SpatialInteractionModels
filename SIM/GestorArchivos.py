@@ -3,7 +3,6 @@ import numpy as np
 import os
 import processing #type:ignore
 from osgeo import ogr
-import shutil
 
 class GestorArchivos:
 

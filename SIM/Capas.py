@@ -182,13 +182,16 @@ class Capas:
         layer.triggerRepaint()
         QgsProject.instance().reloadAllLayers()
 
-    def add_index(self, layer:QgsVectorLayer, values: list) -> None:
+    def add_index(self, layer:QgsVectorLayer, values: list, var:str) -> None:
         with edit(layer):
-            layer.addAttribute(QgsField("OI_SUM",QVariant.Double))
+            if var == "DJ_SUM":
+                layer.addAttribute(QgsField(var,QVariant.Int))
+            else:
+                layer.addAttribute(QgsField(var,QVariant.Double))
             layer.updateFields()
             features = layer.getFeatures()
             for i, feature in enumerate(features):
-                feature["OI_SUM"] = values[i]
+                feature[var] = values[i]
                 layer.updateFeature(feature)
         QgsProject.instance().addMapLayer(layer)
 
@@ -224,7 +227,7 @@ class Capas:
             layer.triggerRepaint()
             QgsProject.instance().reloadAllLayers()
 
-    def thematic_points(self, layer:QgsVectorLayer, l_type:str, l_render:int) -> None:
+    def thematic_points(self, layer:QgsVectorLayer, l_type:str, l_render:int,field_name:str) -> None:
         if l_render == 0:
             if l_type == "ORI":
                 color = '1,200,255,255'
@@ -270,7 +273,6 @@ class Capas:
             layer.triggerRepaint()
             QgsProject.instance().reloadAllLayers()
         else:
-            field_name = "OI_SUM"
             values = layer.uniqueValues(layer.fields().indexFromName(field_name))
             min_v = min(values)
             max_v = max(values)

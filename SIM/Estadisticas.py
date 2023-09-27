@@ -8,7 +8,7 @@ class Estadisticas:
         distance = QgsDistanceArea()
         distance.setSourceCrs(origin.crs(), QgsProject.instance().transformContext())
         ellip = QgsProject.instance().ellipsoid()
-        if ellip.split(":")[1] != 7030:
+        if int(ellip.split(":")[1]) != 7030:
             ellip = "EPSG:7030"
         distance.setEllipsoid(ellip)
 
@@ -43,7 +43,7 @@ class Estadisticas:
                 matrix[i,j] = d
                 j += 1
             i += 1
-        #np.savetxt("matrix.csv", matrix, delimiter=',')
+        # np.savetxt("/home/hades/Documentos/test/matrix_Distance.csv", matrix, delimiter=',')
         return matrix
 
     def origin_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ) -> tuple:
@@ -96,6 +96,45 @@ class Estadisticas:
         #print(values)
         #print(values_oi)
         return values, values_oi, oi
+
+    def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ):
+        #----- first step
+        matrix = np.power(matrix, values_OD["FD"])
+        matrix = 1/matrix
+
+        #---- second step
+        for i in range(0, len(values_OD["ORIGIN"])):
+            for j in range(0, len(values_OD["DEST"])):
+                matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
+
+        # np.savetxt("/home/hades/Documentos/test/matrix_Servicio.csv", matrix, delimiter=',')
+
+        suma = np.sum(matrix, axis = 0)
+
+        pre_bj = 1/suma
+        # convirtiendo los naN e Inf en 0
+        bj = np.nan_to_num(pre_bj, nan=0.0, posinf=0.0, neginf=0.0)
+        # np.savetxt("/home/hades/Documentos/test/matrix_suma.csv", bj, delimiter=',')
+
+        #------------- third step
+        for i in range(0, len(values_OD["ORIGIN"])):
+            for j in range(0, len(values_OD["DEST"])):
+                matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i] * bj[j]
+
+        # np.savetxt("/home/hades/Documentos/test/matrix_final.csv", matrix, delimiter=',')
+        suma = np.sum(matrix,axis=0)
+        suma_final = np.round(suma)
+
+        if val_rest['R_DEST']['OPTION'] == 0:
+            suma_final = np.where(suma_final >= val_rest['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest['R_DEST']['OPTION'] == 1:
+            suma_final = np.where(suma_final <= val_rest['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest['R_DEST']['OPTION'] == 2:
+            suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
+
+        return suma_final.tolist()
+        # suma_final = np.where(suma_final,0,suma_final)
+
 
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore

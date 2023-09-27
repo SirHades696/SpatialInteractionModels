@@ -738,6 +738,8 @@ class SpatialInteractionModels:
             self.validate_outputs()
 
     def get_data_and_run(self):
+        params = {}
+        rest_data = {}
         origin = self.dlg.origin_combobox.currentLayer()
         id_origin = self.dlg.id_origin_combobox.currentField()
         field_origin = self.dlg.field_origin_combobox.currentField()
@@ -747,16 +749,65 @@ class SpatialInteractionModels:
         field_dest = self.dlg.field_dest_combobox.currentField()
 
         filtro = self.dlg.filt_combobox.currentIndex() - 1
+        # ----------------------- Origin
+        if filtro == 0:
+            tipo_filt_dist = self.dlg.tipo_filt_dist.currentIndex() - 1
+            if tipo_filt_dist == 0 or tipo_filt_dist == 1:
+                val1_dist = float(self.dlg.val1_dist.text())
+                rest_data={"R_ORIG":
+                                    {"OPTION": tipo_filt_dist,
+                                    "VALUE":[val1_dist]}}
+            elif tipo_filt_dist == 2:
+                val1_dist = float(self.dlg.val1_dist.text())
+                val2_dist = float(self.dlg.val2_dist.text())
+                rest_data={"R_ORIG":
+                                    {"OPTION": tipo_filt_dist,
+                                    "VALUE":[val1_dist, val2_dist]}}
+        # ----------------------- Dest
+        elif filtro == 1:
+            tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentIndex() - 1
+            if tipo_filt_fluj == 0 or tipo_filt_fluj == 1:
+                val1_fluj = float(self.dlg.val1_fluj.text())
+                rest_data={"R_DEST":
+                                    {"OPTION": tipo_filt_fluj,
+                                    "VALUE":[val1_fluj]}}
+            elif tipo_filt_fluj == 2:
+                val1_fluj = float(self.dlg.val1_fluj.text())
+                val2_fluj = float(self.dlg.val2_fluj.text())
+                rest_data={"R_DEST":
+                                    {"OPTION": tipo_filt_fluj,
+                                    "VALUE":[val1_fluj, val2_fluj]}}
+
+        #  ------------------------ Double
+        elif filtro == 2:
+            tipo_filt_dist = self.dlg.tipo_filt_dist.currentIndex() - 1
+            if tipo_filt_dist == 0 or tipo_filt_dist == 1:
+                val1_dist = float(self.dlg.val1_dist.text())
+                rest_data={"R_ORIG":
+                                    {"OPTION": tipo_filt_dist,
+                                    "VALUE":[val1_dist]}}
+            elif tipo_filt_dist == 2:
+                val1_dist = float(self.dlg.val1_dist.text())
+                val2_dist = float(self.dlg.val2_dist.text())
+                rest_data={"R_ORIG":
+                                    {"OPTION": tipo_filt_dist,
+                                    "VALUE":[val1_dist, val2_dist]}}
+
+            tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentIndex() - 1
+            if tipo_filt_fluj == 0 or tipo_filt_fluj == 1:
+                val1_fluj = float(self.dlg.val1_fluj.text())
+                rest_data={"R_DEST":
+                                    {"OPTION": tipo_filt_fluj,
+                                    "VALUE":[val1_fluj]}}
+            elif tipo_filt_fluj == 2:
+                val1_fluj = float(self.dlg.val1_fluj.text())
+                val2_fluj = float(self.dlg.val2_fluj.text())
+                rest_data={"R_DEST":
+                                    {"OPTION": tipo_filt_fluj,
+                                    "VALUE":[val1_fluj, val2_fluj]}}
+
         measure = self.dlg.measure_combobox.currentIndex() - 1
         friction_distance = float(self.dlg.friction_distance.text())
-
-        tipo_filt_dist = self.dlg.tipo_filt_dist.currentIndex() - 1
-        val1_dist = float(self.dlg.val1_dist.text())
-        val2_dist = float(self.dlg.val2_dist.text())
-
-        tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentIndex() - 1
-        val1_fluj = self.dlg.val1_fluj.text()
-        val2_fluj = self.dlg.val2_fluj.text()
 
         memory_check = self.dlg.memory_check.isChecked()
         sqlite_check = self.dlg.sqlite_check.isChecked()
@@ -784,28 +835,9 @@ class SpatialInteractionModels:
                 "ID_DEST": id_dest,
                 "VAR_DEST": field_dest, #Medicina general
                 "UNIT": measure, # 0 - metros
-                "RESTR": filtro,
-                "VAL_REST": {
-                    "R_ORIG": {
-                        "OPTION": tipo_filt_dist,
-                        "VALUE": [val1_dist,val2_dist],
-                               },
-                    "R_DEST": {
-                        "OPTION": tipo_filt_fluj,
-                        "VALUE": [val1_fluj, val2_fluj],
-                        },
-                    "D_REST":{
-                        "RORIG": {
-                            "OPTION": tipo_filt_dist,
-                            "VALUE": [val1_dist, val2_dist],
-                            },
-                        "RDEST": {
-                            "OPTION": tipo_filt_fluj,
-                            "VALUE": [val1_fluj, val2_fluj],
-                            }
-                        }
-                    },
                 "FRICTION_DISTANCE": friction_distance,
+                "RESTR": filtro,
+                "VAL_REST": rest_data,
                 "OUTPUT":output,
                 "PREFIJO": prefijo,
                 "EXPORTS": {
