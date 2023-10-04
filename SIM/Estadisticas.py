@@ -97,30 +97,24 @@ class Estadisticas:
         #print(values_oi)
         return values, values_oi, oi
 
-    def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ):
+    def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> tuple:
         #----- first step
         matrix = np.power(matrix, values_OD["FD"])
         matrix = 1/matrix
-
         #---- second step
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
                 matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
-
         # np.savetxt("/home/hades/Documentos/test/matrix_Servicio.csv", matrix, delimiter=',')
-
         suma = np.sum(matrix, axis = 0)
-
         pre_bj = 1/suma
         # convirtiendo los naN e Inf en 0
         bj = np.nan_to_num(pre_bj, nan=0.0, posinf=0.0, neginf=0.0)
         # np.savetxt("/home/hades/Documentos/test/matrix_suma.csv", bj, delimiter=',')
-
         #------------- third step
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
                 matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i] * bj[j]
-
         # np.savetxt("/home/hades/Documentos/test/matrix_final.csv", matrix, delimiter=',')
         suma = np.sum(matrix,axis=0)
         suma_final = np.round(suma)
@@ -132,9 +126,28 @@ class Estadisticas:
         elif val_rest['R_DEST']['OPTION'] == 2:
             suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
 
-        return suma_final.tolist()
-        # suma_final = np.where(suma_final,0,suma_final)
+        dj = suma_final.tolist()
+        uniq = [num for num in set(dj) if num != 0]
+        v_max = max(uniq)
+        v_min = min(uniq)
+        index_max = dj.index(v_max)
+        index_min = dj.index(v_min)
+        
+        values = {}
+        values_dj = {}
+        #count = 0
+        for i in range(0, len(values_OD["DEST"])):
+            values[str(i)] = {"DEST": values_OD["ID_DEST"][i], "ORI":values_OD["ID_ORI"]}
+            values_dj[str(i)] = {"DJ":matrix[:,i], "DJ_SUM":dj[i]}
+            #count += 1
 
+        # values = {} #IDs
+        # values["0"] = {"DEST":values_OD["ID_DEST"][index_max], "ORI":values_OD["ID_ORI"]}
+        # values["1"] = {"DEST":values_OD["ID_DEST"][index_min], "ORI":values_OD["ID_ORI"]}
+        # values_dj = {}
+        # values_dj["0"] = {"DJ":matrix[:,index_min], "DJ_SUM":v_min}
+        # values_dj["1"] = {"DJ":matrix[:,index_max], "DJ_SUM":v_max}
+        return values, values_dj, dj
 
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore

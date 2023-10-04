@@ -10,6 +10,7 @@ from qgis.utils import iface
 from qgis.gui import *
 from qgis.PyQt.QtWidgets import *
 from qgis.PyQt.QtCore import *
+from datetime import datetime
 
 import tempfile
 
@@ -77,7 +78,13 @@ class Main:
         self.prefijo = params["PREFIJO"]
 
     def run(self):
-
+        root = QgsProject.instance().layerTreeRoot()
+        if self.prefijo:
+            group = root.addGroup(self.prefijo + "_MIE")
+        else:
+            fecha = datetime.now()
+            aux = fecha.strftime("%Y%m%d%H%M%S")
+            group = root.addGroup("MIE_" + aux)
         gestor = GestorArchivos()
         capas = Capas()
         estadisticas = Estadisticas()
@@ -144,17 +151,17 @@ class Main:
             progressBar.setValue(50)
 
 
-            for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest)
+            for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,0)
 
             with tempfile.TemporaryDirectory() as dir:
                 temp_path = dir + "/"
-                layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path)
+                layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path,0)
                 layer_RO = capas.merge_layers(layers, "Lineas_RO")
 
             layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
             capas.thematic_lines(layer_RO, "OI_SUM")
 
-            QgsProject.instance().addMapLayer(destination_clon)
+            group.addLayer(destination_clon)
 
             capas.thematic_points(layer_RO_p,"ORI",0,"")
             capas.thematic_points(destination_clon,"DEST",0,"")
@@ -180,9 +187,38 @@ class Main:
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
 
         elif self.params["RESTR"] == 1:
-            dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
+            values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
             capas.add_index(destination_clon,dj, "DJ_SUM")
+            vlayer = destination_clon.clone()
+            QgsProject.instance().addMapLayer(vlayer,False)
+            group.insertLayer(0,origin_VMenC)
+            group.insertLayer(1,origin_clon)
+            group.insertLayer(2,destination_clon)
+            group.insertLayer(3,vlayer)
             capas.thematic_points(destination_clon,"",1,"DJ_SUM")
+            capas.thematic_points(vlayer,"",2,"DJ_SUM")
+            progressBar.setValue(60)
+            
+            if flag:
+                capas.thematic_polygons(origin_clon,"",2)
+                capas.thematic_polygons(origin_VMenC,"",2)
+
+            data_layers = {
+                "ORIGIN":origin_centroids,
+                "DEST":destination_clon
+                }
+
+            # for_lines, dest_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,1)
+            progressBar.setValue(70)
+            # with tempfile.TemporaryDirectory() as dir:
+            #     temp_path = dir + "/"
+            #     layers = capas.create_lines_RO(for_lines, values_dj, self.id_origin, self.id_dest, temp_path,1)
+            #     layer_RD = capas.merge_layers(layers, "Lineas_RD")
+
+            # layer_RO_p = capas.merge_layers(dest_list, "Puntos_RD")
+            #capas.thematic_lines(layer_RD, "DJ_SUM")
+            progressBar.setValue(100)
+            messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
         elif self.params["RESTR"] == 2:
             pass
 
