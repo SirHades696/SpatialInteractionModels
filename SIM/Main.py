@@ -34,7 +34,7 @@ class Main:
             "R_ORIG": { - Hace referencia a la restriccion en el origen
                 "OPTION": - Filtro para la restriccion, 0 - Mayor que, 1 - Menor que, 2 - Rango
                 "VALUE": [] - Valor o valores de restriccion para el origen en forma de lista, son distancias
-                 }
+            },
             "R_DEST": { - Hace referencia a la restriccion en el destino
                 "OPTION": Filtro para la restriccion, 0 - Mayor que, 1 - Menor que, 2 - Rango
                 "VALUE": [] - Valor o valores de restriccion para el destino en forma de lista, son flujos
@@ -85,45 +85,48 @@ class Main:
             fecha = datetime.now()
             aux = fecha.strftime("%Y%m%d%H%M%S")
             group = root.addGroup("MIE_" + aux)
+            
         gestor = GestorArchivos()
         capas = Capas()
         estadisticas = Estadisticas()
-        # Crear la barra de mensajes
+        
+        # Messager Bar
         messageBar = iface.messageBar()
         messageBar.clearWidgets()
         progressBar = QProgressBar()
         progressBar.setMaximum(100)
-        # Agregar el widget de la barra de progreso a la barra de mensajes
+        
+        # adding widget
         messageBar.pushWidget(progressBar, Qgis.Info) #type:ignore
 
         #Clonando los archivos de entrada
-        origin_clon = gestor.clone_layer(self.origin)
-        destination_clon = gestor.clone_layer(self.destination)
+        origin_clone = gestor.clone_layer(self.origin)
+        destination_clone = gestor.clone_layer(self.destination)
 
         progressBar.setValue(10)
         #Validando que el origen cuente unicamente con valores mayores a 0
-        lys = capas.layer_filter(origin_clon,self.var_origin)
-        origin_clon = lys[0]
+        lys = capas.layer_filter(origin_clone,self.var_origin)
+        origin_clone = lys[0]
         origin_VMenC = lys[1]
 
         flag = False
-        if origin_clon.geometryType() == 2: #Polygon
+        if origin_clone.geometryType() == 2: #Polygon
             # calcula los centroides del archivo de origen (poligonos)
-            origin_centroids = capas.centroid(origin_clon)
+            origin_centroids = capas.centroid(origin_clone)
             flag = True
         else:
-            origin_centroids = origin_clon
+            origin_centroids = origin_clone
 
         progressBar.setValue(20)
 
         #Calculando la matriz de distancia
-        matrix = estadisticas.distanceMatrix(origin_centroids,destination_clon,self.unit)
+        matrix = estadisticas.distanceMatrix(origin_centroids,destination_clone,self.unit)
 
         # Extracción de la oferta/demanda y los IDs
-        origins = estadisticas.extract_data(origin_clon,self.var_origin)
-        dests = estadisticas.extract_data(destination_clon,self.var_dest)
-        id_origins = estadisticas.extract_data(origin_clon, self.id_origin)
-        id_dests = estadisticas.extract_data(destination_clon, self.id_dest)
+        origins = estadisticas.extract_data(origin_clone,self.var_origin)
+        dests = estadisticas.extract_data(destination_clone,self.var_dest)
+        id_origins = estadisticas.extract_data(origin_clone, self.id_origin)
+        id_dests = estadisticas.extract_data(destination_clone, self.id_dest)
 
 
         progressBar.setValue(40)
@@ -142,11 +145,11 @@ class Main:
             values, values_oi, oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
             data_layers = {
                 "ORIGIN":origin_centroids,
-                "DEST":destination_clon
+                "DEST":destination_clone
                 }
 
-            capas.add_index(origin_clon,oi, "OI_SUM")
-            capas.thematic_polygons(origin_clon,"OI_SUM",0)
+            capas.add_index(origin_clone,oi, "OI_SUM")
+            capas.thematic_polygons(origin_clone,"OI_SUM",0)
 
             progressBar.setValue(50)
 
@@ -161,18 +164,23 @@ class Main:
             layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
             capas.thematic_lines(layer_RO, "OI_SUM")
 
-            group.addLayer(destination_clon)
-
             capas.thematic_points(layer_RO_p,"ORI",0,"")
-            capas.thematic_points(destination_clon,"DEST",0,"")
-
+            capas.thematic_points(destination_clone,"DEST",0,"")
+            
+            thematic_layers = [layer_RO_p, destination_clone, layer_RO, origin_VMenC, origin_clone]
+            
             if flag == False:
-                capas.thematic_points(origin_clon,"",1,"OI_SUM")
+                capas.thematic_points(origin_clone,"",1,"OI_SUM")
+                hmap = origin_clone.clone()
+                capas.thematic_points(hmap,"",2,"OI_SUM")
+                thematic_layers.append(hmap)
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
             else:
                 capas.thematic_polygons(origin_VMenC,"",1)
-
-            thematic_layers = [ layer_RO, layer_RO_p, destination_clon, origin_clon, origin_VMenC]
+            
+            for i, layer in enumerate(thematic_layers):
+                group.insertLayer(i,layer)
+                
             progressBar.setValue(80)
 
             gestor.destroy_layers(layers)
@@ -183,33 +191,39 @@ class Main:
             # instancia de los reportes
             Reportes(values, values_oi, self.params)
             gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
-            progressBar.setValue(100)
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
-
+            
+        #------ dest restriction
         elif self.params["RESTR"] == 1:
             values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
-            capas.add_index(destination_clon,dj, "DJ_SUM")
-            vlayer = destination_clon.clone()
+            capas.add_index(destination_clone,dj, "DJ_SUM")
+            vlayer = destination_clone.clone()
             QgsProject.instance().addMapLayer(vlayer,False)
-            group.insertLayer(0,origin_VMenC)
-            group.insertLayer(1,origin_clon)
-            group.insertLayer(2,destination_clon)
-            group.insertLayer(3,vlayer)
-            capas.thematic_points(destination_clon,"",1,"DJ_SUM")
+            layers = [origin_VMenC, origin_clone, destination_clone, vlayer]
+            
+            for i,layer in enumerate(layers):
+                group.insertLayer(i,layer)
+
+            capas.thematic_points(destination_clone,"",1,"DJ_SUM")
             capas.thematic_points(vlayer,"",2,"DJ_SUM")
             progressBar.setValue(60)
             
             if flag:
-                capas.thematic_polygons(origin_clon,"",2)
+                capas.thematic_polygons(origin_clone,"",2)
                 capas.thematic_polygons(origin_VMenC,"",2)
+            else:
+                capas.thematic_points(origin_clone,"ORI",0,"")
+                capas.thematic_points(origin_VMenC,"VMenC",0,"")
 
-            data_layers = {
-                "ORIGIN":origin_centroids,
-                "DEST":destination_clon
-                }
+            # data_layers = {
+            #     "ORIGIN":origin_centroids,
+            #     "DEST":destination_clone
+            #     }
 
             # for_lines, dest_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,1)
             progressBar.setValue(70)
+            Reportes(values, values_dj, self.params)
+            gestor.save_Layers(layers,self.output,self.params["EXPORTS"])
             # with tempfile.TemporaryDirectory() as dir:
             #     temp_path = dir + "/"
             #     layers = capas.create_lines_RO(for_lines, values_dj, self.id_origin, self.id_dest, temp_path,1)
@@ -217,14 +231,10 @@ class Main:
 
             # layer_RO_p = capas.merge_layers(dest_list, "Puntos_RD")
             #capas.thematic_lines(layer_RD, "DJ_SUM")
-            progressBar.setValue(100)
+            messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
         elif self.params["RESTR"] == 2:
             pass
-
-
-
-        #------ dest restriction
 
 
 

@@ -127,12 +127,9 @@ class Estadisticas:
             suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
 
         dj = suma_final.tolist()
-        uniq = [num for num in set(dj) if num != 0]
-        v_max = max(uniq)
-        v_min = min(uniq)
-        index_max = dj.index(v_max)
-        index_min = dj.index(v_min)
-        
+        indexes = np.where(suma_final == 0)
+        for index in indexes[0].tolist():
+            matrix[:,index] = 0 
         values = {}
         values_dj = {}
         #count = 0

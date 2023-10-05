@@ -2,37 +2,53 @@ import subprocess
 import webbrowser
 import os
 import numpy as np
+from collections import OrderedDict
 
-from html_template import html_string
+from html_template import *
 
 try:
     import pandas as pd
-    from pyexcel_ods import save_data
+    from pyexcel_ods3 import save_data
 except:
     subprocess.call(["pip", "install", "pandas"])
-    subprocess.call(["pip", "install", "pyexcel-ods"])
     subprocess.call(["pip", "install", "xlwt"])
+    subprocess.call(["pip", "install", "pyexcel-ods3"])
     import pandas as pd
-    from pyexcel_ods import save_data
+    from pyexcel_ods3 import save_data
 
 class Reportes:
 
     def __init__(self, IDs:dict, values:dict, params:dict) -> None:
         self.params = params
-        df = pd.DataFrame.from_dict(IDs, orient='index')
-        df_DEST = df.explode('DEST')
-        new_df = pd.DataFrame.from_dict(values, orient='index')
-        new_df_OI = new_df.explode('OI')
-        new_df_OI['ACC_PROM'] = new_df.apply(lambda row: row['OI_SUM']/len(row['OI']), axis=1)
-        new_df_OI['ACC_STD'] = new_df['OI'].apply(lambda x: np.std(x))
-        self.df = pd.concat([df_DEST.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
-        self.df['TOT_DEST'] = self.df.groupby('ORI')['DEST'].transform('count')
-        self.df.rename(columns={'ORI': 'CVE_ORI',
-                           'DEST': 'CVE_DEST',
-                           'OI':'ACC_IND',
-                           'OI_SUM':'ACC_TOT'}, inplace=True)
-        pd.set_option('colheader_justify', 'center')
-
+        
+        if self.params["RESTR"] == 0:
+            df = pd.DataFrame.from_dict(IDs, orient='index')
+            df_DEST = df.explode('DEST')
+            new_df = pd.DataFrame.from_dict(values, orient='index')
+            new_df_OI = new_df.explode('OI')
+            new_df_OI['ACC_PROM'] = new_df.apply(lambda row: row['OI_SUM']/len(row['OI']), axis=1)
+            new_df_OI['ACC_STD'] = new_df['OI'].apply(lambda x: np.std(x))
+            self.df = pd.concat([df_DEST.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
+            self.df['TOT_DEST'] = self.df.groupby('ORI')['DEST'].transform('count')
+            self.df.rename(columns={'ORI': 'CVE_ORI',
+                            'DEST': 'CVE_DEST',
+                            'OI':'ACC_IND',
+                            'OI_SUM':'ACC_TOT'}, inplace=True)
+            
+            pd.set_option('colheader_justify', 'center')
+        elif self.params["RESTR"] == 1:
+            df = pd.DataFrame.from_dict(IDs, orient='index')
+            df_ORI = df.explode('ORI')
+            new_df = pd.DataFrame.from_dict(values, orient='index')
+            new_df_OI = new_df.explode('DJ')
+            new_df_OI['FLUJ_PROM'] = new_df.apply(lambda row: row['DJ_SUM']/len(row['DJ']), axis=1)
+            new_df_OI['FLUJ_STD'] = new_df['DJ'].apply(lambda x: np.std(x))
+            self.df = pd.concat([df_ORI.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
+            self.df.rename(columns={'DEST': 'CVE_DEST',
+                            'ORI': 'CVE_ORI',
+                            'DJ':'FLUJ_IND',
+                            'DJ_SUM':'FLUJ_TOT'}, inplace=True)
+            pd.set_option('colheader_justify', 'center')
         self.report_HTML()
         self.save_calcs()
 
@@ -44,23 +60,41 @@ class Reportes:
         html = self.df.to_html(classes='content-table',index=False)
 
         unit, tipo_rest, tipo_filt, values_r = self.__aux_report()
-
-        with open(path,'w') as f:
-            f.write(html_string.format(
-                path=path_icon,
-                table=html,
-                origin=self.params["ORIGIN"].source(),
-                id_ori=self.params["ID_ORI"],
-                var_ori=self.params["VAR_ORI"],
-                dest=self.params["DEST"].source(),
-                id_dest=self.params["ID_DEST"],
-                var_dest=self.params["VAR_DEST"],
-                friction_distance=self.params["FRICTION_DISTANCE"],
-                output=self.params["OUTPUT"],
-                unit=unit,
-                tipo_rest=tipo_rest,
-                tipo_filt=tipo_filt,
-                values=values_r))
+        
+        if self.params["RESTR"] == 0:
+            with open(path,'w') as f:
+                f.write(html_RO.format(
+                    path=path_icon,
+                    table=html,
+                    origin=self.params["ORIGIN"].source(),
+                    id_ori=self.params["ID_ORI"],
+                    var_ori=self.params["VAR_ORI"],
+                    dest=self.params["DEST"].source(),
+                    id_dest=self.params["ID_DEST"],
+                    var_dest=self.params["VAR_DEST"],
+                    friction_distance=self.params["FRICTION_DISTANCE"],
+                    output=self.params["OUTPUT"],
+                    unit=unit,
+                    tipo_rest=tipo_rest,
+                    tipo_filt=tipo_filt,
+                    values=values_r))
+        elif self.params["RESTR"] == 1:
+            with open(path,'w') as f:
+                f.write(html_RD.format(
+                    path=path_icon,
+                    table=html,
+                    origin=self.params["ORIGIN"].source(),
+                    id_ori=self.params["ID_ORI"],
+                    var_ori=self.params["VAR_ORI"],
+                    dest=self.params["DEST"].source(),
+                    id_dest=self.params["ID_DEST"],
+                    var_dest=self.params["VAR_DEST"],
+                    friction_distance=self.params["FRICTION_DISTANCE"],
+                    output=self.params["OUTPUT"],
+                    unit=unit,
+                    tipo_rest=tipo_rest,
+                    tipo_filt=tipo_filt,
+                    values=values_r))
 
         if os.path.isfile(path):
             webbrowser.open_new_tab(path)
@@ -118,8 +152,13 @@ class Reportes:
 
         if self.params["SAVE"]["ODS"] == True:
             path_ods = self.params["OUTPUT"] + 'ReporteMIE.ods'
-            headers = list(self.df.columns)
-            save_data(path_ods, {"Resultados": [headers] + self.df.values.tolist()})
+            df = self.df.astype(str)
+            headers = list(df.columns)
+            data = OrderedDict()
+            chunks = [df[i:i+65500] for i in range(0, df.shape[0], 65500)]
+            for i, chunk in enumerate(chunks):
+                data.update({f"Resultados_{i+1}": [headers] + chunk.values.tolist()})
+            save_data(path_ods, data)
 
         if self.params["SAVE"]["CSV"] == True:
             path_csv = self.params["OUTPUT"] + 'ReporteMIE.csv'

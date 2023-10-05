@@ -46,10 +46,8 @@ class Capas:
     def features_selector_OR(self, layers:dict, values:dict, id_ori: str, id_dest:str, r_type:int) -> tuple:
         origin = layers['ORIGIN']
         dest = layers['DEST']
-
         origin_fields = origin.fields()
         dest_fields = dest.fields()
-
         origin_list = []
         dest_list = []
         if r_type == 0:
@@ -99,6 +97,7 @@ class Capas:
 
             # Matrix with Origins and Dest (filters)
             matrix_OD = [list(par) for par in zip(origin_list, dest_list)]
+            return matrix_OD, origin_list
         else:
             # For dest
             for field in dest_fields:
@@ -145,8 +144,8 @@ class Capas:
                         origin_list.append(saved["OUTPUT"])
             # Matrix with Origins and Dest (filters)
             matrix_OD = [list(par) for par in zip(dest_list, origin_list)]
-
-        return matrix_OD, dest_list
+            return matrix_OD, dest_list
+        
 
     def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str, temp_path:str, l_type:int) -> list:
         epsg = matrix_OD[0][0].crs().authid()
@@ -252,10 +251,10 @@ class Capas:
                     }
         layer = processing.run("native:mergevectorlayers",data)
         QgsProject.instance().addMapLayer(layer["OUTPUT"], False)
-
         return layer['OUTPUT']
 
     def thematic_lines(self, layer:QgsVectorLayer, field_name:str) -> None:
+        QgsProject.instance().addMapLayer(layer,False)
         field = field_name
         values = layer.uniqueValues(layer.fields().indexFromName(field))
         min_v = min(values)
@@ -285,6 +284,7 @@ class Capas:
         QgsProject.instance().addMapLayer(layer, False)
 
     def thematic_polygons(self, layer:QgsVectorLayer, field_name:str, p_type:int) -> None:
+        QgsProject.instance().addMapLayer(layer,False)
         if p_type == 0:
             symbol = QgsFillSymbol()
             clasificacion = [QgsGraduatedSymbolRenderer.Jenks] #type:ignore
@@ -327,6 +327,7 @@ class Capas:
             QgsProject.instance().reloadAllLayers()
 
     def thematic_points(self, layer:QgsVectorLayer, l_type:str, l_render:int,field_name:str) -> None:
+        QgsProject.instance().addMapLayer(layer,False)
         if l_render == 0:
             if l_type == "ORI":
                 color = '1,200,255,255'
@@ -399,3 +400,4 @@ class Capas:
             heatmap.setWeightExpression(field_name)
             layer.setRenderer(heatmap)
             layer.triggerRepaint()
+            QgsProject.instance().reloadAllLayers()
