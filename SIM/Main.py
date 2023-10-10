@@ -89,7 +89,6 @@ class Main:
         gestor = GestorArchivos()
         capas = Capas()
         estadisticas = Estadisticas()
-        
         # Messager Bar
         messageBar = iface.messageBar()
         messageBar.clearWidgets()
@@ -128,9 +127,7 @@ class Main:
         id_origins = estadisticas.extract_data(origin_clone, self.id_origin)
         id_dests = estadisticas.extract_data(destination_clone, self.id_dest)
 
-
         progressBar.setValue(40)
-
         # Construcción del dict que contiene los valores extraídos de la oferta/demanda y IDs
         values_OD = {
                 "ORIGIN": origins,
@@ -152,7 +149,6 @@ class Main:
             capas.thematic_polygons(origin_clone,"OI_SUM",0)
 
             progressBar.setValue(50)
-
 
             for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,0)
 
@@ -214,23 +210,9 @@ class Main:
             else:
                 capas.thematic_points(origin_clone,"ORI",0,"")
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
-
-            # data_layers = {
-            #     "ORIGIN":origin_centroids,
-            #     "DEST":destination_clone
-            #     }
-
-            # for_lines, dest_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,1)
             progressBar.setValue(70)
             Reportes(values, values_dj, self.params)
             gestor.save_Layers(layers,self.output,self.params["EXPORTS"])
-            # with tempfile.TemporaryDirectory() as dir:
-            #     temp_path = dir + "/"
-            #     layers = capas.create_lines_RO(for_lines, values_dj, self.id_origin, self.id_dest, temp_path,1)
-            #     layer_RD = capas.merge_layers(layers, "Lineas_RD")
-
-            # layer_RO_p = capas.merge_layers(dest_list, "Puntos_RD")
-            #capas.thematic_lines(layer_RD, "DJ_SUM")
             messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
         elif self.params["RESTR"] == 2:

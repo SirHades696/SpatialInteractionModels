@@ -123,3 +123,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /test
+resources_rc.py
+spatial_interaction_models_dialog_base_ui.py

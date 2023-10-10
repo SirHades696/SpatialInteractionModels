@@ -105,17 +105,14 @@ class Estadisticas:
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
                 matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
-        # np.savetxt("/home/hades/Documentos/test/matrix_Servicio.csv", matrix, delimiter=',')
         suma = np.sum(matrix, axis = 0)
         pre_bj = 1/suma
         # convirtiendo los naN e Inf en 0
         bj = np.nan_to_num(pre_bj, nan=0.0, posinf=0.0, neginf=0.0)
-        # np.savetxt("/home/hades/Documentos/test/matrix_suma.csv", bj, delimiter=',')
         #------------- third step
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
                 matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i] * bj[j]
-        # np.savetxt("/home/hades/Documentos/test/matrix_final.csv", matrix, delimiter=',')
         suma = np.sum(matrix,axis=0)
         suma_final = np.round(suma)
 
@@ -132,18 +129,9 @@ class Estadisticas:
             matrix[:,index] = 0 
         values = {}
         values_dj = {}
-        #count = 0
         for i in range(0, len(values_OD["DEST"])):
             values[str(i)] = {"DEST": values_OD["ID_DEST"][i], "ORI":values_OD["ID_ORI"]}
             values_dj[str(i)] = {"DJ":matrix[:,i], "DJ_SUM":dj[i]}
-            #count += 1
-
-        # values = {} #IDs
-        # values["0"] = {"DEST":values_OD["ID_DEST"][index_max], "ORI":values_OD["ID_ORI"]}
-        # values["1"] = {"DEST":values_OD["ID_DEST"][index_min], "ORI":values_OD["ID_ORI"]}
-        # values_dj = {}
-        # values_dj["0"] = {"DJ":matrix[:,index_min], "DJ_SUM":v_min}
-        # values_dj["1"] = {"DJ":matrix[:,index_max], "DJ_SUM":v_max}
         return values, values_dj, dj
 
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:

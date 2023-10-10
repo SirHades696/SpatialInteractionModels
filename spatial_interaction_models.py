@@ -126,6 +126,38 @@ class SpatialInteractionModels:
         self.clear_and_start()
         self.dlg.show()
         self.dlg.exec_()
+    
+    def load_origin(self):
+        path_layer = QFileDialog.getOpenFileName(self.dlg, "Selecciona un archivo vectorial de orígen", "", "*.shp")
+        if(path_layer[0] != ""):
+            sp = path_layer[0].split("/")
+            name = sp[-1].split(".shp")[0]
+            layer = QgsVectorLayer(path_layer[0], name , "ogr")
+            if layer.isValid():
+                geometry_type = layer.geometryType()
+                if geometry_type == QgsWkbTypes.PointGeometry or geometry_type == QgsWkbTypes.PolygonGeometry:
+                    QgsProject.instance().addMapLayer(layer)
+                    self.dlg.origin_combobox.setLayer(layer)
+                else:
+                    self.dlg.origin_combobox.setLayer(None)
+                    self.dlg.origin_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                    self.set_message("Error",f"Se requiere un archivo vectorial de puntos o polígonos", QMessageBox.Critical)
+    
+    def load_dest(self):
+        path_layer = QFileDialog.getOpenFileName(self.dlg, "Selecciona un archivo vectorial de destino", "", "*.shp")
+        if(path_layer[0] != ""):
+            sp = path_layer[0].split("/")
+            name = sp[-1].split(".shp")[0]
+            layer = QgsVectorLayer(path_layer[0], name , "ogr")
+            if layer.isValid():
+                geometry_type = layer.geometryType()
+                if geometry_type == QgsWkbTypes.PointGeometry:
+                    QgsProject.instance().addMapLayer(layer)
+                    self.dlg.dest_combobox.setLayer(layer)
+                else:
+                    self.dlg.dest_combobox.setLayer(None)
+                    self.dlg.dest_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                    self.set_message("Error",f"Se requiere un archivo vectorial de puntos", QMessageBox.Critical)
 
     def clear_and_start(self):
         # TABS
@@ -288,6 +320,10 @@ class SpatialInteractionModels:
         self.dlg.btn_about.clicked.connect(self.__about)
         self.dlg.btn_about2.clicked.connect(self.__about)
         self.dlg.btn_about3.clicked.connect(self.__about)
+        
+        # Origin -dest btns
+        self.dlg.btn_origin.clicked.connect(self.load_origin)
+        self.dlg.btn_dest.clicked.connect(self.load_dest)
 
     # ------ TABS
     def tab_inputs(self):
@@ -449,6 +485,7 @@ class SpatialInteractionModels:
         settings = QSettings()
         pjts = {}
         self.dlg.projects_combobox.addItem("Seleciona un proyecto...",None)
+        count = 1
         for i in range(1,1000):
             rpt = settings.value(f'UI/recentProjects/{i}/title')
             rpp = settings.value(f'UI/recentProjects/{i}/path')
@@ -456,7 +493,9 @@ class SpatialInteractionModels:
                 break
             else:
                 pth = rpp.split(f"{rpt}.qgz",1)[0]
-                pjts[str(i)]={"PROJECT":rpt,"PATH":pth}
+                if os.path.exists(pth):
+                    pjts[str(count)]={"PROJECT":rpt,"PATH":pth}
+                    count += 1
 
         for i in range(1, len(pjts)+1):
             self.dlg.projects_combobox.addItem(pjts[str(i)]["PROJECT"],pjts[str(i)]["PATH"])

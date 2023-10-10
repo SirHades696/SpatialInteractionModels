@@ -78,40 +78,10 @@
           <string>Orígenes</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_12">
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Selecciona el campo ID</string>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Selecciona el campo que contiene la población de demanda</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Selecciona una capa vectorial</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QgsFieldComboBox" name="id_origin_combobox">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>27</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>27</height>
-             </size>
             </property>
            </widget>
           </item>
@@ -131,7 +101,54 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Selecciona una capa vectorial</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Selecciona el campo ID</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="btn_origin">
+            <property name="maximumSize">
+             <size>
+              <width>44</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/spatial_interaction_models/folder.png</normaloff>:/plugins/spatial_interaction_models/folder.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QgsFieldComboBox" name="id_origin_combobox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
            <widget class="QgsFieldComboBox" name="field_origin_combobox">
             <property name="minimumSize">
              <size>
@@ -213,6 +230,13 @@
           <string>Destinos</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_13">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Selecciona una capa vectorial</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QgsMapLayerComboBox" name="dest_combobox">
             <property name="minimumSize">
@@ -226,29 +250,6 @@
               <width>16777215</width>
               <height>27</height>
              </size>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QgsFieldComboBox" name="id_dest_combobox">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>27</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>27</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Selecciona una capa vectorial</string>
             </property>
            </widget>
           </item>
@@ -266,7 +267,46 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="1" column="1">
+           <widget class="QPushButton" name="btn_dest">
+            <property name="minimumSize">
+             <size>
+              <width>44</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>44</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/plugins/spatial_interaction_models/folder.png</normaloff>:/plugins/spatial_interaction_models/folder.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QgsFieldComboBox" name="id_dest_combobox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>27</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>27</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
            <widget class="QgsFieldComboBox" name="field_dest_combobox">
             <property name="minimumSize">
              <size>

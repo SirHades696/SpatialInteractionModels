@@ -176,7 +176,11 @@ html_RD = '''<!doctype html>
             margin-top: 3px;
             margin-bottom: 3px;
         }}
-
+        
+        .oculto {{
+        display: none;
+            }}
+            
     </style>
     <body>
         <h1 align="center">Reporte de ejecución</h1>
@@ -222,4 +226,19 @@ html_RD = '''<!doctype html>
         {table}
         </div>
     </body>
+    <script>
+    var grupos = document.querySelectorAll("#tabla tbody");
+    for (var i = 0; i < grupos.length; i++) {{
+        grupos[i].addEventListener("click", function() {{
+            var filasOcultas = this.querySelectorAll(".oculto");
+            for (var j = 0; j < filasOcultas.length; j++) {{
+                if (filasOcultas[j].style.display === "none") {{
+                    filasOcultas[j].style.display = "table-row";
+                }} else {{
+                    filasOcultas[j].style.display = "none";
+                }}
+            }}
+        }});
+    }}
+    </script>
 </html>'''

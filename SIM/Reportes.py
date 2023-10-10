@@ -9,12 +9,15 @@ from html_template import *
 try:
     import pandas as pd
     from pyexcel_ods3 import save_data
+    from bs4 import BeautifulSoup
 except:
     subprocess.call(["pip", "install", "pandas"])
     subprocess.call(["pip", "install", "xlwt"])
     subprocess.call(["pip", "install", "pyexcel-ods3"])
+    subprocess.call(["pip", "install", "beautifulsoup4"])
     import pandas as pd
     from pyexcel_ods3 import save_data
+    from bs4 import BeautifulSoup
 
 class Reportes:
 
@@ -57,7 +60,30 @@ class Reportes:
         path_icon = path_file.split("SIM")[0]
 
         path = self.params["OUTPUT"] + 'ReporteMIE.html'
-        html = self.df.to_html(classes='content-table',index=False)
+        html = self.df.to_html(classes='content-table" id="tabla',index=False)
+        
+        soup = BeautifulSoup(html, 'html.parser')
+
+        table = soup.find('table')
+        df = pd.read_html(str(table))[0]
+        table = soup.find('table')
+        df = pd.read_html(str(table))[0]
+        grouped = df.groupby('CVE_DEST')
+        new_html = ""
+        for i, (name, group) in enumerate(grouped):
+            tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
+            for j, row in group.iterrows():
+                tr = soup.new_tag('tr')
+                if j != group.first_valid_index():
+                    tr['class'] = 'oculto'
+                for cell in row:
+                    td = soup.new_tag('td')
+                    td.string = str(cell)
+                    tr.append(td)
+                tbody.append(tr)
+            new_html += str(tbody)
+        table.tbody.replace_with(BeautifulSoup(new_html, 'html.parser'))
+        html = table.prettify()
 
         unit, tipo_rest, tipo_filt, values_r = self.__aux_report()
         
