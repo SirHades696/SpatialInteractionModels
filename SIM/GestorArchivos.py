@@ -114,7 +114,7 @@ class GestorArchivos:
                                                                 "UTF-8",
                                                                 layer.crs(),
                                                                 driverName="ESRI Shapefile")
-                layer.saveNamedStyle(path_hd + layer.name() +".qml")
+                layer.saveNamedStyle(path_hd + prefix + "_" + layer.name() +".qml")
                 if result[1] == "":
                     print(f"SHAPEFILE - La capa {layer.name()} exportada con éxito")
                 else:
