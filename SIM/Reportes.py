@@ -37,8 +37,10 @@ class Reportes:
                             'DEST': 'CVE_DEST',
                             'OI':'ACC_IND',
                             'OI_SUM':'ACC_TOT'}, inplace=True)
-            
+            self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
+            self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
             pd.set_option('colheader_justify', 'center')
+            
         elif self.params["RESTR"] == 1:
             df = pd.DataFrame.from_dict(IDs, orient='index')
             df_ORI = df.explode('ORI')
@@ -52,6 +54,9 @@ class Reportes:
                             'DJ':'FLUJ_IND',
                             'DJ_SUM':'FLUJ_TOT'}, inplace=True)
             pd.set_option('colheader_justify', 'center')
+            self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
+            self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+            
         self.report_HTML()
         self.save_calcs()
 
@@ -63,31 +68,29 @@ class Reportes:
         html = self.df.to_html(classes='content-table" id="tabla',index=False)
         
         soup = BeautifulSoup(html, 'html.parser')
-
-        table = soup.find('table')
-        df = pd.read_html(str(table))[0]
-        table = soup.find('table')
-        df = pd.read_html(str(table))[0]
-        grouped = df.groupby('CVE_DEST')
-        new_html = ""
-        for i, (name, group) in enumerate(grouped):
-            tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
-            for j, row in group.iterrows():
-                tr = soup.new_tag('tr')
-                if j != group.first_valid_index():
-                    tr['class'] = 'oculto'
-                for cell in row:
-                    td = soup.new_tag('td')
-                    td.string = str(cell)
-                    tr.append(td)
-                tbody.append(tr)
-            new_html += str(tbody)
-        table.tbody.replace_with(BeautifulSoup(new_html, 'html.parser'))
-        html = table.prettify()
-
         unit, tipo_rest, tipo_filt, values_r = self.__aux_report()
         
         if self.params["RESTR"] == 0:
+            table = soup.find('table')
+            df = pd.read_html(str(table))[0]
+            table = soup.find('table')
+            df = pd.read_html(str(table))[0]
+            grouped = df.groupby('CVE_ORI')
+            new_html = ""
+            for i, (name, group) in enumerate(grouped):
+                tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
+                for j, row in group.iterrows():
+                    tr = soup.new_tag('tr')
+                    if j != group.first_valid_index():
+                        tr['class'] = 'oculto'
+                    for cell in row:
+                        td = soup.new_tag('td')
+                        td.string = str(cell)
+                        tr.append(td)
+                    tbody.append(tr)
+                new_html += str(tbody)
+            table.tbody.replace_with(BeautifulSoup(new_html, 'html.parser'))
+            html = table.prettify()
             with open(path,'w') as f:
                 f.write(html_RO.format(
                     path=path_icon,
@@ -105,6 +108,26 @@ class Reportes:
                     tipo_filt=tipo_filt,
                     values=values_r))
         elif self.params["RESTR"] == 1:
+            table = soup.find('table')
+            df = pd.read_html(str(table))[0]
+            table = soup.find('table')
+            df = pd.read_html(str(table))[0]
+            grouped = df.groupby('CVE_DEST')
+            new_html = ""
+            for i, (name, group) in enumerate(grouped):
+                tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
+                for j, row in group.iterrows():
+                    tr = soup.new_tag('tr')
+                    if j != group.first_valid_index():
+                        tr['class'] = 'oculto'
+                    for cell in row:
+                        td = soup.new_tag('td')
+                        td.string = str(cell)
+                        tr.append(td)
+                    tbody.append(tr)
+                new_html += str(tbody)
+            table.tbody.replace_with(BeautifulSoup(new_html, 'html.parser'))
+            html = table.prettify()
             with open(path,'w') as f:
                 f.write(html_RD.format(
                     path=path_icon,

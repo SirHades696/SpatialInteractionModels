@@ -183,10 +183,10 @@ class Main:
             gestor.destroy_layers(or_list)
 
             progressBar.setValue(90)
-            messageBar.clearWidgets()
             # instancia de los reportes
             Reportes(values, values_oi, self.params)
-            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"])
+            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.prefijo)
+            messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
             
         #------ dest restriction
@@ -212,7 +212,7 @@ class Main:
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
             progressBar.setValue(70)
             Reportes(values, values_dj, self.params)
-            gestor.save_Layers(layers,self.output,self.params["EXPORTS"])
+            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.prefijo)
             messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
         elif self.params["RESTR"] == 2:

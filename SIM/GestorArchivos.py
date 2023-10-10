@@ -3,6 +3,7 @@ import numpy as np
 import os
 import processing #type:ignore
 from osgeo import ogr
+from datetime import datetime
 
 class GestorArchivos:
 
@@ -27,28 +28,42 @@ class GestorArchivos:
         matrix = np.loadtxt(path, delimiter=",", dtype=float)
         return matrix
 
-    def save_Layers(self, layers:list, path:str, data:dict) -> None:
+    def save_Layers(self, layers:list, path:str, data:dict, prefix:str) -> None:
+        root = QgsProject.instance().layerTreeRoot()
+        if not prefix:
+            fecha = datetime.now()
+            prefix = fecha.strftime("%Y%m%d%H%M%S")
+            
         if data["GeoJSON"]["SAVE"] == True:
-            path_g = path + "GeoJSON/"
+            path_g = path + "GeoJSON/" 
             if not os.path.exists(path_g):
                 os.makedirs(path_g)
                 os.chmod(path_g, 0o777)
             else:
                 print("La carpeta ya existe")
+            ly_path = []
             for layer in layers:
-                output = path_g + layer.name()+".geojson"
+                output = path_g + prefix + "_" + layer.name()+".geojson"
+                ly_path.append(output)
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer,
-                                                                 output,
-                                                                 "UTF-8",
-                                                                 layer.crs(),
-                                                                 driverName="GeoJSON")
+                                                                output,
+                                                                "UTF-8",
+                                                                layer.crs(),
+                                                                driverName="GeoJSON")
                 if result[1] == "":
                     print(f"GEOJSON - La capa {layer.name()} exportada con éxito")
-                    if data["GeoJSON"]["OPEN"] == True:
-                        lyr = QgsVectorLayer(output,layer.name(),"ogr")
-                        QgsProject.instance().addMapLayer(lyr)
                 else:
                     print("GEOJSON - Hubo un error al exportar la capa {layer.name()}: ", result[1])
+            
+            if data["GeoJSON"]["OPEN"] == True:
+                fecha = datetime.now()
+                aux = fecha.strftime("%Y%m%d%H%M%S")
+                group = root.addGroup("MIE_" + aux)
+                for layer in ly_path:
+                    name = layer.split("/")[-1].split(".geojson")[0]
+                    lyr = QgsVectorLayer(output,name,"ogr")
+                    QgsProject.instance().addMapLayer(lyr,False)
+                    group.addLayer(lyr)
 
         if data["Spatialite"]["SAVE"] == True:
             path_s = path + "Spatialite/"
@@ -58,21 +73,30 @@ class GestorArchivos:
             else:
                 print("La carpeta ya existe")
 
+            ly_path = []
             for layer in layers:
-                output = path_s + layer.name()+".sqlite"
+                output = path_s + prefix + "_" + layer.name()+".sqlite"
+                ly_path.append(output)
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer,
-                                                                 output,
-                                                                 "UTF-8",
-                                                                 layer.crs(),
-                                                                 driverName="SQLite",
-                                                                 datasourceOptions=["SPATIALITE=YES"])
+                                                                output,
+                                                                "UTF-8",
+                                                                layer.crs(),
+                                                                driverName="SQLite",
+                                                                datasourceOptions=["SPATIALITE=YES"])
                 if result[1] == "":
                     print(f"SPATIALITE - La capa {layer.name()} exportada con éxito")
-                    if data["Spatialite"]["OPEN"] == True:
-                        lyr = QgsVectorLayer(output,layer.name(),"ogr")
-                        QgsProject.instance().addMapLayer(lyr)
                 else:
                     print("SPATIALITE - Hubo un error al exportar la capa {layer.name()}: ", result[1])
+            
+            if data["Spatialite"]["OPEN"] == True:
+                fecha = datetime.now()
+                aux = fecha.strftime("%Y%m%d%H%M%S")
+                group = root.addGroup("MIE_" + aux)
+                for layer in ly_path:
+                    name = layer.split("/")[-1].split(".sqlite")[0]
+                    lyr = QgsVectorLayer(output, name,"ogr")
+                    QgsProject.instance().addMapLayer(lyr, False)
+                    group.addLayer(lyr)
 
         if data["HD"]["SAVE"] == True:
             path_hd = path + "Shapefiles/"
@@ -81,27 +105,33 @@ class GestorArchivos:
                 os.chmod(path_hd, 0o777)
             else:
                 print("La carpeta ya existe")
-
+            ly_path = []
             for layer in layers:
-                output = path_hd + layer.name() + ".shp"
+                output = path_hd + prefix + "_" + layer.name() + ".shp"
+                ly_path.append(output)
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer,
-                                                                 output,
-                                                                 "UTF-8",
-                                                                 layer.crs(),
-                                                                 driverName="ESRI Shapefile")
+                                                                output,
+                                                                "UTF-8",
+                                                                layer.crs(),
+                                                                driverName="ESRI Shapefile")
                 layer.saveNamedStyle(path_hd + layer.name() +".qml")
                 if result[1] == "":
                     print(f"SHAPEFILE - La capa {layer.name()} exportada con éxito")
-                    if data["HD"]["OPEN"] == True:
-                        lyr = QgsVectorLayer(output,layer.name(),"ogr")
-                        QgsProject.instance().addMapLayer(lyr)
-
                 else:
                     print("SHAPEFILE - Hubo un error al exportar la capa {layer.name()}: ", result[1])
-
+            
+            if data["HD"]["OPEN"] == True:
+                fecha = datetime.now()
+                aux = fecha.strftime("%Y%m%d%H%M%S")
+                group = root.addGroup("MIE_" + aux)
+                for layer in ly_path:
+                    name = layer.split("/")[-1].split(".shp")[0]
+                    lyr = QgsVectorLayer(output, name,"ogr")
+                    QgsProject.instance().addMapLayer(lyr, False)
+                    group.addLayer(lyr)
+                    
         if data["Memory"] == False:
             self.destroy_layers(layers)
-
 
         if data["Geopackage"]["SAVE"] == True:
             path_gp = path + "Geopackage/"
@@ -111,7 +141,7 @@ class GestorArchivos:
 
             aux = {
                     "LAYERS":layers,
-                    "OUTPUT":path_gp + "MIE.gpkg",
+                    "OUTPUT":path_gp + prefix + "_" + "MIE.gpkg",
                     "OVERWRITE":False,
                     "SAVE_STYLES":True,
                     "SAVE_METADATA":True,
@@ -121,9 +151,10 @@ class GestorArchivos:
 
             if data["Geopackage"]["OPEN"] == True:
                 conn = ogr.Open(out["OUTPUT"])
-                root = QgsProject.instance().layerTreeRoot()
-                grupo = root.addGroup("MIE")
+                fecha = datetime.now()
+                aux = fecha.strftime("%Y%m%d%H%M%S")
+                group = root.addGroup("MIE_" + aux)
                 for i in conn:
                     ly = QgsVectorLayer(f"{out['OUTPUT']}|layername={i.GetName()}", i.GetName(), 'ogr')
                     QgsProject.instance().addMapLayer(ly, False)
-                    grupo.addLayer(ly)
+                    group.addLayer(ly)

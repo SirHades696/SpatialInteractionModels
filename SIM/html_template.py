@@ -3,8 +3,7 @@ html_RO = '''<!doctype html>
     <link rel="icon" href="{path}/test1.png" type="image/x-icon" />
     <head>
         <title>Reporte - Modelos de Interacción Espacial</title>
-    </head>
-    <style>
+        <style>
 
         * {{
             font-family: sans-serif;
@@ -46,10 +45,6 @@ html_RO = '''<!doctype html>
             background-color: #f3f3f3;
         }}
 
-        .content-table tbody tr:last-of-type {{
-            border-bottom: 2px solid #0074cc;
-        }}
-
         .content-table tbody tr.active-row {{
             font-weight: bold;
             color: #0074cc;
@@ -60,8 +55,13 @@ html_RO = '''<!doctype html>
             margin-top: 3px;
             margin-bottom: 3px;
         }}
+        
+        .oculto {{
+        display: none;
+            }}
 
     </style>
+    </head>
     <body>
         <h1 align="center">Reporte de ejecución</h1>
         <div>
@@ -111,6 +111,31 @@ html_RO = '''<!doctype html>
         <div>
         {table}
         </div>
+        <script>
+    var grupos = document.querySelectorAll("#tabla tbody");
+    for (var i = 0; i < grupos.length; i++) {{
+        grupos[i].addEventListener("click", function() {{
+            var filasOcultas = this.querySelectorAll(".oculto");
+            var filaSeleccionada = event.target.parentNode;
+            var grupoSeleccionado = filaSeleccionada.parentNode;
+            console.log(grupoSeleccionado)
+            for (var j = 0; j < filasOcultas.length; j++) {{
+                if (filasOcultas[j].style.display === "none") {{
+                    filasOcultas[j].style.display = "table-row";
+                    filasOcultas[j].style.background = "#e0fffc"
+                    grupoSeleccionado.style.background = "#e0fffc"
+                    filaSeleccionada.style.fontWeight = "bold"
+
+                }} else {{
+                    filasOcultas[j].style.display = "none";
+                    filasOcultas[j].style.background = "none"
+                    grupoSeleccionado.style.background = "none"
+                    filaSeleccionada.style.fontWeight = "normal"
+                }}
+            }}
+        }});
+    }}
+    </script>
     </body>
 </html>'''
 
@@ -119,7 +144,6 @@ html_RD = '''<!doctype html>
     <link rel="icon" href="{path}/test1.png" type="image/x-icon" />
     <head>
         <title>Reporte - Modelos de Interacción Espacial</title>
-    </head>
     <style>
 
         * {{
@@ -162,10 +186,6 @@ html_RD = '''<!doctype html>
             background-color: #f3f3f3;
         }}
 
-        .content-table tbody tr:last-of-type {{
-            border-bottom: 2px solid #0074cc;
-        }}
-
         .content-table tbody tr.active-row {{
             font-weight: bold;
             color: #0074cc;
@@ -182,6 +202,7 @@ html_RD = '''<!doctype html>
             }}
             
     </style>
+    </head>
     <body>
         <h1 align="center">Reporte de ejecución</h1>
         <div>
@@ -225,20 +246,30 @@ html_RD = '''<!doctype html>
         <div>
         {table}
         </div>
-    </body>
     <script>
     var grupos = document.querySelectorAll("#tabla tbody");
     for (var i = 0; i < grupos.length; i++) {{
         grupos[i].addEventListener("click", function() {{
             var filasOcultas = this.querySelectorAll(".oculto");
+            var filaSeleccionada = event.target.parentNode;
+            var grupoSeleccionado = filaSeleccionada.parentNode;
+            console.log(grupoSeleccionado)
             for (var j = 0; j < filasOcultas.length; j++) {{
                 if (filasOcultas[j].style.display === "none") {{
                     filasOcultas[j].style.display = "table-row";
+                    filasOcultas[j].style.background = "#e0fffc"
+                    grupoSeleccionado.style.background = "#e0fffc"
+                    filaSeleccionada.style.fontWeight = "bold"
+
                 }} else {{
                     filasOcultas[j].style.display = "none";
+                    filasOcultas[j].style.background = "none"
+                    grupoSeleccionado.style.background = "none"
+                    filaSeleccionada.style.fontWeight = "normal"
                 }}
             }}
         }});
     }}
     </script>
+    </body>
 </html>'''
