@@ -3,7 +3,6 @@ import numpy as np
 import os
 import processing #type:ignore
 from osgeo import ogr
-from datetime import datetime
 
 class GestorArchivos:
 
@@ -30,10 +29,6 @@ class GestorArchivos:
 
     def save_Layers(self, layers:list, path:str, data:dict, prefix:str) -> None:
         root = QgsProject.instance().layerTreeRoot()
-        if not prefix:
-            fecha = datetime.now()
-            prefix = fecha.strftime("%Y%m%d%H%M%S")
-            
         if data["GeoJSON"]["SAVE"] == True:
             path_g = path + "GeoJSON/" 
             if not os.path.exists(path_g):
@@ -56,12 +51,10 @@ class GestorArchivos:
                     print("GEOJSON - Hubo un error al exportar la capa {layer.name()}: ", result[1])
             
             if data["GeoJSON"]["OPEN"] == True:
-                fecha = datetime.now()
-                aux = fecha.strftime("%Y%m%d%H%M%S")
-                group = root.addGroup("MIE_" + aux)
+                group = root.addGroup("MIE_" + prefix + "_GeoJSON")
                 for layer in ly_path:
                     name = layer.split("/")[-1].split(".geojson")[0]
-                    lyr = QgsVectorLayer(output,name,"ogr")
+                    lyr = QgsVectorLayer(layer,name,"ogr")
                     QgsProject.instance().addMapLayer(lyr,False)
                     group.addLayer(lyr)
 
@@ -89,12 +82,10 @@ class GestorArchivos:
                     print("SPATIALITE - Hubo un error al exportar la capa {layer.name()}: ", result[1])
             
             if data["Spatialite"]["OPEN"] == True:
-                fecha = datetime.now()
-                aux = fecha.strftime("%Y%m%d%H%M%S")
-                group = root.addGroup("MIE_" + aux)
+                group = root.addGroup("MIE_" + prefix + "_Spatialite")
                 for layer in ly_path:
                     name = layer.split("/")[-1].split(".sqlite")[0]
-                    lyr = QgsVectorLayer(output, name,"ogr")
+                    lyr = QgsVectorLayer(layer, name,"ogr")
                     QgsProject.instance().addMapLayer(lyr, False)
                     group.addLayer(lyr)
 
@@ -121,12 +112,10 @@ class GestorArchivos:
                     print("SHAPEFILE - Hubo un error al exportar la capa {layer.name()}: ", result[1])
             
             if data["HD"]["OPEN"] == True:
-                fecha = datetime.now()
-                aux = fecha.strftime("%Y%m%d%H%M%S")
-                group = root.addGroup("MIE_" + aux)
+                group = root.addGroup("MIE_" + prefix + "_SHP")
                 for layer in ly_path:
                     name = layer.split("/")[-1].split(".shp")[0]
-                    lyr = QgsVectorLayer(output, name,"ogr")
+                    lyr = QgsVectorLayer(layer, name,"ogr")
                     QgsProject.instance().addMapLayer(lyr, False)
                     group.addLayer(lyr)
                     
@@ -151,9 +140,7 @@ class GestorArchivos:
 
             if data["Geopackage"]["OPEN"] == True:
                 conn = ogr.Open(out["OUTPUT"])
-                fecha = datetime.now()
-                aux = fecha.strftime("%Y%m%d%H%M%S")
-                group = root.addGroup("MIE_" + aux)
+                group = root.addGroup("MIE_" + prefix + "_Geopkg")
                 for i in conn:
                     ly = QgsVectorLayer(f"{out['OUTPUT']}|layername={i.GetName()}", i.GetName(), 'ogr')
                     QgsProject.instance().addMapLayer(ly, False)

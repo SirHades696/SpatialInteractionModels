@@ -41,6 +41,7 @@ import sys
 import os
 import time
 from .about_dialog import Ui_DialogBase
+from pathlib import PureWindowsPath
 
 sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM/")
 from Main import Main #type:ignore
@@ -188,15 +189,15 @@ class SpatialInteractionModels:
         self.dlg.field_origin_combobox.setLayer(None)
 
         self.dlg.id_origin_combobox.setFilters(QgsFieldProxyModel.String|
-                                               QgsFieldProxyModel.Int|
-                                               QgsFieldProxyModel.Double|
-                                               QgsFieldProxyModel.Numeric|
-                                               QgsFieldProxyModel.LongLong)
+                                            QgsFieldProxyModel.Int|
+                                            QgsFieldProxyModel.Double|
+                                            QgsFieldProxyModel.Numeric|
+                                            QgsFieldProxyModel.LongLong)
 
         self.dlg.field_origin_combobox.setFilters(QgsFieldProxyModel.Int|
-                                               QgsFieldProxyModel.Double|
-                                               QgsFieldProxyModel.Numeric|
-                                               QgsFieldProxyModel.LongLong)
+                                            QgsFieldProxyModel.Double|
+                                            QgsFieldProxyModel.Numeric|
+                                            QgsFieldProxyModel.LongLong)
         # Dest
         self.dlg.dest_combobox.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.dlg.dest_combobox.setCurrentIndex(-1)
@@ -204,15 +205,15 @@ class SpatialInteractionModels:
         self.dlg.field_dest_combobox.setLayer(None)
 
         self.dlg.id_dest_combobox.setFilters(QgsFieldProxyModel.String|
-                                               QgsFieldProxyModel.Int|
-                                               QgsFieldProxyModel.Double|
-                                               QgsFieldProxyModel.Numeric|
-                                               QgsFieldProxyModel.LongLong)
+                                            QgsFieldProxyModel.Int|
+                                            QgsFieldProxyModel.Double|
+                                            QgsFieldProxyModel.Numeric|
+                                            QgsFieldProxyModel.LongLong)
 
         self.dlg.field_dest_combobox.setFilters(QgsFieldProxyModel.Int|
-                                               QgsFieldProxyModel.Double|
-                                               QgsFieldProxyModel.Numeric|
-                                               QgsFieldProxyModel.LongLong)
+                                            QgsFieldProxyModel.Double|
+                                            QgsFieldProxyModel.Numeric|
+                                            QgsFieldProxyModel.LongLong)
 
         #----------Restrictions
         self.dlg.filt_combobox.setCurrentIndex(0)
@@ -531,7 +532,7 @@ class SpatialInteractionModels:
 
     def clear_inputs(self):
         comboboxes = [self.dlg.origin_combobox, self.dlg.id_origin_combobox, self.dlg.field_origin_combobox,
-                      self.dlg.dest_combobox, self.dlg.id_dest_combobox, self.dlg.field_dest_combobox]
+                    self.dlg.dest_combobox, self.dlg.id_dest_combobox, self.dlg.field_dest_combobox]
 
         for combobox in comboboxes:
             if combobox.currentIndex() != -1:
@@ -539,7 +540,7 @@ class SpatialInteractionModels:
 
     def validate_inputs(self):
         comboboxes = [self.dlg.origin_combobox, self.dlg.id_origin_combobox, self.dlg.field_origin_combobox,
-                      self.dlg.dest_combobox, self.dlg.id_dest_combobox, self.dlg.field_dest_combobox]
+                    self.dlg.dest_combobox, self.dlg.id_dest_combobox, self.dlg.field_dest_combobox]
         flags = [False]*6
         for i, combobox in enumerate(comboboxes):
             if combobox.currentIndex() == -1:
@@ -872,8 +873,8 @@ class SpatialInteractionModels:
                 "VAR_ORI": field_origin,
                 "DEST": dest,
                 "ID_DEST": id_dest,
-                "VAR_DEST": field_dest, #Medicina general
-                "UNIT": measure, # 0 - metros
+                "VAR_DEST": field_dest, 
+                "UNIT": measure, 
                 "FRICTION_DISTANCE": friction_distance,
                 "RESTR": filtro,
                 "VAL_REST": rest_data,

@@ -64,7 +64,7 @@ class Reportes:
         path_file = os.path.dirname(os.path.abspath(__file__))
         path_icon = path_file.split("SIM")[0]
 
-        path = self.params["OUTPUT"] + 'ReporteMIE.html'
+        path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.html'
         html = self.df.to_html(classes='content-table" id="tabla',index=False)
         
         soup = BeautifulSoup(html, 'html.parser')
@@ -192,7 +192,7 @@ class Reportes:
 
     def save_calcs(self):
         if self.params["SAVE"]["XLS"] == True:
-            path_xls = self.params["OUTPUT"] + 'ReporteMIE.xls'
+            path_xls = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.xls'
             chunk_size = 65500
             chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
             with pd.ExcelWriter(path_xls) as writer: #type:ignore
@@ -200,7 +200,7 @@ class Reportes:
                     chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
 
         if self.params["SAVE"]["ODS"] == True:
-            path_ods = self.params["OUTPUT"] + 'ReporteMIE.ods'
+            path_ods = self.params["OUTPUT"] + self.params["PREFIJO"] +'_ReporteMIE.ods'
             df = self.df.astype(str)
             headers = list(df.columns)
             data = OrderedDict()
@@ -210,6 +210,6 @@ class Reportes:
             save_data(path_ods, data)
 
         if self.params["SAVE"]["CSV"] == True:
-            path_csv = self.params["OUTPUT"] + 'ReporteMIE.csv'
+            path_csv = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.csv'
             self.df.to_csv(path_csv, index=False)
 

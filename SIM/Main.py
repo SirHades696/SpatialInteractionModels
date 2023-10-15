@@ -75,16 +75,16 @@ class Main:
         self.val_rest = params["VAL_REST"]
         self.friction_distance = params["FRICTION_DISTANCE"]
         self.output = params["OUTPUT"]
-        self.prefijo = params["PREFIJO"]
 
     def run(self):
         root = QgsProject.instance().layerTreeRoot()
-        if self.prefijo:
-            group = root.addGroup(self.prefijo + "_MIE")
+        if self.params["PREFIJO"]:
+            group = root.addGroup(self.params["PREFIJO"] + "_MIE")
         else:
             fecha = datetime.now()
             aux = fecha.strftime("%Y%m%d%H%M%S")
-            group = root.addGroup("MIE_" + aux)
+            self.params["PREFIJO"] = aux
+            group = root.addGroup("MIE_" + self.params["PREFIJO"])
             
         gestor = GestorArchivos()
         capas = Capas()
@@ -185,7 +185,7 @@ class Main:
             progressBar.setValue(90)
             # instancia de los reportes
             Reportes(values, values_oi, self.params)
-            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.prefijo)
+            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
             
@@ -212,7 +212,7 @@ class Main:
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
             progressBar.setValue(70)
             Reportes(values, values_dj, self.params)
-            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.prefijo)
+            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
         elif self.params["RESTR"] == 2:
