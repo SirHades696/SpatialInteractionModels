@@ -42,20 +42,34 @@ class Reportes:
             pd.set_option('colheader_justify', 'center')
             
         elif self.params["RESTR"] == 1:
-            df = pd.DataFrame.from_dict(IDs, orient='index')
-            df_ORI = df.explode('ORI')
-            new_df = pd.DataFrame.from_dict(values, orient='index')
-            new_df_OI = new_df.explode('DJ')
-            new_df_OI['FLUJ_PROM'] = new_df.apply(lambda row: row['DJ_SUM']/len(row['DJ']), axis=1)
-            new_df_OI['FLUJ_STD'] = new_df['DJ'].apply(lambda x: np.std(x))
-            self.df = pd.concat([df_ORI.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
-            self.df.rename(columns={'DEST': 'CVE_DEST',
-                            'ORI': 'CVE_ORI',
-                            'DJ':'FLUJ_IND',
-                            'DJ_SUM':'FLUJ_TOT'}, inplace=True)
-            pd.set_option('colheader_justify', 'center')
-            self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
-            self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+            flag = False
+            if flag:
+                df = pd.DataFrame.from_dict(IDs, orient='index')
+                df_ORI = df.explode('ORI')
+                new_df = pd.DataFrame.from_dict(values, orient='index')
+                new_df_OI = new_df.explode('DJ')
+                new_df_OI['FLUJ_PROM'] = new_df.apply(lambda row: row['DJ_SUM']/len(row['DJ']), axis=1)
+                new_df_OI['FLUJ_STD'] = new_df['DJ'].apply(lambda x: np.std(x))
+                self.df = pd.concat([df_ORI.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
+                self.df.rename(columns={'DEST': 'CVE_DEST',
+                                'ORI': 'CVE_ORI',
+                                'DJ':'FLUJ_IND',
+                                'DJ_SUM':'FLUJ_TOT'}, inplace=True)
+                pd.set_option('colheader_justify', 'center')
+                self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
+                self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+            else:
+                valores_dj = [v['DJ_SUM'] for v in values.values()]
+                # valors_dj =  [val for val in aux if val != 0]
+                serie = pd.Series(valores_dj)
+                conteo = serie.value_counts()
+                self.s_prom = serie.mean()
+                self.s_mediana = serie.median()
+                self.s_std = serie.std()
+                s_moda = serie.mode()
+                self.s_moda = ', '.join(map(str, s_moda))
+                self.df = pd.DataFrame(conteo).reset_index()
+                self.df.columns = ['Flujos', 'Total']
             
         self.report_HTML()
         self.save_calcs()
@@ -108,42 +122,72 @@ class Reportes:
                     tipo_filt=tipo_filt,
                     values=values_r))
         elif self.params["RESTR"] == 1:
-            table = soup.find('table')
-            df = pd.read_html(str(table))[0]
-            table = soup.find('table')
-            df = pd.read_html(str(table))[0]
-            grouped = df.groupby('CVE_DEST')
-            new_html = ""
-            for i, (name, group) in enumerate(grouped):
-                tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
-                for j, row in group.iterrows():
-                    tr = soup.new_tag('tr')
-                    if j != group.first_valid_index():
-                        tr['class'] = 'oculto'
-                    for cell in row:
-                        td = soup.new_tag('td')
-                        td.string = str(cell)
-                        tr.append(td)
-                    tbody.append(tr)
-                new_html += str(tbody)
-            table.tbody.replace_with(BeautifulSoup(new_html, 'html.parser'))
-            html = table.prettify()
-            with open(path,'w') as f:
-                f.write(html_RD.format(
-                    path=path_icon,
-                    table=html,
-                    origin=self.params["ORIGIN"].source(),
-                    id_ori=self.params["ID_ORI"],
-                    var_ori=self.params["VAR_ORI"],
-                    dest=self.params["DEST"].source(),
-                    id_dest=self.params["ID_DEST"],
-                    var_dest=self.params["VAR_DEST"],
-                    friction_distance=self.params["FRICTION_DISTANCE"],
-                    output=self.params["OUTPUT"],
-                    unit=unit,
-                    tipo_rest=tipo_rest,
-                    tipo_filt=tipo_filt,
-                    values=values_r))
+            flag = False
+            if flag:
+                table = soup.find('table')
+                df = pd.read_html(str(table))[0]
+                table = soup.find('table')
+                df = pd.read_html(str(table))[0]
+                grouped = df.groupby('CVE_DEST')
+                new_html = ""
+                for i, (name, group) in enumerate(grouped):
+                    tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
+                    for j, row in group.iterrows():
+                        tr = soup.new_tag('tr')
+                        if j != group.first_valid_index():
+                            tr['class'] = 'oculto'
+                        for cell in row:
+                            td = soup.new_tag('td')
+                            td.string = str(cell)
+                            tr.append(td)
+                        tbody.append(tr)
+                    new_html += str(tbody)
+                table.tbody.replace_with(BeautifulSoup(new_html, 'html.parser'))
+                html = table.prettify()
+                with open(path,'w') as f:
+                    f.write(html_RD.format(
+                        path=path_icon,
+                        table=html,
+                        origin=self.params["ORIGIN"].source(),
+                        id_ori=self.params["ID_ORI"],
+                        var_ori=self.params["VAR_ORI"],
+                        dest=self.params["DEST"].source(),
+                        id_dest=self.params["ID_DEST"],
+                        var_dest=self.params["VAR_DEST"],
+                        friction_distance=self.params["FRICTION_DISTANCE"],
+                        output=self.params["OUTPUT"],
+                        unit=unit,
+                        tipo_rest=tipo_rest,
+                        tipo_filt=tipo_filt,
+                        values=values_r))
+            else:
+                rows = soup.find_all('tr')
+                for row in rows:
+                    if 'style' in row.attrs:
+                        del row['style']
+                    row['style'] = 'text-align:center;'
+                html = soup.prettify()
+                
+                with open(path,'w') as f:
+                    f.write(html_RD_S.format(
+                        path=path_icon,
+                        table=html,
+                        origin=self.params["ORIGIN"].source(),
+                        id_ori=self.params["ID_ORI"],
+                        var_ori=self.params["VAR_ORI"],
+                        dest=self.params["DEST"].source(),
+                        id_dest=self.params["ID_DEST"],
+                        var_dest=self.params["VAR_DEST"],
+                        friction_distance=self.params["FRICTION_DISTANCE"],
+                        output=self.params["OUTPUT"],
+                        unit=unit,
+                        tipo_rest=tipo_rest,
+                        tipo_filt=tipo_filt,
+                        values=values_r,
+                        s_prom = self.s_prom,
+                        s_mediana = self.s_mediana,
+                        s_std = self.s_std,
+                        s_moda = self.s_moda))
 
         if os.path.isfile(path):
             webbrowser.open_new_tab(path)
