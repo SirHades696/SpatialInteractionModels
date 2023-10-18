@@ -42,8 +42,7 @@ class Reportes:
             pd.set_option('colheader_justify', 'center')
             
         elif self.params["RESTR"] == 1:
-            flag = False
-            if flag:
+            if self.params["REPORTS"][0] == True:
                 df = pd.DataFrame.from_dict(IDs, orient='index')
                 df_ORI = df.explode('ORI')
                 new_df = pd.DataFrame.from_dict(values, orient='index')
@@ -58,7 +57,7 @@ class Reportes:
                 pd.set_option('colheader_justify', 'center')
                 self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
                 self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
-            else:
+            if self.params["REPORTS"][1] == True:
                 valores_dj = [v['DJ_SUM'] for v in values.values()]
                 # valors_dj =  [val for val in aux if val != 0]
                 serie = pd.Series(valores_dj)
@@ -68,8 +67,8 @@ class Reportes:
                 self.s_std = serie.std()
                 s_moda = serie.mode()
                 self.s_moda = ', '.join(map(str, s_moda))
-                self.df = pd.DataFrame(conteo).reset_index()
-                self.df.columns = ['Flujos', 'Total']
+                self.df2 = pd.DataFrame(conteo).reset_index()
+                self.df2.columns = ['Flujos', 'Total']
             
         self.report_HTML()
         self.save_calcs()
@@ -77,14 +76,12 @@ class Reportes:
     def report_HTML(self) -> None:
         path_file = os.path.dirname(os.path.abspath(__file__))
         path_icon = path_file.split("SIM")[0]
-
-        path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.html'
-        html = self.df.to_html(classes='content-table" id="tabla',index=False)
-        
-        soup = BeautifulSoup(html, 'html.parser')
         unit, tipo_rest, tipo_filt, values_r = self.__aux_report()
         
         if self.params["RESTR"] == 0:
+            path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RO.html'
+            html = self.df.to_html(classes='content-table" id="tabla',index=False)
+            soup = BeautifulSoup(html, 'html.parser')
             table = soup.find('table')
             df = pd.read_html(str(table))[0]
             table = soup.find('table')
@@ -121,9 +118,16 @@ class Reportes:
                     tipo_rest=tipo_rest,
                     tipo_filt=tipo_filt,
                     values=values_r))
+
+            if os.path.isfile(path):
+                webbrowser.open_new_tab(path)
+                
         elif self.params["RESTR"] == 1:
-            flag = False
-            if flag:
+            if self.params["REPORTS"][0] == True:
+                path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RD.html'
+                html = self.df.to_html(classes='content-table" id="tabla',index=False)
+                soup = BeautifulSoup(html, 'html.parser')
+                
                 table = soup.find('table')
                 df = pd.read_html(str(table))[0]
                 table = soup.find('table')
@@ -160,14 +164,22 @@ class Reportes:
                         tipo_rest=tipo_rest,
                         tipo_filt=tipo_filt,
                         values=values_r))
-            else:
+                    
+                if os.path.isfile(path):
+                    webbrowser.open_new_tab(path)
+                    
+            if self.params["REPORTS"][1] == True:
+                path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RDGeneral.html'
+                html = self.df2.to_html(classes='content-table" id="tabla',index=False)
+                soup = BeautifulSoup(html, 'html.parser')
+                
                 rows = soup.find_all('tr')
                 for row in rows:
                     if 'style' in row.attrs:
                         del row['style']
                     row['style'] = 'text-align:center;'
                 html = soup.prettify()
-                
+
                 with open(path,'w') as f:
                     f.write(html_RD_S.format(
                         path=path_icon,
@@ -189,8 +201,8 @@ class Reportes:
                         s_std = self.s_std,
                         s_moda = self.s_moda))
 
-        if os.path.isfile(path):
-            webbrowser.open_new_tab(path)
+                if os.path.isfile(path):
+                    webbrowser.open_new_tab(path)
 
     def __aux_report(self) -> tuple:
         if self.params["UNIT"] == 0:

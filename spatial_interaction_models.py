@@ -230,6 +230,10 @@ class SpatialInteractionModels:
         validator = QDoubleValidator()
         validator.setBottom(0)
         self.dlg.val1_dist.setValidator(validator)
+        
+        self.dlg.groupBox.setVisible(False)
+        self.dlg.groupBox_2.setVisible(False)
+        self.dlg.group_reports.setVisible(False)
 
         self.dlg.val2_dist.setEnabled(False)
         self.dlg.val2_dist.setReadOnly(False)
@@ -296,7 +300,10 @@ class SpatialInteractionModels:
         self.dlg.tipo_filt_fluj.currentIndexChanged.connect(self.clear_restrictions)
         self.dlg.val1_fluj.textEdited.connect(self.clear_restrictions)
         self.dlg.val2_fluj.textEdited.connect(self.clear_restrictions)
+        self.dlg.check_exe_f.stateChanged.connect(self.clear_restrictions)
+        self.dlg.check_exe_s.stateChanged.connect(self.clear_restrictions)
         self.dlg.btn_sig2.clicked.connect(self.validate_restrictions)
+
         # Output
         self.dlg.sqlite_check.stateChanged.connect(self.hide_show_sqlite)
         self.dlg.geojson_check.stateChanged.connect(self.hide_show_geojson)
@@ -356,6 +363,9 @@ class SpatialInteractionModels:
         self.dlg.val2_fluj.setStyleSheet("")
         if index != 0:
             if index == 1:
+                self.dlg.group_reports.setVisible(False)
+                self.dlg.groupBox.setVisible(True)
+                self.dlg.groupBox_2.setVisible(False)
                 self.dlg.tipo_filt_dist.setEnabled(True)
                 self.dlg.tipo_filt_dist.setCurrentIndex(0)
                 self.dlg.tipo_filt_fluj.setEnabled(False)
@@ -365,6 +375,9 @@ class SpatialInteractionModels:
                 self.dlg.val1_fluj.setVisible(False)
                 self.dlg.val2_fluj.setVisible(False)
             elif index == 2:
+                self.dlg.group_reports.setVisible(True)
+                self.dlg.groupBox.setVisible(False)
+                self.dlg.groupBox_2.setVisible(True)
                 self.dlg.tipo_filt_dist.setEnabled(False)
                 self.dlg.tipo_filt_dist.setCurrentIndex(0)
                 self.dlg.tipo_filt_fluj.setEnabled(True)
@@ -373,7 +386,11 @@ class SpatialInteractionModels:
                 self.dlg.val2_dist.setVisible(False)
                 self.dlg.val1_fluj.setVisible(False)
                 self.dlg.val2_fluj.setVisible(False)
+                
             elif index == 3:
+                self.dlg.group_reports.setVisible(True)
+                self.dlg.groupBox.setVisible(True)
+                self.dlg.groupBox_2.setVisible(True)
                 self.dlg.tipo_filt_dist.setEnabled(True)
                 self.dlg.tipo_filt_dist.setCurrentIndex(0)
                 self.dlg.tipo_filt_fluj.setEnabled(True)
@@ -383,6 +400,9 @@ class SpatialInteractionModels:
                 self.dlg.val1_fluj.setVisible(False)
                 self.dlg.val2_fluj.setVisible(False)
         else:
+            self.dlg.group_reports.setVisible(False)
+            self.dlg.groupBox.setVisible(False)
+            self.dlg.groupBox_2.setVisible(False)
             self.dlg.tipo_filt_dist.setEnabled(False)
             self.dlg.tipo_filt_dist.setCurrentIndex(0)
             self.dlg.tipo_filt_fluj.setEnabled(False)
@@ -597,9 +617,19 @@ class SpatialInteractionModels:
         for line in lines:
             if line.text() != "":
                 line.setStyleSheet("")
+        
+        flag = False
+        checks = [self.dlg.check_exe_s, self.dlg.check_exe_f]
+        for check in checks:
+            if check.isChecked() == True:
+                flag = True
+                break
+        if flag:
+            for check in checks:
+                check.setStyleSheet("")
 
     def validate_restrictions(self):
-        flag1, flag3, flag4, flag5 = False, False, False, False
+        flag1, flag3, flag4, flag5, flag2 = False, False, False, False, False
 
         if self.dlg.filt_combobox.currentIndex() == 0:
             self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
@@ -618,6 +648,7 @@ class SpatialInteractionModels:
 
         # Origin restriction
         if self.dlg.filt_combobox.currentIndex() == 1:
+            flag2 = True
             if self.dlg.tipo_filt_dist.currentIndex() == 0:
                 self.dlg.tipo_filt_dist.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
             else:
@@ -667,8 +698,18 @@ class SpatialInteractionModels:
                             self.dlg.val1_fluj.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                         if self.dlg.val2_fluj.text() == "":
                             self.dlg.val2_fluj.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-
-
+                            
+            checks = [self.dlg.check_exe_f, self.dlg.check_exe_s]
+            aux = []
+            for check in checks:
+                if check.isChecked() == True:
+                    aux.append(True)
+                    flag2 = True
+                    break
+            if len(aux) == 0:
+                for check in checks:
+                    check.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                    
         # Two restrictions
         elif self.dlg.filt_combobox.currentIndex() == 3:
             auxflag1, auxflag2 = False, False
@@ -725,8 +766,19 @@ class SpatialInteractionModels:
 
                 if auxflag1 and auxflag2:
                     flag1 = True
+            
+            checks = [self.dlg.check_exe_f, self.dlg.check_exe_s]
+            aux = []
+            for check in checks:
+                if check.isChecked() == True:
+                    aux.append(True)
+                    flag2 = True
+                    break
+            if len(aux) == 0:
+                for check in checks:
+                    check.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
 
-        if flag1 and flag3 and flag4 and flag5:
+        if flag1 and flag3 and flag4 and flag5 and flag2:
             self.dlg.tabWidget.setTabEnabled(2,True)
             self.dlg.tabWidget.setTabEnabled(0,False)
             self.dlg.tabWidget.setTabEnabled(1,False)
@@ -803,6 +855,7 @@ class SpatialInteractionModels:
                 rest_data={"R_ORIG":
                                     {"OPTION": tipo_filt_dist,
                                     "VALUE":[val1_dist, val2_dist]}}
+            reports = [False, False]
         # ----------------------- Dest
         elif filtro == 1:
             tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentIndex() - 1
@@ -817,6 +870,7 @@ class SpatialInteractionModels:
                 rest_data={"R_DEST":
                                     {"OPTION": tipo_filt_fluj,
                                     "VALUE":[val1_fluj, val2_fluj]}}
+            reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
 
         #  ------------------------ Double
         elif filtro == 2:
@@ -845,6 +899,7 @@ class SpatialInteractionModels:
                 rest_data={"R_DEST":
                                     {"OPTION": tipo_filt_fluj,
                                     "VALUE":[val1_fluj, val2_fluj]}}
+            reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
 
         measure = self.dlg.measure_combobox.currentIndex() - 1
         friction_distance = float(self.dlg.friction_distance.text())
@@ -891,7 +946,8 @@ class SpatialInteractionModels:
                     "XLS":xls_check,
                     "ODS":ods_check,
                     "CSV":csv_check
-                    }
+                    },
+                "REPORTS":reports
                 }
         self.dlg.hide()
         start = time.time()

@@ -76,7 +76,7 @@ html_RO = '''<!doctype html>
             <p align="left"><b>Unidades de medida: </b>{unit}</p>
             <p align="left"><b>Tipo de filtro: </b>{tipo_filt}</p>
             <p align="left"><b>Valor(es): </b>{values}</p>
-            <p align="left"><b>Ruta de almacenamiento: </b>{output}</p>
+            <p align="left"><b>Ruta de almacenamiento: </b><a href="file://{output}" target="_blank">{output}</a></p>
         </div>
         <div>
             <table border="1" class="dataframe content-table">
@@ -217,7 +217,7 @@ html_RD = '''<!doctype html>
             <p align="left"><b>Unidades de medida: </b>{unit}</p>
             <p align="left"><b>Tipo de filtro: </b>{tipo_filt}</p>
             <p align="left"><b>Valor(es): </b>{values}</p>
-            <p align="left"><b>Ruta de almacenamiento: </b>{output}</p>
+            <p align="left"><b>Ruta de almacenamiento: </b><a href="file://{output}" target="_blank">{output}</a></p>
         </div>
         <div>
             <table border="1" class="dataframe content-table">
@@ -352,7 +352,7 @@ html_RD_S = '''<!doctype html>
             <p align="left"><b>Unidades de medida: </b>{unit}</p>
             <p align="left"><b>Tipo de filtro: </b>{tipo_filt}</p>
             <p align="left"><b>Valor(es): </b>{values}</p>
-            <p align="left"><b>Ruta de almacenamiento: </b>{output}</p>
+            <p align="left"><b>Ruta de almacenamiento: </b><a href="file://{output}" target="_blank">{output}</a></p>
         </div>
         <div>
             <table border="1" class="dataframe content-table">
