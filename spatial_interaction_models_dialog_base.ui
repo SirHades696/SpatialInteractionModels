@@ -771,14 +771,14 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="check_exe_f">
             <property name="text">
-             <string>General (Ejecución Rápida)</string>
+             <string>General (Ejecución rápida)</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="check_exe_s">
             <property name="text">
-             <string>Completo (Requiere mayor tiempo)</string>
+             <string>Completo (Demanda recursos y tiempo)</string>
             </property>
            </widget>
           </item>

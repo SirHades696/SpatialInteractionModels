@@ -43,7 +43,6 @@ class Estadisticas:
                 matrix[i,j] = d
                 j += 1
             i += 1
-        # np.savetxt("/home/hades/Documentos/test/matrix_Distance.csv", matrix, delimiter=',')
         return matrix
 
     def origin_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ) -> tuple:
@@ -93,8 +92,6 @@ class Estadisticas:
                 values[str(count)] = {"ORI": values_OD["ID_ORI"][i], "DEST": aux}
                 values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i])}
                 count += 1
-        #print(values)
-        #print(values_oi)
         return values, values_oi, oi
 
     def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> tuple:
@@ -141,5 +138,3 @@ class Estadisticas:
             attribute_value = feature[name_attr]
             values.append(attribute_value)
         return values
-
-

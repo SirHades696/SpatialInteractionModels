@@ -452,8 +452,8 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.btn_about2.setText(_translate("SpatialInteractionModelsDialogBase", "Acerca de..."))
         self.label_8.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona las unidades de medida para la matriz de distancias"))
         self.group_reports.setTitle(_translate("SpatialInteractionModelsDialogBase", "Reportes"))
-        self.check_exe_f.setText(_translate("SpatialInteractionModelsDialogBase", "General (Ejecución Rápida)"))
-        self.check_exe_s.setText(_translate("SpatialInteractionModelsDialogBase", "Completo (Requiere mayor tiempo)"))
+        self.check_exe_f.setText(_translate("SpatialInteractionModelsDialogBase", "General (Ejecución rápida)"))
+        self.check_exe_s.setText(_translate("SpatialInteractionModelsDialogBase", "Completo (Demanda recursos y tiempo)"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.restrictions), _translate("SpatialInteractionModelsDialogBase", "Restricción"))
         self.prefijo.setPlaceholderText(_translate("SpatialInteractionModelsDialogBase", "Ejemplo: Ejec1"))
         self.btn_reg3.setText(_translate("SpatialInteractionModelsDialogBase", "Regresar"))
@@ -480,6 +480,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
 from qgis import gui
 # import resources_rc
 from .resources import *
+
 
 # if __name__ == "__main__":
 #     import sys

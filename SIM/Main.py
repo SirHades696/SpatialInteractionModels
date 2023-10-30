@@ -163,8 +163,13 @@ class Main:
             capas.thematic_points(layer_RO_p,"ORI",0,"")
             capas.thematic_points(destination_clone,"DEST",0,"")
             
+            progressBar.setValue(80)
+
+            progressBar.setValue(90)
+            # instancia de los reportes
+            Reportes(values, values_oi, self.params)
             thematic_layers = [layer_RO_p, destination_clone, layer_RO, origin_VMenC, origin_clone]
-            
+            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             if flag == False:
                 capas.thematic_points(origin_clone,"",1,"OI_SUM")
                 hmap = origin_clone.clone()
@@ -176,33 +181,28 @@ class Main:
             
             for i, layer in enumerate(thematic_layers):
                 group.insertLayer(i,layer)
-                
-            progressBar.setValue(80)
-
             gestor.destroy_layers(layers)
             gestor.destroy_layers(or_list)
-
-            progressBar.setValue(90)
-            # instancia de los reportes
-            Reportes(values, values_oi, self.params)
-            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
             
         #------ dest restriction
         elif self.params["RESTR"] == 1:
+            progressBar.setValue(60)
             values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
             capas.add_index(destination_clone,dj, "DJ_SUM")
             vlayer = destination_clone.clone()
             QgsProject.instance().addMapLayer(vlayer,False)
+            progressBar.setValue(70)
+            Reportes(values, values_dj, self.params)
+    
             layers = [origin_VMenC, origin_clone, destination_clone, vlayer]
+            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             
             for i,layer in enumerate(layers):
                 group.insertLayer(i,layer)
-
             capas.thematic_points(destination_clone,"",1,"DJ_SUM")
             capas.thematic_points(vlayer,"",2,"DJ_SUM")
-            progressBar.setValue(60)
             
             if flag:
                 capas.thematic_polygons(origin_clone,"",2)
@@ -210,9 +210,6 @@ class Main:
             else:
                 capas.thematic_points(origin_clone,"ORI",0,"")
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
-            progressBar.setValue(70)
-            Reportes(values, values_dj, self.params)
-            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             messageBar.clearWidgets()
             messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
         elif self.params["RESTR"] == 2:

@@ -10,15 +10,17 @@ try:
     import pandas as pd
     from pyexcel_ods3 import save_data
     from bs4 import BeautifulSoup
+    import plotly.express as px
 except:
     subprocess.call(["pip", "install", "pandas"])
-    subprocess.call(["pip", "install", "xlwt"])
     subprocess.call(["pip", "install", "pyexcel-ods3"])
     subprocess.call(["pip", "install", "beautifulsoup4"])
+    subprocess.call(["pip", "install", "plotly"])
     import pandas as pd
     from pyexcel_ods3 import save_data
     from bs4 import BeautifulSoup
-
+    import plotly.express as px
+    
 class Reportes:
 
     def __init__(self, IDs:dict, values:dict, params:dict) -> None:
@@ -57,14 +59,17 @@ class Reportes:
                 pd.set_option('colheader_justify', 'center')
                 self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
                 self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+                
             if self.params["REPORTS"][1] == True:
-                valores_dj = [v['DJ_SUM'] for v in values.values()]
-                # valors_dj =  [val for val in aux if val != 0]
-                serie = pd.Series(valores_dj)
+                aux = [int(v['DJ_SUM']) for v in values.values()]
+                ceros = [aux for val in aux if val == 0]
+                self.c_ceros = len(ceros)
+                self.valores_dj =  [val for val in aux if val != 0]
+                serie = pd.Series(self.valores_dj)
                 conteo = serie.value_counts()
-                self.s_prom = serie.mean()
-                self.s_mediana = serie.median()
-                self.s_std = serie.std()
+                self.s_prom = round(serie.mean(),4)
+                self.s_mediana = round(serie.median(),4)
+                self.s_std = round(serie.std(),4)
                 s_moda = serie.mode()
                 self.s_moda = ', '.join(map(str, s_moda))
                 self.df2 = pd.DataFrame(conteo).reset_index()
@@ -167,7 +172,21 @@ class Reportes:
                     
                 if os.path.isfile(path):
                     webbrowser.open_new_tab(path)
-                    
+                
+                headers = self.df.columns.tolist()
+                dp_hd = [h for h in headers if h not in ['CVE_DEST', 'FLUJ_TOT']]
+                df = self.df.drop(columns=dp_hd)
+                df_gp = df.groupby('CVE_DEST').first().reset_index() 
+                df_filt = df_gp.loc[df_gp['FLUJ_TOT'] != 0]
+                bp_path = self.boxplot(df_filt,
+                            "FLUJ_TOT",
+                            "Distribución de Flujos en el Destino",
+                            df_filt.columns,
+                            "RD")
+                
+                if os.path.isfile(bp_path):
+                    webbrowser.open_new_tab(bp_path)
+            
             if self.params["REPORTS"][1] == True:
                 path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RDGeneral.html'
                 html = self.df2.to_html(classes='content-table" id="tabla',index=False)
@@ -199,11 +218,21 @@ class Reportes:
                         s_prom = self.s_prom,
                         s_mediana = self.s_mediana,
                         s_std = self.s_std,
-                        s_moda = self.s_moda))
+                        s_moda = self.s_moda,
+                        c_ceros = self.c_ceros))
 
                 if os.path.isfile(path):
                     webbrowser.open_new_tab(path)
-
+                df = pd.DataFrame(self.valores_dj, columns=["Flujos"])
+                bp_path = self.boxplot(df,
+                            "Flujos",
+                            "Distribución de Flujos en el Destino (General)",
+                            None,
+                            "RDGeneral")
+                
+                if os.path.isfile(bp_path):
+                    webbrowser.open_new_tab(bp_path)
+                    
     def __aux_report(self) -> tuple:
         if self.params["UNIT"] == 0:
             unit = "Metros"
@@ -246,7 +275,7 @@ class Reportes:
             #Agregar cada unas de las  caracteristicas de los modelos doblemente restrictivos
         return unit, tipo_rest, tipo_filt, values_r
 
-    def save_calcs(self):
+    def save_calcs(self) -> None:
         if self.params["SAVE"]["XLS"] == True:
             path_xls = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.xls'
             chunk_size = 65500
@@ -268,4 +297,9 @@ class Reportes:
         if self.params["SAVE"]["CSV"] == True:
             path_csv = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.csv'
             self.df.to_csv(path_csv, index=False)
-
+            
+    def boxplot(self, data:pd.DataFrame, column:str, plot_title:str, hv_dt:pd.DataFrame.columns, tr:str) -> str:
+        fig = px.box(data,y=column, points="all", hover_data=hv_dt, title=plot_title)
+        path = self.params["OUTPUT"] + self.params["PREFIJO"] + "_BoxPlot_" + tr + ".html"
+        fig.write_html(path)
+        return path

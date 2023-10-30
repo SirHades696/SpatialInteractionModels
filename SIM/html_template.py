@@ -60,6 +60,46 @@ html_RO = '''<!doctype html>
         display: none;
             }}
 
+        .overlay {{
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }}
+
+        .popup {{
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            border-radius: 10px;
+        }}
+
+        .close-button {{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }}
+        
+        .text-popup {{
+            margin:0;
+        }}
+        
+        tbody[class^="grupo"] {{
+            cursor: pointer;
+        }}
+        
     </style>
     </head>
     <body>
@@ -111,30 +151,52 @@ html_RO = '''<!doctype html>
         <div>
         {table}
         </div>
+        <div class="overlay" id="overlay"></div>
+        <div class="popup" id="popup">
+        <span class="close-button" onclick="closePopup()">&times;</span>
+        <h2>Información importante</h2>
+        <p class="text-popup">Puedes dar clic sobre cada registro CVE_ORI de la tabla para desglosar la información</p>
+        </div>
         <script>
-    var grupos = document.querySelectorAll("#tabla tbody");
-    for (var i = 0; i < grupos.length; i++) {{
-        grupos[i].addEventListener("click", function() {{
-            var filasOcultas = this.querySelectorAll(".oculto");
-            var filaSeleccionada = event.target.parentNode;
-            var grupoSeleccionado = filaSeleccionada.parentNode;
-            console.log(grupoSeleccionado)
-            for (var j = 0; j < filasOcultas.length; j++) {{
-                if (filasOcultas[j].style.display === "none") {{
-                    filasOcultas[j].style.display = "table-row";
-                    filasOcultas[j].style.background = "#e0fffc"
-                    grupoSeleccionado.style.background = "#e0fffc"
-                    filaSeleccionada.style.fontWeight = "bold"
 
-                }} else {{
-                    filasOcultas[j].style.display = "none";
-                    filasOcultas[j].style.background = "none"
-                    grupoSeleccionado.style.background = "none"
-                    filaSeleccionada.style.fontWeight = "normal"
-                }}
+            window.onload = function() {{
+                var overlay = document.getElementById("overlay");
+                var popup = document.getElementById("popup");
+                overlay.style.display = "block";
+                popup.style.display = "block";
+            }};
+
+
+            function closePopup() {{
+                var overlay = document.getElementById("overlay");
+                var popup = document.getElementById("popup");
+                overlay.style.display = "none";
+                popup.style.display = "none";
             }}
-        }});
-    }}
+            
+            var grupos = document.querySelectorAll("#tabla tbody");
+            for (var i = 0; i < grupos.length; i++) {{
+                grupos[i].addEventListener("click", function() {{
+                    var filasOcultas = this.querySelectorAll(".oculto");
+                    var filaSeleccionada = event.target.parentNode;
+                    var grupoSeleccionado = filaSeleccionada.parentNode;
+                    console.log(grupoSeleccionado)
+                    for (var j = 0; j < filasOcultas.length; j++) {{
+                        if (filasOcultas[j].style.display === "none") {{
+                            filasOcultas[j].style.display = "table-row";
+                            filasOcultas[j].style.background = "#e0fffc"
+                            grupoSeleccionado.style.background = "#e0fffc"
+                            filaSeleccionada.style.fontWeight = "bold"
+
+                        }} else {{
+                            filasOcultas[j].style.display = "none";
+                            filasOcultas[j].style.background = "none"
+                            grupoSeleccionado.style.background = "none"
+                            filaSeleccionada.style.fontWeight = "normal"
+                        }}
+                    }}
+                }});
+            }}
     </script>
     </body>
 </html>'''
@@ -200,11 +262,51 @@ html_RD = '''<!doctype html>
         .oculto {{
         display: none;
             }}
-            
+        
+        .overlay {{
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }}
+
+        .popup {{
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            border-radius: 10px;
+        }}
+
+        .close-button {{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }}
+        
+        .text-popup {{
+            margin:0;
+        }}
+        
+        tbody[class^="grupo"]  {{
+            cursor: pointer;
+        }}
+
     </style>
     </head>
     <body>
-        <h1 align="center">Reporte de ejecución</h1>
+        <h1 align="center">Reporte de ejecución (Completo)</h1>
         <div>
             <p align="left"><b>Archivo de Orígen:</b> {origin}</p>
             <p align="left"><b>ID de orígen: </b>{id_ori}</p>
@@ -246,30 +348,51 @@ html_RD = '''<!doctype html>
         <div>
         {table}
         </div>
+        <div class="overlay" id="overlay"></div>
+        <div class="popup" id="popup">
+        <span class="close-button" onclick="closePopup()">&times;</span>
+        <h2>Información importante</h2>
+        <p class="text-popup">Puedes dar clic sobre cada registro CVE_DEST de la tabla para desglosar la información</p>
+        </div>
     <script>
-    var grupos = document.querySelectorAll("#tabla tbody");
-    for (var i = 0; i < grupos.length; i++) {{
-        grupos[i].addEventListener("click", function() {{
-            var filasOcultas = this.querySelectorAll(".oculto");
-            var filaSeleccionada = event.target.parentNode;
-            var grupoSeleccionado = filaSeleccionada.parentNode;
-            console.log(grupoSeleccionado)
-            for (var j = 0; j < filasOcultas.length; j++) {{
-                if (filasOcultas[j].style.display === "none") {{
-                    filasOcultas[j].style.display = "table-row";
-                    filasOcultas[j].style.background = "#e0fffc"
-                    grupoSeleccionado.style.background = "#e0fffc"
-                    filaSeleccionada.style.fontWeight = "bold"
+            window.onload = function() {{
+                var overlay = document.getElementById("overlay");
+                var popup = document.getElementById("popup");
+                overlay.style.display = "block";
+                popup.style.display = "block";
+            }};
 
-                }} else {{
-                    filasOcultas[j].style.display = "none";
-                    filasOcultas[j].style.background = "none"
-                    grupoSeleccionado.style.background = "none"
-                    filaSeleccionada.style.fontWeight = "normal"
-                }}
+
+            function closePopup() {{
+                var overlay = document.getElementById("overlay");
+                var popup = document.getElementById("popup");
+                overlay.style.display = "none";
+                popup.style.display = "none";
             }}
-        }});
-    }}
+            
+            var grupos = document.querySelectorAll("#tabla tbody");
+            for (var i = 0; i < grupos.length; i++) {{
+                grupos[i].addEventListener("click", function() {{
+                    var filasOcultas = this.querySelectorAll(".oculto");
+                    var filaSeleccionada = event.target.parentNode;
+                    var grupoSeleccionado = filaSeleccionada.parentNode;
+                    console.log(grupoSeleccionado)
+                    for (var j = 0; j < filasOcultas.length; j++) {{
+                        if (filasOcultas[j].style.display === "none") {{
+                            filasOcultas[j].style.display = "table-row";
+                            filasOcultas[j].style.background = "#e0fffc"
+                            grupoSeleccionado.style.background = "#e0fffc"
+                            filaSeleccionada.style.fontWeight = "bold"
+
+                        }} else {{
+                            filasOcultas[j].style.display = "none";
+                            filasOcultas[j].style.background = "none"
+                            grupoSeleccionado.style.background = "none"
+                            filaSeleccionada.style.fontWeight = "normal"
+                        }}
+                    }}
+                }});
+            }}
     </script>
     </body>
 </html>'''
@@ -339,7 +462,7 @@ html_RD_S = '''<!doctype html>
     </style>
     </head>
     <body>
-        <h1 align="center">Reporte de ejecución</h1>
+        <h1 align="center">Reporte de ejecución (General)</h1>
         <div>
             <p align="left"><b>Archivo de Orígen:</b> {origin}</p>
             <p align="left"><b>ID de orígen: </b>{id_ori}</p>
@@ -370,8 +493,14 @@ html_RD_S = '''<!doctype html>
                 <td>Flujo(s) (Moda)</td>
                 </tr>
                 <tr>
+                <th>T_CEROS</th>
+                <td>Total de ceros</td>
+                <th></th>
+                <td></td>
+                </tr>
+                <tr>
                 <th>Flujos</th>
-                <td>Flujo obtenidos</td>
+                <td>Flujos obtenidos</td>
                 <th>Total</th>
                 <td>Total de flujos identificados</td>
                 </tr>
@@ -386,6 +515,7 @@ html_RD_S = '''<!doctype html>
                     <th>FLUJ_MEDIANA</th>
                     <th>FLUJ_STD</th>
                     <th>FLUJ_MODA</th>
+                    <th>T_CEROS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -394,6 +524,7 @@ html_RD_S = '''<!doctype html>
                     <td>{s_mediana}</td>
                     <td>{s_std}</td>
                     <td>{s_moda}</td>
+                    <td>{c_ceros}</td>
                     </tr>
                 </tbody>
                 </table>
