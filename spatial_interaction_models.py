@@ -254,7 +254,7 @@ class SpatialInteractionModels:
         self.dlg.val2_fluj.setVisible(False)
         
         self.dlg.check_exe_f.setChecked(False)
-        self.dgl.check_exe_s.setChecked(False)
+        self.dlg.check_exe_s.setChecked(False)
 
         #----------outputs
         self.dlg.sqlite_check_load.setVisible(False)

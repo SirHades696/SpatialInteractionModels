@@ -299,7 +299,7 @@ class Reportes:
             self.df.to_csv(path_csv, index=False)
             
     def boxplot(self, data:pd.DataFrame, column:str, plot_title:str, hv_dt:pd.DataFrame.columns, tr:str) -> str:
-        fig = px.box(data,y=column, points="all", hover_data=hv_dt, title=plot_title)
+        fig = px.box(data,y=column, points="all", hover_data=hv_dt, title=plot_title, notched=True)
         path = self.params["OUTPUT"] + self.params["PREFIJO"] + "_BoxPlot_" + tr + ".html"
         fig.write_html(path)
         return path
