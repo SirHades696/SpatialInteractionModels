@@ -77,14 +77,13 @@ class Main:
         self.output = params["OUTPUT"]
 
     def run(self):
-        root = QgsProject.instance().layerTreeRoot()
         if self.params["PREFIJO"]:
-            group = root.addGroup(self.params["PREFIJO"] + "_MIE")
+            aux_pref = self.params["PREFIJO"] + "_MIE"
         else:
             fecha = datetime.now()
             aux = fecha.strftime("%Y%m%d%H%M%S")
             self.params["PREFIJO"] = aux
-            group = root.addGroup("MIE_" + self.params["PREFIJO"])
+            aux_pref = "MIE_" + self.params["PREFIJO"]
             
         gestor = GestorArchivos()
         capas = Capas()
@@ -152,11 +151,14 @@ class Main:
 
             for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,0)
 
-            with tempfile.TemporaryDirectory() as dir:
-                temp_path = dir + "/"
-                layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path,0)
-                layer_RO = capas.merge_layers(layers, "Lineas_RO")
-
+            try: 
+                with tempfile.TemporaryDirectory() as dir:
+                    temp_path = dir + "/"
+                    layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path,0)
+                    layer_RO = capas.merge_layers(layers, "Lineas_RO")
+            except Exception as e:
+                pass
+            
             layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
             capas.thematic_lines(layer_RO, "OI_SUM")
 
@@ -169,18 +171,23 @@ class Main:
             # instancia de los reportes
             Reportes(values, values_oi, self.params)
             thematic_layers = [layer_RO_p, destination_clone, layer_RO, origin_VMenC, origin_clone]
-            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             if flag == False:
                 capas.thematic_points(origin_clone,"",1,"OI_SUM")
                 hmap = origin_clone.clone()
+                hmap.setName(origin_clone.name()+"_hmap")
                 capas.thematic_points(hmap,"",2,"OI_SUM")
                 thematic_layers.append(hmap)
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
             else:
                 capas.thematic_polygons(origin_VMenC,"",1)
-            
-            for i, layer in enumerate(thematic_layers):
-                group.insertLayer(i,layer)
+                
+            if self.params["EXPORTS"]["Memory"] == True:
+                root = QgsProject.instance().layerTreeRoot()
+                group = root.addGroup(aux_pref)
+                for i, layer in enumerate(thematic_layers):
+                    group.insertLayer(i,layer)
+
+            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])   
             gestor.destroy_layers(layers)
             gestor.destroy_layers(or_list)
             messageBar.clearWidgets()
@@ -192,6 +199,7 @@ class Main:
             values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
             capas.add_index(destination_clone,dj, "DJ_SUM")
             vlayer = destination_clone.clone()
+            vlayer.setName(destination_clone.name()+"_hmap")
             QgsProject.instance().addMapLayer(vlayer,False)
             progressBar.setValue(70)
             Reportes(values, values_dj, self.params)
