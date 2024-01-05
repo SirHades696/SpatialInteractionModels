@@ -41,6 +41,10 @@ class Reportes:
                             'OI_SUM':'ACC_TOT'}, inplace=True)
             self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
             self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+            self.df['ACC_IND'] = self.df['ACC_IND'].astype(float).round(4)
+            self.df['ACC_TOT'] = self.df['ACC_TOT'].astype(int)
+            self.df['ACC_PROM'] = self.df['ACC_PROM'].astype(float).round(4)
+            self.df['ACC_STD'] = self.df['ACC_STD'].astype(float).round(4)
             pd.set_option('colheader_justify', 'center')
             
         elif self.params["RESTR"] == 1:
@@ -59,6 +63,10 @@ class Reportes:
                 pd.set_option('colheader_justify', 'center')
                 self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
                 self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+                self.df['FLUJ_IND'] = self.df['FLUJ_IND'].astype(float).round(4)
+                self.df['FLUJ_TOT'] = self.df['FLUJ_TOT'].astype(int)
+                self.df['FLUJ_PROM'] = self.df['FLUJ_PROM'].astype(float).round(4)
+                self.df['FLUJ_STD'] = self.df['FLUJ_STD'].astype(float).round(4)
                 
             if self.params["REPORTS"][1] == True:
                 aux = [int(v['DJ_SUM']) for v in values.values()]
@@ -83,8 +91,13 @@ class Reportes:
         path_icon = path_file.split("SIM")[0]
         unit, tipo_rest, tipo_filt, values_r = self.__aux_report()
         
+        path_reports = self.params["OUTPUT"] + "Reportes/"
+        if not os.path.exists(path_reports):
+            os.makedirs(path_reports)
+            os.chmod(path_reports, 0o777)
+        
         if self.params["RESTR"] == 0:
-            path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RO.html'
+            path = path_reports + self.params["PREFIJO"] + '_ReporteMIE_RO.html'
             html = self.df.to_html(classes='content-table" id="tabla',index=False)
             soup = BeautifulSoup(html, 'html.parser')
             table = soup.find('table')
@@ -126,10 +139,24 @@ class Reportes:
 
             if os.path.isfile(path):
                 webbrowser.open_new_tab(path)
+
+            headers = self.df.columns.tolist()
+            dp_hd = [h for h in headers if h not in ['CVE_ORI', 'ACC_TOT']]
+            df = self.df.drop(columns=dp_hd)
+            df_gp = df.groupby('CVE_ORI').first().reset_index() 
+            df_filt = df_gp.loc[df_gp['ACC_TOT'] != 0]
+            bp_path = self.boxplot(df_filt,
+                        "ACC_TOT",
+                        "Accesibilidad en el Orígen",
+                        df_filt.columns,
+                        "RO")
+            
+            if os.path.isfile(bp_path):
+                webbrowser.open_new_tab(bp_path)
                 
         elif self.params["RESTR"] == 1:
             if self.params["REPORTS"][0] == True:
-                path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RD.html'
+                path = path_reports + self.params["PREFIJO"] + '_ReporteMIE_RD.html'
                 html = self.df.to_html(classes='content-table" id="tabla',index=False)
                 soup = BeautifulSoup(html, 'html.parser')
                 
@@ -188,7 +215,7 @@ class Reportes:
                     webbrowser.open_new_tab(bp_path)
             
             if self.params["REPORTS"][1] == True:
-                path = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE_RDGeneral.html'
+                path = path_reports + self.params["PREFIJO"] + '_ReporteMIE_RDGeneral.html'
                 html = self.df2.to_html(classes='content-table" id="tabla',index=False)
                 soup = BeautifulSoup(html, 'html.parser')
                 
@@ -276,8 +303,13 @@ class Reportes:
         return unit, tipo_rest, tipo_filt, values_r
 
     def save_calcs(self) -> None:
+        path_calcs = self.params["OUTPUT"] + "Estadisticas/"
+        if not os.path.exists(path_calcs):
+            os.makedirs(path_calcs)
+            os.chmod(path_calcs, 0o777)
+            
         if self.params["SAVE"]["XLS"] == True:
-            path_xls = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.xls'
+            path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
             chunk_size = 65500
             chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
             with pd.ExcelWriter(path_xls) as writer: #type:ignore
@@ -285,7 +317,7 @@ class Reportes:
                     chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
 
         if self.params["SAVE"]["ODS"] == True:
-            path_ods = self.params["OUTPUT"] + self.params["PREFIJO"] +'_ReporteMIE.ods'
+            path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE.ods'
             df = self.df.astype(str)
             headers = list(df.columns)
             data = OrderedDict()
@@ -295,11 +327,15 @@ class Reportes:
             save_data(path_ods, data)
 
         if self.params["SAVE"]["CSV"] == True:
-            path_csv = self.params["OUTPUT"] + self.params["PREFIJO"] + '_ReporteMIE.csv'
+            path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.csv'
             self.df.to_csv(path_csv, index=False)
             
     def boxplot(self, data:pd.DataFrame, column:str, plot_title:str, hv_dt:pd.DataFrame.columns, tr:str) -> str:
+        path_plots = self.params["OUTPUT"] + "Graficas/"
+        if not os.path.exists(path_plots):
+            os.makedirs(path_plots)
+            os.chmod(path_plots, 0o777)
         fig = px.box(data,y=column, points="all", hover_data=hv_dt, title=plot_title, notched=True)
-        path = self.params["OUTPUT"] + self.params["PREFIJO"] + "_BoxPlot_" + tr + ".html"
+        path = path_plots + self.params["PREFIJO"] + "_BoxPlot_" + tr + ".html"
         fig.write_html(path)
         return path

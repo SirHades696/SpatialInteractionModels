@@ -168,8 +168,6 @@ class Main:
             progressBar.setValue(80)
 
             progressBar.setValue(90)
-            # instancia de los reportes
-            Reportes(values, values_oi, self.params)
             thematic_layers = [layer_RO_p, destination_clone, layer_RO, origin_VMenC, origin_clone]
             if flag == False:
                 capas.thematic_points(origin_clone,"",1,"OI_SUM")
@@ -187,11 +185,11 @@ class Main:
                 for i, layer in enumerate(thematic_layers):
                     group.insertLayer(i,layer)
 
-            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])   
+            gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
+            # instancia de los reportes
+            Reportes(values, values_oi, self.params)
             gestor.destroy_layers(layers)
             gestor.destroy_layers(or_list)
-            messageBar.clearWidgets()
-            messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
             
         #------ dest restriction
         elif self.params["RESTR"] == 1:
@@ -202,26 +200,30 @@ class Main:
             vlayer.setName(destination_clone.name()+"_hmap")
             QgsProject.instance().addMapLayer(vlayer,False)
             progressBar.setValue(70)
-            Reportes(values, values_dj, self.params)
-    
+                
             layers = [origin_VMenC, origin_clone, destination_clone, vlayer]
             gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             
-            for i,layer in enumerate(layers):
-                group.insertLayer(i,layer)
             capas.thematic_points(destination_clone,"",1,"DJ_SUM")
             capas.thematic_points(vlayer,"",2,"DJ_SUM")
             
             if flag:
                 capas.thematic_polygons(origin_clone,"",2)
-                capas.thematic_polygons(origin_VMenC,"",2)
+                capas.thematic_polygons(origin_VMenC,"",1)
             else:
                 capas.thematic_points(origin_clone,"ORI",0,"")
                 capas.thematic_points(origin_VMenC,"VMenC",0,"")
-            messageBar.clearWidgets()
-            messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
+                
+            if self.params["EXPORTS"]["Memory"] == True:
+                root = QgsProject.instance().layerTreeRoot()
+                group = root.addGroup(aux_pref)
+                for i,layer in enumerate(layers):
+                    group.insertLayer(i,layer)
+                    
+            # instancia de los reportes   
+            Reportes(values, values_dj, self.params)
         elif self.params["RESTR"] == 2:
             pass
 
-
-
+        messageBar.clearWidgets()
+        messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore

@@ -131,17 +131,17 @@ html_RO = '''<!doctype html>
                 <th>CVE_DEST</th>
                 <td>Clave de Destino</td>
                 <th>ACC_STD</th>
-                <td>Accesibilidad (Desviación Estándar)</td>
+                <td>Accesibilidad (Desviación estándar)</td>
                 </tr>
                 <tr>
                 <th>ACC_IND</th>
-                <td>Accesibilidad Individual (por unidad)</td>
+                <td>Accesibilidad Individual (Por unidad)</td>
                 <th>TOT_DEST</th>
                 <td>Total de destinos</td>
                 </tr>
                 <tr>
                 <th>ACC_TOT</th>
-                <td>Accesibilidad Total (suma de todas las unidades)</td>
+                <td>Accesibilidad Total (Suma de todas las unidades)</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 </tr>
@@ -334,11 +334,11 @@ html_RD = '''<!doctype html>
                 <th>CVE_ORI</th>
                 <td>Clave de Orígen</td>
                 <th>FLUJ_STD</th>
-                <td>Flujos (Desviación Estándar)</td>
+                <td>Flujos (Desviación estándar)</td>
                 </tr>
                 <tr>
                 <th>FLUJ_IND</th>
-                <td>Flujo Individual (por unidad)</td>
+                <td>Flujo Individual (Por unidad)</td>
                 <th>FLUJ_TOT</th>
                 <td>Flujo total recibido</td>
                 </tr>
@@ -484,11 +484,11 @@ html_RD_S = '''<!doctype html>
                 <th>FLUJ_PROM</th>
                 <td>Flujo promedio</td>
                 <th>FLUJ_MEDIANA</th>
-                <td>Flujo (mediana)</td>
+                <td>Flujo (Mediana)</td>
                 </tr>
                 <tr>
                 <th>FLUJ_STD</th>
-                <td>Flujo (Desviación Estándar)</td>
+                <td>Flujo (Desviación estándar)</td>
                 <th>FLUJ_MODA</th>
                 <td>Flujo(s) (Moda)</td>
                 </tr>

@@ -267,6 +267,10 @@ class SpatialInteractionModels:
         self.dlg.geopackage_check.setChecked(False)
         self.dlg.hd_check.setChecked(False)
 
+        self.dlg.csv_check.setChecked(False)
+        self.dlg.ods_check.setChecked(False)
+        self.dlg.xls_check.setChecked(False)
+        
         self.dlg.prefijo.clear()
         self.dlg.output.clear()
         self.dlg.check_projects.setChecked(False)
