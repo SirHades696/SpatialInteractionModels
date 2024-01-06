@@ -1,6 +1,6 @@
 html_RO = '''<!doctype html>
 <html>
-    <link rel="icon" href="{path}/test1.png" type="image/x-icon" />
+    <link rel="icon" href="{path}test1.png" type="image/x-icon" />
     <head>
         <title>Reporte - Modelos de Interacción Espacial</title>
         <style>
@@ -203,7 +203,7 @@ html_RO = '''<!doctype html>
 
 html_RD = '''<!doctype html>
 <html>
-    <link rel="icon" href="{path}/test1.png" type="image/x-icon" />
+    <link rel="icon" href="{path}test1.png" type="image/x-icon" />
     <head>
         <title>Reporte - Modelos de Interacción Espacial</title>
     <style>
@@ -399,7 +399,7 @@ html_RD = '''<!doctype html>
 
 html_RD_S = '''<!doctype html>
 <html>
-    <link rel="icon" href="{path}/test1.png" type="image/x-icon" />
+    <link rel="icon" href="{path}test1.png" type="image/x-icon" />
     <head>
         <title>Reporte - Modelos de Interacción Espacial</title>
     <style>
