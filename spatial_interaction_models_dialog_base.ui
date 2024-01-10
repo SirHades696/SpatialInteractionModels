@@ -33,7 +33,7 @@
    <item row="0" column="1">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="inputs">
       <attribute name="title">
@@ -53,6 +53,9 @@
            <width>44</width>
            <height>27</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Mostrar ayuda</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -99,6 +102,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Archivo vectorial de polígonos o puntos</string>
+            </property>
            </widget>
           </item>
           <item row="0" column="0">
@@ -123,6 +129,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Buscar archivo vectorial</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -146,6 +155,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Campo único o ID de la capa seleccionada previamente</string>
+            </property>
            </widget>
           </item>
           <item row="5" column="0" colspan="2">
@@ -161,6 +173,9 @@
               <width>16777215</width>
               <height>27</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>Campo númerico</string>
             </property>
            </widget>
           </item>
@@ -251,6 +266,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Archivo vectorial de puntos</string>
+            </property>
            </widget>
           </item>
           <item row="2" column="0">
@@ -281,6 +299,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Buscar archivo vectorial</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -304,6 +325,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Campo único o ID de la capa seleccionada previamente</string>
+            </property>
            </widget>
           </item>
           <item row="5" column="0" colspan="2">
@@ -319,6 +343,9 @@
               <width>16777215</width>
               <height>27</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>Campo númerico</string>
             </property>
            </widget>
           </item>
@@ -358,6 +385,9 @@
            <width>16777215</width>
            <height>27</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>1. Usa la distancia como evaluación, 2. Identifica los posibles flujos que recibe una unidad, 3. Realiza una combinación de ambos.</string>
          </property>
          <item>
           <property name="text">
@@ -402,6 +432,9 @@
            <height>27</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Mostrar ayuda</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -437,6 +470,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Valor númerico</string>
+            </property>
             <property name="dragEnabled">
              <bool>false</bool>
             </property>
@@ -467,6 +503,9 @@
               <width>16777215</width>
               <height>27</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>Existen 3 formas de filtrar la distancia a evaluar</string>
             </property>
             <item>
              <property name="text">
@@ -507,6 +546,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Valor númerico</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -538,6 +580,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Valor númerico</string>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -559,6 +604,9 @@
               <width>16777215</width>
               <height>27</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>Valor númerico</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>
@@ -584,6 +632,9 @@
               <width>16777215</width>
               <height>27</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>Existen 3 formas de filtrar los flujos a evaluar</string>
             </property>
             <item>
              <property name="text">
@@ -623,6 +674,9 @@
            <width>16777215</width>
            <height>27</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Hay 5 unidades de medida para calcular distancias</string>
          </property>
          <item>
           <property name="text">
@@ -664,7 +718,11 @@
         </widget>
        </item>
        <item row="5" column="0" colspan="2">
-        <widget class="QLineEdit" name="friction_distance"/>
+        <widget class="QLineEdit" name="friction_distance">
+         <property name="toolTip">
+          <string>Parámetro númerico que representa la atracción o repulsión de la atractividad</string>
+         </property>
+        </widget>
        </item>
        <item row="13" column="0" colspan="2">
         <widget class="QWidget" name="widget_2" native="true">
@@ -770,6 +828,9 @@
          <layout class="QGridLayout" name="gridLayout_16">
           <item row="0" column="0">
            <widget class="QCheckBox" name="check_exe_f">
+            <property name="toolTip">
+             <string>Genera resultados puntuales</string>
+            </property>
             <property name="text">
              <string>General (Ejecución rápida)</string>
             </property>
@@ -777,6 +838,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="check_exe_s">
+            <property name="toolTip">
+             <string>Genera resultados específicos por cada unidad evaluada</string>
+            </property>
             <property name="text">
              <string>Completo (Demanda recursos y tiempo)</string>
             </property>
@@ -794,6 +858,9 @@
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="5" column="0" colspan="2">
         <widget class="QLineEdit" name="prefijo">
+         <property name="toolTip">
+          <string>Los prefijos permiten diferenciar las distintas ejecuciones del modelo</string>
+         </property>
          <property name="placeholderText">
           <string>Ejemplo: Ejec1</string>
          </property>
@@ -890,6 +957,9 @@
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="2" column="0">
            <widget class="QCheckBox" name="geojson_check">
+            <property name="toolTip">
+             <string>Genera archivos GeoJSON con la información crGenera un archivo SQLite con la información creada por el modeloeada por el modelo</string>
+            </property>
             <property name="text">
              <string>Guardar en GeoJSON</string>
             </property>
@@ -907,6 +977,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="sqlite_check">
+            <property name="toolTip">
+             <string>Genera archivos SQLite con la información creada por el modelo</string>
+            </property>
             <property name="text">
              <string>Guardar en SQLite</string>
             </property>
@@ -914,6 +987,9 @@
           </item>
           <item row="4" column="0">
            <widget class="QCheckBox" name="hd_check">
+            <property name="toolTip">
+             <string>Genera archivos Shapefile con la información creada por el modelo</string>
+            </property>
             <property name="text">
              <string>Guardar en Shapefile</string>
             </property>
@@ -921,6 +997,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QCheckBox" name="memory_check">
+            <property name="toolTip">
+             <string>Genera capas temporales para mostrar los resultados</string>
+            </property>
             <property name="text">
              <string>Visualizar capas en el espacio de trabajo</string>
             </property>
@@ -954,6 +1033,9 @@
           </item>
           <item row="3" column="0">
            <widget class="QCheckBox" name="geopackage_check">
+            <property name="toolTip">
+             <string>Genera un archivo Geopackage con la información creada por el modelo</string>
+            </property>
             <property name="text">
              <string>Guardar en Geopackage</string>
             </property>
@@ -987,6 +1069,9 @@
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
            <widget class="QCheckBox" name="xls_check">
+            <property name="toolTip">
+             <string>Crea archivo de Excel</string>
+            </property>
             <property name="text">
              <string>Generar XLS</string>
             </property>
@@ -994,6 +1079,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="ods_check">
+            <property name="toolTip">
+             <string>Crea archivo de OpenOffice</string>
+            </property>
             <property name="text">
              <string>Generar ODS</string>
             </property>
@@ -1001,6 +1089,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="csv_check">
+            <property name="toolTip">
+             <string>Crea archivo separado por comas </string>
+            </property>
             <property name="text">
              <string>Generar CSV</string>
             </property>
@@ -1025,6 +1116,9 @@
            <width>44</width>
            <height>27</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Mostrar ayuda</string>
          </property>
          <property name="text">
           <string/>
@@ -1080,6 +1174,9 @@
               <height>27</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>Buscar ruta de almancenamiento</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -1099,10 +1196,17 @@
            <widget class="QWidget" name="widget_4" native="true">
             <layout class="QGridLayout" name="gridLayout_15">
              <item row="0" column="1">
-              <widget class="QComboBox" name="projects_combobox"/>
+              <widget class="QComboBox" name="projects_combobox">
+               <property name="toolTip">
+                <string>Proyectos disponibles</string>
+               </property>
+              </widget>
              </item>
              <item row="0" column="0">
               <widget class="QCheckBox" name="check_projects">
+               <property name="toolTip">
+                <string>Utilizar la ruta de almacenamiento de un proyecto previo</string>
+               </property>
                <property name="text">
                 <string>Seleccionar proyecto actual [Opcional]</string>
                </property>
