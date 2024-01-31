@@ -77,6 +77,9 @@
        </item>
        <item row="12" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_5">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Archivo vectorial que corresponde a la demanda, este archivo es del tipo polígono o punto, y su estructura más básica es la siguiente: &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;ID: &lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Identificador o clave única correspondiente para cada polígono. Este atributo es obligatorio y es del tipo alfanumérica. &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;Población:&lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt; Valor numérico entero mayor que o igual que cero, que muestra la cantidad total de población que hay dentro del polígono, ya sea AGEB (Área geoestadística básica), manzana, etc. Este atributo es obligatorio. &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;Nombre:&lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt; Además del ID, cada polígono puede contener un nombre, ya sea para identificar las manzanas, los AGEB, etc. Este atributo es opcional y es de texto.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="title">
           <string>Orígenes</string>
          </property>
@@ -103,7 +106,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Archivo vectorial de polígonos o puntos</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Archivo vectorial que corresponde a la demanda, este archivo es del tipo polígono o punto.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -130,7 +133,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Buscar archivo vectorial</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Abrir explorador de archivos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string/>
@@ -156,7 +159,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Campo único o ID de la capa seleccionada previamente</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;ID: &lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Identificador o clave única correspondiente para cada polígono. Este atributo es obligatorio y es del tipo alfanumérica.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -175,7 +178,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Campo númerico</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;Población:&lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt; Valor numérico entero mayor que o igual que cero, que muestra la cantidad total de población que hay dentro del polígono, ya sea AGEB (Área geoestadística básica), manzana, etc. Este atributo es obligatorio. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -241,6 +244,9 @@
        </item>
        <item row="13" column="0" rowspan="2" colspan="2">
         <widget class="QGroupBox" name="groupBox_6">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Archivo que corresponde a la oferta, este archivo es de tipo punto y su estructura más básica es la siguiente: &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;ID: &lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Identificador o clave única correspondiente para cada punto. Este atributo es obligatorio y alfanumérico. &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;Capacidad: &lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Valor numérico entero mayor que cero, que muestra la capacidad total que tiene cada unidad de servicio, ya sea el número disponible de camas en un hospital, el número de lugares disponibles en una escuela, etc. Este atributo es obligatorio. &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;Nombre:&lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt; Además del ID, cada punto puede contener un nombre, este nombre puede ser el del establecimiento, el nombre de la unidad médica, etc. Este atributo es opcional y del tipo texto.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="title">
           <string>Destinos</string>
          </property>
@@ -267,7 +273,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Archivo vectorial de puntos</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Archivo que corresponde a la oferta, este archivo es de tipo punto.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -300,7 +306,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Buscar archivo vectorial</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Abrir explorador de archivos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string/>
@@ -326,7 +332,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Campo único o ID de la capa seleccionada previamente</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;ID: &lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Identificador o clave única correspondiente para cada punto. Este atributo es obligatorio y alfanumérico. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -345,7 +351,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Campo númerico</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-weight:600; background-color:transparent;&quot;&gt;Capacidad: &lt;/span&gt;&lt;span style=&quot; background-color:transparent;&quot;&gt;Valor numérico entero mayor que cero, que muestra la capacidad total que tiene cada unidad de servicio, ya sea el número disponible de camas en un hospital, el número de lugares disponibles en una escuela, etc. Este atributo es obligatorio.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -387,7 +393,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>1. Usa la distancia como evaluación, 2. Identifica los posibles flujos que recibe una unidad, 3. Realiza una combinación de ambos.</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1. Usa la distancia como evaluación&lt;/p&gt;&lt;p&gt;2. Identifica los posibles flujos que recibe una unidad&lt;/p&gt;&lt;p&gt;3. Realiza una combinación de ambos.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -471,7 +477,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Valor númerico</string>
+             <string>Valor númerico.</string>
             </property>
             <property name="dragEnabled">
              <bool>false</bool>
@@ -505,7 +511,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Existen 3 formas de filtrar la distancia a evaluar</string>
+             <string>Existen 3 formas de filtrar la distancia a evaluar.</string>
             </property>
             <item>
              <property name="text">
@@ -547,7 +553,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Valor númerico</string>
+             <string>Valor númerico.</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>
@@ -581,7 +587,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Valor númerico</string>
+             <string>Valor númerico.</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>
@@ -606,7 +612,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Valor númerico</string>
+             <string>Valor númerico.</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>
@@ -634,7 +640,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Existen 3 formas de filtrar los flujos a evaluar</string>
+             <string>Existen 3 formas de filtrar los flujos a evaluar.</string>
             </property>
             <item>
              <property name="text">
@@ -676,7 +682,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Hay 5 unidades de medida para calcular distancias</string>
+          <string>Hay 5 unidades de medidAbrir explorador de archivosa para calcular distancias.</string>
          </property>
          <item>
           <property name="text">
@@ -720,7 +726,7 @@
        <item row="5" column="0" colspan="2">
         <widget class="QLineEdit" name="friction_distance">
          <property name="toolTip">
-          <string>Parámetro númerico que representa la atracción o repulsión de la atractividad</string>
+          <string>Parámetro númerico que representa la atracción o repulsión de la atractividad.</string>
          </property>
         </widget>
        </item>
@@ -829,7 +835,7 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="check_exe_f">
             <property name="toolTip">
-             <string>Genera resultados puntuales</string>
+             <string>Genera resultados puntuales.</string>
             </property>
             <property name="text">
              <string>General (Ejecución rápida)</string>
@@ -839,7 +845,7 @@
           <item row="0" column="1">
            <widget class="QCheckBox" name="check_exe_s">
             <property name="toolTip">
-             <string>Genera resultados específicos por cada unidad evaluada</string>
+             <string>Genera resultados específicos por cada unidad evaluada.</string>
             </property>
             <property name="text">
              <string>Completo (Demanda recursos y tiempo)</string>
@@ -958,7 +964,7 @@
           <item row="2" column="0">
            <widget class="QCheckBox" name="geojson_check">
             <property name="toolTip">
-             <string>Genera archivos GeoJSON con la información crGenera un archivo SQLite con la información creada por el modeloeada por el modelo</string>
+             <string>Genera archivos GeoJSON con la información crGenera un archivo SQLite con la información creada por el modeloeada por el modelo.</string>
             </property>
             <property name="text">
              <string>Guardar en GeoJSON</string>
@@ -978,7 +984,7 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="sqlite_check">
             <property name="toolTip">
-             <string>Genera archivos SQLite con la información creada por el modelo</string>
+             <string>Genera archivos SQLite con la información creada por el modelo.</string>
             </property>
             <property name="text">
              <string>Guardar en SQLite</string>
@@ -988,7 +994,7 @@
           <item row="4" column="0">
            <widget class="QCheckBox" name="hd_check">
             <property name="toolTip">
-             <string>Genera archivos Shapefile con la información creada por el modelo</string>
+             <string>Genera archivos Shapefile con la información creada por el modelo.</string>
             </property>
             <property name="text">
              <string>Guardar en Shapefile</string>
@@ -998,7 +1004,7 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="memory_check">
             <property name="toolTip">
-             <string>Genera capas temporales para mostrar los resultados</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Genera capas temporales para mostrar los resultados.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Visualizar capas en el espacio de trabajo</string>
@@ -1034,7 +1040,7 @@
           <item row="3" column="0">
            <widget class="QCheckBox" name="geopackage_check">
             <property name="toolTip">
-             <string>Genera un archivo Geopackage con la información creada por el modelo</string>
+             <string>Genera un archivo Geopackage con la información creada por el modelo.</string>
             </property>
             <property name="text">
              <string>Guardar en Geopackage</string>
@@ -1070,7 +1076,7 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="xls_check">
             <property name="toolTip">
-             <string>Crea archivo de Excel</string>
+             <string>Crea archivo de Excel.</string>
             </property>
             <property name="text">
              <string>Generar XLS</string>
@@ -1080,7 +1086,7 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="ods_check">
             <property name="toolTip">
-             <string>Crea archivo de OpenOffice</string>
+             <string>Crea archivo de OpenOffice.</string>
             </property>
             <property name="text">
              <string>Generar ODS</string>
@@ -1090,7 +1096,7 @@
           <item row="0" column="1">
            <widget class="QCheckBox" name="csv_check">
             <property name="toolTip">
-             <string>Crea archivo separado por comas </string>
+             <string>Crea archivo separado por comas. </string>
             </property>
             <property name="text">
              <string>Generar CSV</string>
@@ -1175,7 +1181,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Buscar ruta de almancenamiento</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Abrir explorador de archivos para localizar ruta de almacenamiento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string/>
@@ -1198,14 +1204,14 @@
              <item row="0" column="1">
               <widget class="QComboBox" name="projects_combobox">
                <property name="toolTip">
-                <string>Proyectos disponibles</string>
+                <string>Proyectos disponibles.</string>
                </property>
               </widget>
              </item>
              <item row="0" column="0">
               <widget class="QCheckBox" name="check_projects">
                <property name="toolTip">
-                <string>Utilizar la ruta de almacenamiento de un proyecto previo</string>
+                <string>Utilizar la ruta de almacenamiento de un proyecto previo.</string>
                </property>
                <property name="text">
                 <string>Seleccionar proyecto actual [Opcional]</string>
