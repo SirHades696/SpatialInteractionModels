@@ -410,14 +410,14 @@ class Ui_SpatialInteractionModelsDialogBase(object):
     def retranslateUi(self, SpatialInteractionModelsDialogBase):
         _translate = QtCore.QCoreApplication.translate
         SpatialInteractionModelsDialogBase.setWindowTitle(_translate("SpatialInteractionModelsDialogBase", "Modelos de Interacción Espacial"))
-        self.btn_ayuda1.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Mostrar ayuda"))
+        self.btn_ayuda1.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Mostrar ayuda."))
         self.groupBox_5.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\"><span style=\" background-color:transparent;\">Archivo vectorial que corresponde a la demanda, este archivo es del tipo polígono o punto, y su estructura más básica es la siguiente: </span></p><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">ID: </span><span style=\" background-color:transparent;\">Identificador o clave única correspondiente para cada polígono. Este atributo es obligatorio y es del tipo alfanumérica. </span></p><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">Población:</span><span style=\" background-color:transparent;\"> Valor numérico entero mayor que o igual que cero, que muestra la cantidad total de población que hay dentro del polígono, ya sea AGEB (Área geoestadística básica), manzana, etc. Este atributo es obligatorio. </span></p><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">Nombre:</span><span style=\" background-color:transparent;\"> Además del ID, cada polígono puede contener un nombre, ya sea para identificar las manzanas, los AGEB, etc. Este atributo es opcional y es de texto.</span></p></body></html>"))
         self.groupBox_5.setTitle(_translate("SpatialInteractionModelsDialogBase", "Orígenes"))
         self.label_4.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona el campo que contiene la población de demanda"))
         self.origin_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p><span style=\" background-color:transparent;\">Archivo vectorial que corresponde a la demanda, este archivo es del tipo polígono o punto.</span></p></body></html>"))
         self.label.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona una capa vectorial"))
         self.label_3.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona el campo ID"))
-        self.btn_origin.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\">Abrir explorador de archivos</p></body></html>"))
+        self.btn_origin.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\">Abrir explorador de archivos.</p></body></html>"))
         self.id_origin_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">ID: </span><span style=\" background-color:transparent;\">Identificador o clave única correspondiente para cada polígono. Este atributo es obligatorio y es del tipo alfanumérica.</span></p></body></html>"))
         self.field_origin_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">Población:</span><span style=\" background-color:transparent;\"> Valor numérico entero mayor que o igual que cero, que muestra la cantidad total de población que hay dentro del polígono, ya sea AGEB (Área geoestadística básica), manzana, etc. Este atributo es obligatorio. </span></p></body></html>"))
         self.btn_sig1.setText(_translate("SpatialInteractionModelsDialogBase", "Siguiente"))
@@ -428,7 +428,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.dest_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\"><span style=\" background-color:transparent;\">Archivo que corresponde a la oferta, este archivo es de tipo punto.</span></p></body></html>"))
         self.label_5.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona el campo ID"))
         self.label_6.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona el campo que contiene la cantidad de oferta disponible"))
-        self.btn_dest.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\">Abrir explorador de archivos</p></body></html>"))
+        self.btn_dest.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\">Abrir explorador de archivos.</p></body></html>"))
         self.id_dest_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">ID: </span><span style=\" background-color:transparent;\">Identificador o clave única correspondiente para cada punto. Este atributo es obligatorio y alfanumérico. </span></p></body></html>"))
         self.field_dest_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\"><span style=\" font-weight:600; background-color:transparent;\">Capacidad: </span><span style=\" background-color:transparent;\">Valor numérico entero mayor que cero, que muestra la capacidad total que tiene cada unidad de servicio, ya sea el número disponible de camas en un hospital, el número de lugares disponibles en una escuela, etc. Este atributo es obligatorio.</span></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.inputs), _translate("SpatialInteractionModelsDialogBase", "Entradas"))
@@ -438,7 +438,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.filt_combobox.setItemText(2, _translate("SpatialInteractionModelsDialogBase", "Restricción en el destino"))
         self.filt_combobox.setItemText(3, _translate("SpatialInteractionModelsDialogBase", "Doblemente restrictivos"))
         self.label_7.setText(_translate("SpatialInteractionModelsDialogBase", "Selecciona el tipo de restricción"))
-        self.btn_ayuda2.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Mostrar ayuda"))
+        self.btn_ayuda2.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Mostrar ayuda."))
         self.groupBox.setTitle(_translate("SpatialInteractionModelsDialogBase", "Filtro de Distancias/Costos"))
         self.val1_dist.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Valor númerico."))
         self.val1_dist.setPlaceholderText(_translate("SpatialInteractionModelsDialogBase", "Primer valor"))
@@ -506,7 +506,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.ods_check.setText(_translate("SpatialInteractionModelsDialogBase", "Generar ODS"))
         self.csv_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Crea archivo separado por comas. "))
         self.csv_check.setText(_translate("SpatialInteractionModelsDialogBase", "Generar CSV"))
-        self.btn_ayuda3.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Mostrar ayuda"))
+        self.btn_ayuda3.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Mostrar ayuda."))
         self.groupBox_7.setTitle(_translate("SpatialInteractionModelsDialogBase", "Salidas"))
         self.btn_output.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\">Abrir explorador de archivos para localizar ruta de almacenamiento.</p></body></html>"))
         self.projects_combobox.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Proyectos disponibles."))
@@ -514,14 +514,14 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.check_projects.setText(_translate("SpatialInteractionModelsDialogBase", "Seleccionar proyecto actual [Opcional]"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.outputs), _translate("SpatialInteractionModelsDialogBase", "Salidas"))
 from qgis import gui
-import resources_rc
+from .resources import *
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    SpatialInteractionModelsDialogBase = QtWidgets.QDialog()
-    ui = Ui_SpatialInteractionModelsDialogBase()
-    ui.setupUi(SpatialInteractionModelsDialogBase)
-    SpatialInteractionModelsDialogBase.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#     app = QtWidgets.QApplication(sys.argv)
+#     SpatialInteractionModelsDialogBase = QtWidgets.QDialog()
+#     ui = Ui_SpatialInteractionModelsDialogBase()
+#     ui.setupUi(SpatialInteractionModelsDialogBase)
+#     SpatialInteractionModelsDialogBase.show()
+#     sys.exit(app.exec_())
