@@ -255,6 +255,7 @@ class SpatialInteractionModels:
         
         self.dlg.check_exe_f.setChecked(False)
         self.dlg.check_exe_s.setChecked(False)
+        self.dlg.check_lineas.setChecked(False)
 
         #----------outputs
         self.dlg.sqlite_check_load.setVisible(False)
@@ -262,6 +263,7 @@ class SpatialInteractionModels:
         self.dlg.geopackage_check_load.setVisible(False)
         self.dlg.hd_check_load.setVisible(False)
 
+        self.dlg.memory_check.setChecked(True)
         self.dlg.sqlite_check.setChecked(False)
         self.dlg.geojson_check.setChecked(False)
         self.dlg.geopackage_check.setChecked(False)
@@ -370,7 +372,10 @@ class SpatialInteractionModels:
         self.dlg.val2_fluj.setStyleSheet("")
         if index != 0:
             if index == 1:
-                self.dlg.group_reports.setVisible(False)
+                self.dlg.group_reports.setVisible(True)
+                self.dlg.check_lineas.setVisible(True)
+                self.dlg.check_exe_f.setVisible(False)
+                self.dlg.check_exe_s.setVisible(False)
                 self.dlg.groupBox.setVisible(True)
                 self.dlg.groupBox_2.setVisible(False)
                 self.dlg.tipo_filt_dist.setEnabled(True)
@@ -383,6 +388,9 @@ class SpatialInteractionModels:
                 self.dlg.val2_fluj.setVisible(False)
             elif index == 2:
                 self.dlg.group_reports.setVisible(True)
+                self.dlg.check_lineas.setVisible(False)
+                self.dlg.check_exe_f.setVisible(True)
+                self.dlg.check_exe_s.setVisible(True)
                 self.dlg.groupBox.setVisible(False)
                 self.dlg.groupBox_2.setVisible(True)
                 self.dlg.tipo_filt_dist.setEnabled(False)
@@ -396,6 +404,9 @@ class SpatialInteractionModels:
                 
             elif index == 3:
                 self.dlg.group_reports.setVisible(True)
+                self.dlg.check_lineas.setVisible(True)
+                self.dlg.check_exe_f.setVisible(True)
+                self.dlg.check_exe_s.setVisible(True)
                 self.dlg.groupBox.setVisible(True)
                 self.dlg.groupBox_2.setVisible(True)
                 self.dlg.tipo_filt_dist.setEnabled(True)
@@ -924,6 +935,8 @@ class SpatialInteractionModels:
         xls_check = self.dlg.xls_check.isChecked()
         ods_check = self.dlg.ods_check.isChecked()
         csv_check = self.dlg.csv_check.isChecked()
+        
+        lines = self.dlg.check_lineas.isChecked()
 
         prefijo = self.dlg.prefijo.text()
 
@@ -954,7 +967,8 @@ class SpatialInteractionModels:
                     "ODS":ods_check,
                     "CSV":csv_check
                     },
-                "REPORTS":reports
+                "REPORTS ":reports,
+                "LINES" : lines
                 }
         self.dlg.hide()
         start = time.time()

@@ -147,7 +147,7 @@ class Reportes:
             df_filt = df_gp.loc[df_gp['ACC_TOT'] != 0]
             bp_path = self.boxplot(df_filt,
                         "ACC_TOT",
-                        "Accesibilidad en el Orígen",
+                        "Accesibilidad en el Origen",
                         df_filt.columns,
                         "RO")
             

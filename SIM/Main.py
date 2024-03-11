@@ -150,25 +150,28 @@ class Main:
             progressBar.setValue(50)
 
             for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,0)
-
-            try: 
-                with tempfile.TemporaryDirectory() as dir:
-                    temp_path = dir + "/"
-                    layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path,0)
-                    layer_RO = capas.merge_layers(layers, "Lineas_RO")
-            except Exception as e:
-                pass
+            thematic_layers = []
+            if self.params["LINES"] is True:
+                print("Entro")
+                try: 
+                    with tempfile.TemporaryDirectory() as dir:
+                        temp_path = dir + "/"
+                        layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path,0)
+                        layer_RO = capas.merge_layers(layers, "Lineas_RO")
+                except Exception as e:
+                    pass
+                capas.thematic_lines(layer_RO, "OI_SUM")
+                thematic_layers.append(layer_RO)    
             
             layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
-            capas.thematic_lines(layer_RO, "OI_SUM")
-
+            
             capas.thematic_points(layer_RO_p,"ORI",0,"")
             capas.thematic_points(destination_clone,"DEST",0,"")
             
             progressBar.setValue(80)
 
             progressBar.setValue(90)
-            thematic_layers = [layer_RO_p, destination_clone, layer_RO, origin_VMenC, origin_clone]
+            thematic_layers = [layer_RO_p, destination_clone] + thematic_layers + [origin_VMenC, origin_clone]
             if flag == False:
                 capas.thematic_points(origin_clone,"",1,"OI_SUM")
                 hmap = origin_clone.clone()
@@ -188,7 +191,8 @@ class Main:
             gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             # instancia de los reportes
             Reportes(values, values_oi, self.params)
-            gestor.destroy_layers(layers)
+            if self.params["LINES"] is True:
+                gestor.destroy_layers(layers)
             gestor.destroy_layers(or_list)
             
         #------ dest restriction
