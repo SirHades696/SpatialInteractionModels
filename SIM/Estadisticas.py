@@ -11,7 +11,6 @@ class Estadisticas:
         if int(ellip.split(":")[1]) != 7030:
             ellip = "EPSG:7030"
         distance.setEllipsoid(ellip)
-
         f_origin = origin.getFeatures()
         f_dest = destination.getFeatures()
         rows = len(list(f_origin))
@@ -46,53 +45,49 @@ class Estadisticas:
         return matrix
 
     def origin_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict ) -> tuple:
+        # distance filter step 1 and step 2, 1/dji^fd
         if val_rest['R_ORIG']['OPTION'] == 0:
             matrix = np.where(matrix >= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
         elif val_rest['R_ORIG']['OPTION'] == 1:
             matrix = np.where(matrix <= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
         elif val_rest['R_ORIG']['OPTION'] == 2:
             matrix = np.where((matrix >= val_rest['R_ORIG']['VALUE'][0]) & (matrix <= val_rest['R_ORIG']['VALUE'][1]),1/(matrix**values_OD["FD"]),0)
-
+            
+        # Wj * 1/dji^fd
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
                 matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
-
-        ai = []
-        for i in range(0, len(values_OD["ORIGIN"])):
-            suma = 0
-            for j in range(0, len(values_OD["DEST"])):
-                suma += matrix[i,j]
-            if suma != 0:
-                ai.append(float(1/suma))
-            else:
-                ai.append(float(0))
-
+        
+        # ai = 1/sum(wj/dij^fd)
+        suma = np.sum(matrix, axis=1)
+        pre_ai = 1/suma
+        # naN & Inf = 0
+        ai = np.nan_to_num(pre_ai, nan=0.0, posinf=0.0, neginf=0.0)
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
-                matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i] * ai[i]
+                matrix[i,j] *=  values_OD["ORIGIN"][i] * ai[i]
+        # oi
+        sum_oi = np.sum(matrix,axis=0)
+        oi = np.nan_to_num(sum_oi, nan=0.0,posinf=0.0, neginf=0.0)
 
-        oi = []
-        for i in range(0, len(values_OD["ORIGIN"])):
-            suma = 0
-            for j in range(0, len(values_OD["DEST"])):
-                suma += matrix[i,j]
-            oi.append(float(suma))
-
+        matrix_T = matrix.T
         values = {} #IDs
         values_oi = {} #Values of OI, total and individual
+        
         count = 0
-        for i in range(0, len(values_OD["ORIGIN"])):
+        for i in range(0, len(values_OD["DEST"])):
             aux = []
             aux_v = []
-            for j in range(0, len(values_OD["DEST"])):
-                if matrix[i,j] > 0:
-                    aux.append(values_OD["ID_DEST"][j])
-                    aux_v.append(float(matrix[i,j]))
+            for j in range(0, len(values_OD["ORIGIN"])):
+                if matrix_T[i,j] > 0:
+                    aux.append(values_OD["ID_ORI"][j])
+                    aux_v.append(float(matrix_T[i,j]))
             if len(aux) != 0 and len(aux_v) != 0:
-                values[str(count)] = {"ORI": values_OD["ID_ORI"][i], "DEST": aux}
+                values[str(count)] = {"DEST": values_OD["ID_DEST"][i], "ORI": aux}
                 values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i])}
                 count += 1
-        return values, values_oi, oi
+        
+        return values, values_oi, oi.tolist()
 
     def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> tuple:
         #----- first step

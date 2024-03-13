@@ -155,7 +155,7 @@ html_RO = '''<!doctype html>
         <div class="popup" id="popup">
         <span class="close-button" onclick="closePopup()">&times;</span>
         <h2>Información importante</h2>
-        <p class="text-popup">Puedes dar clic sobre cada registro CVE_ORI de la tabla para desglosar la información</p>
+        <p class="text-popup">Puedes dar clic sobre cada registro CVE_DEST de la tabla para desglosar la información</p>
         </div>
         <script>
 

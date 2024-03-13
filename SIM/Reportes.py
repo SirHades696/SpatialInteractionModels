@@ -28,13 +28,13 @@ class Reportes:
         
         if self.params["RESTR"] == 0:
             df = pd.DataFrame.from_dict(IDs, orient='index')
-            df_DEST = df.explode('DEST')
+            df_DEST = df.explode('ORI')
             new_df = pd.DataFrame.from_dict(values, orient='index')
             new_df_OI = new_df.explode('OI')
             new_df_OI['ACC_PROM'] = new_df.apply(lambda row: row['OI_SUM']/len(row['OI']), axis=1)
             new_df_OI['ACC_STD'] = new_df['OI'].apply(lambda x: np.std(x))
             self.df = pd.concat([df_DEST.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
-            self.df['TOT_DEST'] = self.df.groupby('ORI')['DEST'].transform('count')
+            self.df['TOT_DEST'] = self.df.groupby('DEST')['ORI'].transform('count')
             self.df.rename(columns={'ORI': 'CVE_ORI',
                             'DEST': 'CVE_DEST',
                             'OI':'ACC_IND',
@@ -42,7 +42,7 @@ class Reportes:
             self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
             self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
             self.df['ACC_IND'] = self.df['ACC_IND'].astype(float).round(4)
-            self.df['ACC_TOT'] = self.df['ACC_TOT'].astype(int)
+            self.df['ACC_TOT'] = self.df['ACC_TOT'].astype(float).round(4)
             self.df['ACC_PROM'] = self.df['ACC_PROM'].astype(float).round(4)
             self.df['ACC_STD'] = self.df['ACC_STD'].astype(float).round(4)
             pd.set_option('colheader_justify', 'center')
@@ -104,7 +104,7 @@ class Reportes:
             df = pd.read_html(str(table))[0]
             table = soup.find('table')
             df = pd.read_html(str(table))[0]
-            grouped = df.groupby('CVE_ORI')
+            grouped = df.groupby('CVE_DEST')
             new_html = ""
             for i, (name, group) in enumerate(grouped):
                 tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
@@ -141,9 +141,9 @@ class Reportes:
                 webbrowser.open_new_tab(path)
 
             headers = self.df.columns.tolist()
-            dp_hd = [h for h in headers if h not in ['CVE_ORI', 'ACC_TOT']]
+            dp_hd = [h for h in headers if h not in ['CVE_DEST', 'ACC_TOT']]
             df = self.df.drop(columns=dp_hd)
-            df_gp = df.groupby('CVE_ORI').first().reset_index() 
+            df_gp = df.groupby('CVE_DEST').first().reset_index() 
             df_filt = df_gp.loc[df_gp['ACC_TOT'] != 0]
             bp_path = self.boxplot(df_filt,
                         "ACC_TOT",

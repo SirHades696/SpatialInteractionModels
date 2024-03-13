@@ -1,18 +1,16 @@
-
-from Capas import Capas
-from GestorArchivos import GestorArchivos
-from Estadisticas import Estadisticas
-from Reportes import Reportes
-
-from qgis.core import *
-
-from qgis.utils import iface
-from qgis.gui import *
-from qgis.PyQt.QtWidgets import *
-from qgis.PyQt.QtCore import *
+import tempfile
 from datetime import datetime
 
-import tempfile
+from Capas import Capas
+from Estadisticas import Estadisticas
+from GestorArchivos import GestorArchivos
+from qgis.core import *
+from qgis.gui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
+from qgis.utils import iface
+from Reportes import Reportes
+
 
 class Main:
     def __init__(self, params:dict) -> None:
@@ -100,12 +98,13 @@ class Main:
         #Clonando los archivos de entrada
         origin_clone = gestor.clone_layer(self.origin)
         destination_clone = gestor.clone_layer(self.destination)
+        destination_clone.setName(destination_clone.name()+"_RO")
 
         progressBar.setValue(10)
         #Validando que el origen cuente unicamente con valores mayores a 0
         lys = capas.layer_filter(origin_clone,self.var_origin)
         origin_clone = lys[0]
-        origin_VMenC = lys[1]
+        origin_SinDemanda = lys[1]
 
         flag = False
         if origin_clone.geometryType() == 2: #Polygon
@@ -143,44 +142,46 @@ class Main:
                 "ORIGIN":origin_centroids,
                 "DEST":destination_clone
                 }
-
-            capas.add_index(origin_clone,oi, "OI_SUM")
-            capas.thematic_polygons(origin_clone,"OI_SUM",0)
-
+            
+            capas.add_index(destination_clone,oi, "OI_SUM")
+            
             progressBar.setValue(50)
 
             for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,0)
+            layer_RO_p = capas.merge_layers(or_list, "Centroides_evaluados")
+            
             thematic_layers = []
             if self.params["LINES"] is True:
-                print("Entro")
                 try: 
                     with tempfile.TemporaryDirectory() as dir:
                         temp_path = dir + "/"
                         layers = capas.create_lines_RO(for_lines, values_oi, self.id_origin, self.id_dest, temp_path,0)
-                        layer_RO = capas.merge_layers(layers, "Lineas_RO")
+                        layer_RO = capas.merge_layers(layers, "Lineas_conectividad")
                 except Exception as e:
                     pass
                 capas.thematic_lines(layer_RO, "OI_SUM")
+                capas.thematic_points(layer_RO_p,"ORI",0,"")
+                thematic_layers.append(layer_RO_p)
                 thematic_layers.append(layer_RO)    
             
-            layer_RO_p = capas.merge_layers(or_list, "Puntos_RO")
-            
-            capas.thematic_points(layer_RO_p,"ORI",0,"")
-            capas.thematic_points(destination_clone,"DEST",0,"")
+            capas.thematic_points(destination_clone,"",1,"OI_SUM")
             
             progressBar.setValue(80)
 
             progressBar.setValue(90)
-            thematic_layers = [layer_RO_p, destination_clone] + thematic_layers + [origin_VMenC, origin_clone]
+            thematic_layers = [destination_clone] + thematic_layers + [origin_SinDemanda, origin_clone]
             if flag == False:
-                capas.thematic_points(origin_clone,"",1,"OI_SUM")
-                hmap = origin_clone.clone()
-                hmap.setName(origin_clone.name()+"_hmap")
+                capas.thematic_points(origin_clone, "ORI", 1, self.var_origin)
+                capas.thematic_points(destination_clone,"",1 ,"OI_SUM")
+                hmap = destination_clone.clone()
+                hmap.setName(destination_clone.name()+"_hmap")
                 capas.thematic_points(hmap,"",2,"OI_SUM")
                 thematic_layers.append(hmap)
-                capas.thematic_points(origin_VMenC,"VMenC",0,"")
+                capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                
             else:
-                capas.thematic_polygons(origin_VMenC,"",1)
+                capas.thematic_polygons(origin_SinDemanda,"",1)
+                capas.thematic_polygons(origin_clone, self.var_origin,0)
                 
             if self.params["EXPORTS"]["Memory"] == True:
                 root = QgsProject.instance().layerTreeRoot()
@@ -205,7 +206,7 @@ class Main:
             QgsProject.instance().addMapLayer(vlayer,False)
             progressBar.setValue(70)
                 
-            layers = [origin_VMenC, origin_clone, destination_clone, vlayer]
+            layers = [origin_SinDemanda, origin_clone, destination_clone, vlayer]
             gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             
             capas.thematic_points(destination_clone,"",1,"DJ_SUM")
@@ -213,10 +214,10 @@ class Main:
             
             if flag:
                 capas.thematic_polygons(origin_clone,"",2)
-                capas.thematic_polygons(origin_VMenC,"",1)
+                capas.thematic_polygons(origin_SinDemanda,"",1)
             else:
                 capas.thematic_points(origin_clone,"ORI",0,"")
-                capas.thematic_points(origin_VMenC,"VMenC",0,"")
+                capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
                 
             if self.params["EXPORTS"]["Memory"] == True:
                 root = QgsProject.instance().layerTreeRoot()

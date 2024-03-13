@@ -23,7 +23,7 @@ class Capas:
                 "METHOD":0 #new selection
             }
             selection = processing.run("qgis:selectbyexpression",data_sl)["OUTPUT"]
-            aux = "_VMC" if i == 0 else "_VMenC"
+            aux = "_Demanda" if i == 0 else "_SinDemanda"
             data_sv = {
                 "INPUT":selection,
                 "OUTPUT":"memory:" + layer.name() + aux}
@@ -51,53 +51,53 @@ class Capas:
         origin_list = []
         dest_list = []
         if r_type == 0:
-            # For origins
-            for field in origin_fields:
-                if field.name() == id_ori:
+            # ------ DEST
+            for field in dest_fields:
+                if field.name() == id_dest:
                     for i in range(0,len(values)):
-                        origin.removeSelection()
+                        dest.removeSelection()
                         if field.type() == 7 or field.type() == 10: # for strings
-                            expr = f"\"{id_ori}\"=\'{values[str(i)]['ORI']}\'"
+                            expr = f"\"{id_dest}\"=\'{values[str(i)]['DEST']}\'"
                         else:
-                            expr = f"\"{id_ori}\"={values[str(i)]['ORI']}"
+                            expr = f"\"{id_dest}\"={values[str(i)]['DEST']}"
                         data = {
-                                "INPUT":origin,
+                                "INPUT":dest,
                                 "EXPRESSION":expr,
                                 "METHOD":1
                                 }
                         selected_features = processing.run("qgis:selectbyexpression",data)
                         data2 = {
                                 "INPUT":selected_features["OUTPUT"],
-                                "OUTPUT":"memory:"+str(values[str(i)]['ORI'])}
+                                "OUTPUT":"memory:"+str(values[str(i)]['DEST'])}
                         saved = processing.run("native:saveselectedfeatures",data2)
                         origin_list.append(saved["OUTPUT"])
-
-            # for destinations
-            for field in dest_fields:
-                if field.name() == id_dest:
+                        
+            # ORIGINs
+            for field in origin_fields:
+                if field.name() == id_ori:
                     for i in range(0,len(values)):
-                        dest.removeSelection()
+                        origin.removeSelection()
                         selected_features = {}
-                        for j in range(0, len(values[str(i)]["DEST"])):
+                        for j in range(0, len(values[str(i)]["ORI"])):
                             if field.type() == 7 or field.type() == 10: # for strings
-                                expr = f"\"{id_dest}\"=\'{values[str(i)]['DEST'][j]}\'"
+                                expr = f"\"{id_ori}\"=\'{values[str(i)]['ORI'][j]}\'"
                             else:
-                                expr = f"\"{id_dest}\"={values[str(i)]['DEST'][j]}"
+                                expr = f"\"{id_ori}\"={values[str(i)]['ORI'][j]}"
                             data = {
-                                    "INPUT":dest,
+                                    "INPUT":origin,
                                     "EXPRESSION":expr,
                                     "METHOD":1
                                     }
                             selected_features = processing.run("qgis:selectbyexpression",data)
                         data2 = {
                                 "INPUT":selected_features["OUTPUT"],
-                                "OUTPUT":"memory:"+dest.name()+"_"+str(i+1)}
+                                "OUTPUT":"memory:"+str(values[str(i)]['ORI'][j])}
                         saved = processing.run("native:saveselectedfeatures",data2)
                         dest_list.append(saved["OUTPUT"])
 
             # Matrix with Origins and Dest (filters)
             matrix_OD = [list(par) for par in zip(origin_list, dest_list)]
-            return matrix_OD, origin_list
+            return matrix_OD, dest_list
         else:
             # For dest
             for field in dest_fields:
@@ -154,8 +154,8 @@ class Capas:
             for i in range(len(matrix_OD)):
                 origin_features = matrix_OD[i][0].getFeatures()
                 destination_features = matrix_OD[i][1].getFeatures()
-                index_O = matrix_OD[i][0].fields().indexFromName(id_ori)
-                index_D = matrix_OD[i][1].fields().indexFromName(id_dest)
+                index_O = matrix_OD[i][0].fields().indexFromName(id_dest)
+                index_D = matrix_OD[i][1].fields().indexFromName(id_ori)
                 # Create a empty Linestring
                 fields = QgsFields()
                 fields.append(QgsField('ID_ORI', QVariant.String))
@@ -292,6 +292,7 @@ class Capas:
             color_ramp = style.colorRampNames()
             ind_c = color_ramp.index("RdYlGn")
             ramp = style.colorRamp(color_ramp[ind_c]) #RdYlGn
+            ramp.invert()
             field = field_name
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
             layer.setRenderer(renderer)
@@ -330,12 +331,12 @@ class Capas:
         QgsProject.instance().addMapLayer(layer,False)
         if l_render == 0:
             if l_type == "ORI":
-                color = '1,200,255,255'
-                outline_color = '0,0,0,255'
-                outline_width = '0.2'
-                scale_method = 'area'
-                size = '3'
-            elif l_type == "VMenC":
+                color = '0,0,0,255'
+                outline_color = '255,255,255,255'
+                outline_width = '0.4'
+                scale_method = 'diameter'
+                size = '1.5'
+            elif l_type == "SinDemanda":
                 color = '83,83,83,255'
                 outline_color = '247,247,247,255'
                 outline_width = '0.4'
@@ -379,11 +380,14 @@ class Capas:
             symbol = QgsMarkerSymbol()
             exp = f'coalesce(scale_linear("{field_name}", {min_v}, {max_v}, 1, 10), 0)'
             symbol.symbolLayer(0).setDataDefinedProperty(QgsSymbolLayer.PropertySize, QgsProperty.fromExpression(exp)) #type:ignore
-            symbol.setOpacity(0.6)
+            symbol.setOpacity(1)
             clasificacion = [QgsGraduatedSymbolRenderer.Jenks] #type:ignore
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()
-            ramp = style.colorRamp(color_ramp[25]) #RdYlGn
+            ind_c = color_ramp.index("RdYlGn")
+            ramp = style.colorRamp(color_ramp[ind_c]) #RdYlGn
+            if l_type == "ORI":
+                ramp.invert()
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field_name, 5, clasificacion[0], symbol, ramp)
             # pendiente para agregar el contorno blanco
             layer.setRenderer(renderer)
