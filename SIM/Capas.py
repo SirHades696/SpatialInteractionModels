@@ -346,15 +346,6 @@ class Capas:
                 size = '4'
                 name = 'circle'
                 angle = '0'
-            elif l_type == "Demanda":
-                color = '26,150,65,255'
-                outline_color = '3,3,3,255'
-                outline_width = '0.0'
-                scale_method = 'diameter'
-                size = '3'
-                name = 'diamond'
-                angle = '45'
-                
             data = {'angle': angle,
                     'cap_style': 'square',
                     'color': color,
@@ -384,6 +375,14 @@ class Capas:
             min_v = min(values)
             max_v = max(values)
             symbol = QgsMarkerSymbol()
+            if l_type == "ORI":
+                symbol_layer = QgsSimpleMarkerSymbolLayer()
+                symbol_layer.setShape(QgsSimpleMarkerSymbolLayer.Diamond)
+                symbol_layer.setSize(3)  
+                symbol_layer.setColor(QColor(0, 0, 0))
+                symbol_layer.setAngle(45)
+                symbol_layer.setOutlineWidth(0)  
+                symbol.changeSymbolLayer(0, symbol_layer)
             exp = f'coalesce(scale_linear("{field_name}", {min_v}, {max_v}, 1, 10), 0)'
             symbol.symbolLayer(0).setDataDefinedProperty(QgsSymbolLayer.PropertySize, QgsProperty.fromExpression(exp)) #type:ignore
             symbol.setOpacity(1)

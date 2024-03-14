@@ -160,7 +160,6 @@ class Main:
                 except Exception as e:
                     pass
                 capas.thematic_lines(layer_RO, "OI_SUM")
-                capas.thematic_points(layer_RO_p,"Demanda",0,"")
                 thematic_layers.append(layer_RO_p)
                 thematic_layers.append(layer_RO)    
             
@@ -216,7 +215,7 @@ class Main:
                 capas.thematic_polygons(origin_clone,"",2)
                 capas.thematic_polygons(origin_SinDemanda,"",1)
             else:
-                capas.thematic_points(origin_clone,"ORI",0,"")
+                capas.thematic_points(origin_clone,"ORI",1,self.var_origin)
                 capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
                 
             if self.params["EXPORTS"]["Memory"] == True:
