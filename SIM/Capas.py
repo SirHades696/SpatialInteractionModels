@@ -336,25 +336,31 @@ class Capas:
                 outline_width = '0.4'
                 scale_method = 'diameter'
                 size = '1.5'
+                name = 'circle'
+                angle = '0'
             elif l_type == "SinDemanda":
                 color = '83,83,83,255'
                 outline_color = '247,247,247,255'
                 outline_width = '0.4'
                 scale_method = 'diameter'
                 size = '4'
-            else:
-                color = '0,0,0,255'
-                outline_color = '255,255,255,255'
-                outline_width = '0.4'
+                name = 'circle'
+                angle = '0'
+            elif l_type == "Demanda":
+                color = '26,150,65,255'
+                outline_color = '3,3,3,255'
+                outline_width = '0.0'
                 scale_method = 'diameter'
                 size = '3'
-
-            data = {'angle': '0',
+                name = 'diamond'
+                angle = '45'
+                
+            data = {'angle': angle,
                     'cap_style': 'square',
                     'color': color,
                     'horizontal_anchor_point':'1',
                     'joinstyle': 'bevel',
-                    'name': 'circle',
+                    'name': name,
                     'offset': '0,0',
                     'offset_map_unit_scale':'3x:0,0,0,0,0,0',
                     'offset_unit': 'MM',

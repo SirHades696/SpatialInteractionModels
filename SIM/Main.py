@@ -160,7 +160,7 @@ class Main:
                 except Exception as e:
                     pass
                 capas.thematic_lines(layer_RO, "OI_SUM")
-                capas.thematic_points(layer_RO_p,"ORI",0,"")
+                capas.thematic_points(layer_RO_p,"Demanda",0,"")
                 thematic_layers.append(layer_RO_p)
                 thematic_layers.append(layer_RO)    
             
