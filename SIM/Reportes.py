@@ -303,10 +303,11 @@ class Reportes:
         return unit, tipo_rest, tipo_filt, values_r
 
     def save_calcs(self) -> None:
-        path_calcs = self.params["OUTPUT"] + "Estadisticas/"
-        if not os.path.exists(path_calcs):
-            os.makedirs(path_calcs)
-            os.chmod(path_calcs, 0o777)
+        if any(self.params["SAVE"][ext] for ext in ["XLS", "ODS", "CSV"]):
+            path_calcs = os.path.join(self.params["OUTPUT"], "Estadisticas")
+            if not os.path.exists(path_calcs):
+                os.makedirs(path_calcs)
+                os.chmod(path_calcs, 0o777)
             
         if self.params["SAVE"]["XLS"] == True:
             path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
