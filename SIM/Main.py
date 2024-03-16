@@ -11,6 +11,8 @@ from qgis.PyQt.QtWidgets import *
 from qgis.utils import iface
 from Reportes import Reportes
 
+import numpy as np
+
 
 class Main:
     def __init__(self, params:dict) -> None:
@@ -124,6 +126,8 @@ class Main:
         dests = estadisticas.extract_data(destination_clone,self.var_dest)
         id_origins = estadisticas.extract_data(origin_clone, self.id_origin)
         id_dests = estadisticas.extract_data(destination_clone, self.id_dest)
+        
+        
 
         progressBar.setValue(40)
         # Construcción del dict que contiene los valores extraídos de la oferta/demanda y IDs
@@ -137,13 +141,17 @@ class Main:
 
         # -------------------- General process finished
         if self.params["RESTR"] == 0:
-            values, values_oi, oi = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
+            values, values_oi, oi, oi_n = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
             data_layers = {
                 "ORIGIN":origin_centroids,
                 "DEST":destination_clone
                 }
             
             capas.add_index(destination_clone,oi, "OI_SUM")
+            capas.add_index(destination_clone, oi_n, "OI_SUM_N")
+            
+            origin_n = estadisticas.normalize(np.array(origins))
+            capas.add_index(origin_clone,origin_n,self.var_origin + "_N")
             
             progressBar.setValue(50)
 
@@ -159,28 +167,31 @@ class Main:
                         layer_RO = capas.merge_layers(layers, "Lineas_conectividad")
                 except Exception as e:
                     pass
-                capas.thematic_lines(layer_RO, "OI_SUM")
+                capas.thematic_lines(layer_RO, "OI_SUM_N")
                 thematic_layers.append(layer_RO_p)
                 thematic_layers.append(layer_RO)    
             
-            capas.thematic_points(destination_clone,"",1,"OI_SUM")
+            capas.thematic_points(destination_clone,"",1,"OI_SUM_N")
             
             progressBar.setValue(80)
 
             progressBar.setValue(90)
             thematic_layers = [destination_clone] + thematic_layers + [origin_SinDemanda, origin_clone]
             if flag == False:
-                capas.thematic_points(origin_clone, "ORI", 1, self.var_origin)
-                capas.thematic_points(destination_clone,"",1 ,"OI_SUM")
+                capas.thematic_points(origin_clone, "ORI", 1, self.var_origin + "_N")
+                capas.thematic_points(destination_clone,"",1 ,"OI_SUM_N")
                 hmap = destination_clone.clone()
                 hmap.setName(destination_clone.name()+"_hmap")
-                capas.thematic_points(hmap,"",2,"OI_SUM")
+                capas.thematic_points(hmap,"",2,"OI_SUM_N")
                 thematic_layers.append(hmap)
                 capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
-                
             else:
+                hmap = destination_clone.clone()
+                hmap.setName(destination_clone.name()+"_hmap")
+                capas.thematic_points(hmap,"",2,"OI_SUM_N")
+                thematic_layers.append(hmap)
                 capas.thematic_polygons(origin_SinDemanda,"",1)
-                capas.thematic_polygons(origin_clone, self.var_origin,0)
+                capas.thematic_polygons(origin_clone, self.var_origin + "_N",0)
                 
             if self.params["EXPORTS"]["Memory"] == True:
                 root = QgsProject.instance().layerTreeRoot()

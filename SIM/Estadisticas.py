@@ -69,6 +69,7 @@ class Estadisticas:
         # oi
         sum_oi = np.sum(matrix,axis=0)
         oi = np.nan_to_num(sum_oi, nan=0.0,posinf=0.0, neginf=0.0)
+        oi_n = self.normalize(oi)
 
         matrix_T = matrix.T
         values = {} #IDs
@@ -84,10 +85,10 @@ class Estadisticas:
                     aux_v.append(float(matrix_T[i,j]))
             if len(aux) != 0 and len(aux_v) != 0:
                 values[str(count)] = {"DEST": values_OD["ID_DEST"][i], "ORI": aux}
-                values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i])}
+                values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i]), "OI_SUM_N": oi_n[i]}
                 count += 1
         
-        return values, values_oi, oi.tolist()
+        return values, values_oi, oi.tolist(), oi_n
 
     def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> tuple:
         #----- first step
@@ -133,3 +134,7 @@ class Estadisticas:
             attribute_value = feature[name_attr]
             values.append(attribute_value)
         return values
+    
+    def normalize(self, data:np.ndarray) -> list:
+        norm = (data - np.min(data)) / (np.max(data) - np.min(data))
+        return norm.tolist()

@@ -162,6 +162,7 @@ class Capas:
                 fields.append(QgsField('ID_DEST', QVariant.String))
                 fields.append(QgsField('OI_RO', QVariant.Double))
                 fields.append(QgsField('OI_SUM', QVariant.Double))
+                fields.append(QgsField('OI_SUM_N', QVariant.Double))
                 layer_name = 'Lineas_RO_' + str(i+1)
                 lines_layer = QgsVectorLayer('LineString?crs='+epsg, layer_name, 'memory')
                 #lines_layers_name.append(lines_layer.id())
@@ -184,7 +185,7 @@ class Capas:
                         line_feature.setGeometry(line_geometry)
                         attr_valueO = origin_feature.attributes()[index_O]
                         attr_valueD = destination_feature.attributes()[index_D]
-                        line_feature.setAttributes([attr_valueO, attr_valueD, values_oi[str(i)]["OI"][column], values_oi[str(i)]["OI_SUM"]])
+                        line_feature.setAttributes([attr_valueO, attr_valueD, values_oi[str(i)]["OI"][column], values_oi[str(i)]["OI_SUM"], values_oi[str(i)]["OI_SUM_N"]])
 
                         # adding features
                         lines_layer.dataProvider().addFeatures([line_feature])
@@ -287,6 +288,7 @@ class Capas:
         QgsProject.instance().addMapLayer(layer,False)
         if p_type == 0:
             symbol = QgsFillSymbol()
+            symbol.setOpacity(0.5)
             clasificacion = [QgsGraduatedSymbolRenderer.Jenks] #type:ignore
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()
@@ -381,11 +383,10 @@ class Capas:
                 symbol_layer.setSize(3)  
                 symbol_layer.setColor(QColor(0, 0, 0))
                 symbol_layer.setAngle(45)
-                symbol_layer.setOutlineWidth(0)  
+                symbol_layer.setStrokeWidth(0)  
                 symbol.changeSymbolLayer(0, symbol_layer)
             exp = f'coalesce(scale_linear("{field_name}", {min_v}, {max_v}, 1, 10), 0)'
             symbol.symbolLayer(0).setDataDefinedProperty(QgsSymbolLayer.PropertySize, QgsProperty.fromExpression(exp)) #type:ignore
-            symbol.setOpacity(1)
             clasificacion = [QgsGraduatedSymbolRenderer.Jenks] #type:ignore
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()

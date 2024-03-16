@@ -967,7 +967,7 @@ class SpatialInteractionModels:
                     "ODS":ods_check,
                     "CSV":csv_check
                     },
-                "REPORTS ":reports,
+                "REPORTS":reports,
                 "LINES" : lines
                 }
         self.dlg.hide()

@@ -309,28 +309,28 @@ class Reportes:
                 os.makedirs(path_calcs)
                 os.chmod(path_calcs, 0o777)
             
-        if self.params["SAVE"]["XLS"] == True:
-            path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
-            chunk_size = 65500
-            chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
-            with pd.ExcelWriter(path_xls) as writer: #type:ignore
+            if self.params["SAVE"]["XLS"] == True:
+                path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
+                chunk_size = 65500
+                chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
+                with pd.ExcelWriter(path_xls) as writer: #type:ignore
+                    for i, chunk in enumerate(chunks):
+                        chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
+
+            if self.params["SAVE"]["ODS"] == True:
+                path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE.ods'
+                df = self.df.astype(str)
+                headers = list(df.columns)
+                data = OrderedDict()
+                chunks = [df[i:i+65500] for i in range(0, df.shape[0], 65500)]
                 for i, chunk in enumerate(chunks):
-                    chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
+                    data.update({f"Resultados_{i+1}": [headers] + chunk.values.tolist()})
+                save_data(path_ods, data)
 
-        if self.params["SAVE"]["ODS"] == True:
-            path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE.ods'
-            df = self.df.astype(str)
-            headers = list(df.columns)
-            data = OrderedDict()
-            chunks = [df[i:i+65500] for i in range(0, df.shape[0], 65500)]
-            for i, chunk in enumerate(chunks):
-                data.update({f"Resultados_{i+1}": [headers] + chunk.values.tolist()})
-            save_data(path_ods, data)
-
-        if self.params["SAVE"]["CSV"] == True:
-            path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.csv'
-            self.df.to_csv(path_csv, index=False)
-            
+            if self.params["SAVE"]["CSV"] == True:
+                path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.csv'
+                self.df.to_csv(path_csv, index=False)
+                
     def boxplot(self, data:pd.DataFrame, column:str, plot_title:str, hv_dt:pd.DataFrame.columns, tr:str) -> str:
         path_plots = self.params["OUTPUT"] + "Graficas/"
         if not os.path.exists(path_plots):
