@@ -217,7 +217,6 @@ class Main:
             progressBar.setValue(70)
                 
             layers = [origin_SinDemanda, origin_clone, destination_clone, vlayer]
-            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             
             capas.thematic_points(destination_clone,"",1,"DJ_SUM")
             capas.thematic_points(vlayer,"",2,"DJ_SUM")
@@ -235,6 +234,7 @@ class Main:
                 for i,layer in enumerate(layers):
                     group.insertLayer(i,layer)
                     
+            gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             # instancia de los reportes   
             Reportes(values, values_dj, self.params)
         elif self.params["RESTR"] == 2:
