@@ -33,7 +33,6 @@ class Capas:
 
         return layers
 
-
     def centroid(self, layer:QgsVectorLayer) -> QgsVectorLayer:
         params = {
                 "INPUT":layer,
@@ -146,7 +145,6 @@ class Capas:
             matrix_OD = [list(par) for par in zip(dest_list, origin_list)]
             return matrix_OD, dest_list
         
-
     def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str, temp_path:str, l_type:int) -> list:
         epsg = matrix_OD[0][0].crs().authid()
         lines_layers_name = []

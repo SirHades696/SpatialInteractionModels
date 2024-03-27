@@ -100,7 +100,6 @@ class Main:
         #Clonando los archivos de entrada
         origin_clone = gestor.clone_layer(self.origin)
         destination_clone = gestor.clone_layer(self.destination)
-        destination_clone.setName(destination_clone.name()+"_RO")
 
         progressBar.setValue(10)
         #Validando que el origen cuente unicamente con valores mayores a 0
@@ -141,6 +140,7 @@ class Main:
 
         # -------------------- General process finished
         if self.params["RESTR"] == 0:
+            destination_clone.setName(destination_clone.name()+"_RO")
             values, values_oi, oi, oi_n = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
             data_layers = {
                 "ORIGIN":origin_centroids,
@@ -208,6 +208,7 @@ class Main:
             
         #------ dest restriction
         elif self.params["RESTR"] == 1:
+            destination_clone.setName(destination_clone.name()+"_RD")
             progressBar.setValue(60)
             values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
             capas.add_index(destination_clone,dj, "DJ_SUM")

@@ -84,7 +84,6 @@ class SpatialInteractionModels:
         self.dlg2 = Ui_DialogBase()
         self.connections()
 
-
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -119,7 +118,6 @@ class SpatialInteractionModels:
                 action)
             self.iface.removeToolBarIcon(action)
         del self.toolbar
-
 
     def run(self):
         """Run method that performs all the real work"""
@@ -280,7 +278,6 @@ class SpatialInteractionModels:
         self.dlg.projects_combobox.setEnabled(False)
         self.load_projects()
 
-
     def connections(self):
         # # view restrictions
         self.dlg.btn_reg2.clicked.connect(self.tab_inputs)
@@ -354,7 +351,6 @@ class SpatialInteractionModels:
         self.dlg.tabWidget.setCurrentIndex(1)
         self.dlg.tabWidget.setTabEnabled(1, True)
         self.dlg.tabWidget.setTabEnabled(2, False)
-
 
     def tab_formats(self):
         self.dlg.tabWidget.setTabEnabled(0, False)
@@ -434,7 +430,6 @@ class SpatialInteractionModels:
             self.dlg.val1_fluj.setVisible(False)
             self.dlg.val2_fluj.setVisible(False)
 
-
     def restrictions_valuesD(self):
         index = self.dlg.tipo_filt_dist.currentIndex()
         if index != 0:
@@ -459,7 +454,6 @@ class SpatialInteractionModels:
             self.dlg.val1_dist.clear()
             self.dlg.val2_dist.clear()
 
-
     def restrictions_valuesF(self):
         index = self.dlg.tipo_filt_fluj.currentIndex()
         if index != 0:
@@ -483,7 +477,6 @@ class SpatialInteractionModels:
             self.dlg.val2_fluj.setVisible(False)
             self.dlg.val1_fluj.clear()
             self.dlg.val2_fluj.clear()
-
 
     def hide_show_sqlite(self, state):
         if state:
