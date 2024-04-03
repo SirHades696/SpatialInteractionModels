@@ -41,9 +41,9 @@ import sys
 import os
 import time
 from .about_dialog import Ui_DialogBase
-from pathlib import PureWindowsPath
+import webbrowser
 
-sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM/")
+sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM" + os.sep)
 from Main import Main #type:ignore
 
 class SpatialInteractionModels:
@@ -83,6 +83,7 @@ class SpatialInteractionModels:
         self.dlg = SpatialInteractionModelsDialog()
         self.dlg2 = Ui_DialogBase()
         self.connections()
+        self.manual_path = self.plugin_dir + os.sep + "SIM" + os.sep + "Manual.htm#"
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -338,7 +339,12 @@ class SpatialInteractionModels:
         # Origin -dest btns
         self.dlg.btn_origin.clicked.connect(self.load_origin)
         self.dlg.btn_dest.clicked.connect(self.load_dest)
-
+        
+        #helpers
+        self.dlg.btn_ayuda1.clicked.connect(self.input_help)
+        self.dlg.btn_ayuda2.clicked.connect(self.restrictions_help)
+        self.dlg.btn_ayuda3.clicked.connect(self.outputs_help)
+        
     # ------ TABS
     def tab_inputs(self):
         self.dlg.tabWidget.setCurrentIndex(0)
@@ -970,3 +976,15 @@ class SpatialInteractionModels:
         end = time.time()
         print(f'Tiempo de ejecución: {end - start} segundos')
 
+    def input_help(self):
+        input_p = self.manual_path + '_Toc161040182'
+        webbrowser.open(input_p)
+        print(input_p)
+    
+    def restrictions_help(self):
+        rest_p = self.manual_path + '_Toc161040183'
+        webbrowser.open_new_tab(rest_p)    
+    
+    def outputs_help(self):
+        output_p = self.manual_path + '_Toc161040184'
+        webbrowser.open_new_tab(output_p)
