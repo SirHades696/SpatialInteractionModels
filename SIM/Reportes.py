@@ -50,7 +50,7 @@ class Reportes:
         elif self.params["RESTR"] == 1:
             if self.params["REPORTS"][0] == True:
                 df = pd.DataFrame.from_dict(IDs, orient='index')
-                df_ORI = df.explode('ORI')
+                df_ORI = df.explode('DEST')
                 new_df = pd.DataFrame.from_dict(values, orient='index')
                 new_df_OI = new_df.explode('DJ')
                 new_df_OI['FLUJ_PROM'] = new_df.apply(lambda row: row['DJ_SUM']/len(row['DJ']), axis=1)
@@ -164,7 +164,7 @@ class Reportes:
                 df = pd.read_html(str(table))[0]
                 table = soup.find('table')
                 df = pd.read_html(str(table))[0]
-                grouped = df.groupby('CVE_DEST')
+                grouped = df.groupby('CVE_ORI')
                 new_html = ""
                 for i, (name, group) in enumerate(grouped):
                     tbody = soup.new_tag('tbody', **{'class': f'grupo{i+1}'})
@@ -201,9 +201,9 @@ class Reportes:
                     webbrowser.open_new_tab(path)
                 
                 headers = self.df.columns.tolist()
-                dp_hd = [h for h in headers if h not in ['CVE_DEST', 'FLUJ_TOT']]
+                dp_hd = [h for h in headers if h not in ['CVE_ORI', 'FLUJ_TOT']]
                 df = self.df.drop(columns=dp_hd)
-                df_gp = df.groupby('CVE_DEST').first().reset_index() 
+                df_gp = df.groupby('CVE_ORI').first().reset_index() 
                 df_filt = df_gp.loc[df_gp['FLUJ_TOT'] != 0]
                 bp_path = self.boxplot(df_filt,
                             "FLUJ_TOT",

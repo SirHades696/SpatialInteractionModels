@@ -105,9 +105,9 @@ html_RO = '''<!doctype html>
     <body>
         <h1 align="center">Reporte de ejecución</h1>
         <div>
-            <p align="left"><b>Archivo de Orígen:</b> {origin}</p>
-            <p align="left"><b>ID de orígen: </b>{id_ori}</p>
-            <p align="left"><b>Campo de orígen: </b>{var_ori}</p>
+            <p align="left"><b>Archivo de Origen:</b> {origin}</p>
+            <p align="left"><b>ID de Origen: </b>{id_ori}</p>
+            <p align="left"><b>Campo de Origen: </b>{var_ori}</p>
             <p align="left"><b>Archivo de Destino: </b>{dest}</p>
             <p align="left"><b>ID de destino: </b>{id_dest}</p>
             <p align="left"><b>Campo de destino: </b>{var_dest}</p>
@@ -123,7 +123,7 @@ html_RO = '''<!doctype html>
                 <tbody>
                 <tr>
                 <th>CVE_ORI</th>
-                <td>Clave de Orígen</td>
+                <td>Clave de Origen</td>
                 <th>ACC_PROM</th>
                 <td>Accesibilidad promedio</td>
                 </tr>
@@ -308,9 +308,9 @@ html_RD = '''<!doctype html>
     <body>
         <h1 align="center">Reporte de ejecución (Completo)</h1>
         <div>
-            <p align="left"><b>Archivo de Orígen:</b> {origin}</p>
-            <p align="left"><b>ID de orígen: </b>{id_ori}</p>
-            <p align="left"><b>Campo de orígen: </b>{var_ori}</p>
+            <p align="left"><b>Archivo de Origen:</b> {origin}</p>
+            <p align="left"><b>ID de Origen: </b>{id_ori}</p>
+            <p align="left"><b>Campo de Origen: </b>{var_ori}</p>
             <p align="left"><b>Archivo de Destino: </b>{dest}</p>
             <p align="left"><b>ID de destino: </b>{id_dest}</p>
             <p align="left"><b>Campo de destino: </b>{var_dest}</p>
@@ -325,14 +325,14 @@ html_RD = '''<!doctype html>
             <table border="1" class="dataframe content-table">
                 <tbody>
                 <tr>
-                <th>CVE_DEST</th>
-                <td>Clave de Destino</td>
+                <th>CVE_ORI</th>
+                <td>Clave de Origen</td>
                 <th>FLUJ_PROM</th>
                 <td>Flujo promedio</td>
                 </tr>
                 <tr>
-                <th>CVE_ORI</th>
-                <td>Clave de Orígen</td>
+                <th>CVE_DEST</th>
+                <td>Clave de Destino</td>
                 <th>FLUJ_STD</th>
                 <td>Flujos (Desviación estándar)</td>
                 </tr>
@@ -352,7 +352,7 @@ html_RD = '''<!doctype html>
         <div class="popup" id="popup">
         <span class="close-button" onclick="closePopup()">&times;</span>
         <h2>Información importante</h2>
-        <p class="text-popup">Puedes dar clic sobre cada registro CVE_DEST de la tabla para desglosar la información</p>
+        <p class="text-popup">Puedes dar clic sobre cada registro CVE_ORI de la tabla para desglosar la información</p>
         </div>
     <script>
             window.onload = function() {{
@@ -464,9 +464,9 @@ html_RD_S = '''<!doctype html>
     <body>
         <h1 align="center">Reporte de ejecución (General)</h1>
         <div>
-            <p align="left"><b>Archivo de Orígen:</b> {origin}</p>
-            <p align="left"><b>ID de orígen: </b>{id_ori}</p>
-            <p align="left"><b>Campo de orígen: </b>{var_ori}</p>
+            <p align="left"><b>Archivo de Origen:</b> {origin}</p>
+            <p align="left"><b>ID de Origen: </b>{id_ori}</p>
+            <p align="left"><b>Campo de Origen: </b>{var_ori}</p>
             <p align="left"><b>Archivo de Destino: </b>{dest}</p>
             <p align="left"><b>ID de destino: </b>{id_dest}</p>
             <p align="left"><b>Campo de destino: </b>{var_dest}</p>

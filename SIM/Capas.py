@@ -292,7 +292,8 @@ class Capas:
             color_ramp = style.colorRampNames()
             ind_c = color_ramp.index("RdYlGn")
             ramp = style.colorRamp(color_ramp[ind_c]) #RdYlGn
-            ramp.invert()
+            if field_name != "DJ_SUM":
+                ramp.invert()
             field = field_name
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field, 5, clasificacion[0], symbol, ramp)
             layer.setRenderer(renderer)

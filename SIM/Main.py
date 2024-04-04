@@ -126,8 +126,6 @@ class Main:
         id_origins = estadisticas.extract_data(origin_clone, self.id_origin)
         id_dests = estadisticas.extract_data(destination_clone, self.id_dest)
         
-        
-
         progressBar.setValue(40)
         # Construcción del dict que contiene los valores extraídos de la oferta/demanda y IDs
         values_OD = {
@@ -211,22 +209,22 @@ class Main:
             destination_clone.setName(destination_clone.name()+"_RD")
             progressBar.setValue(60)
             values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
-            capas.add_index(destination_clone,dj, "DJ_SUM")
+            capas.add_index(origin_clone,dj, "DJ_SUM")
             vlayer = destination_clone.clone()
             vlayer.setName(destination_clone.name()+"_hmap")
             QgsProject.instance().addMapLayer(vlayer,False)
             progressBar.setValue(70)
                 
-            layers = [origin_SinDemanda, origin_clone, destination_clone, vlayer]
+            layers = [origin_SinDemanda,  destination_clone, origin_clone, vlayer]
             
-            capas.thematic_points(destination_clone,"",1,"DJ_SUM")
-            capas.thematic_points(vlayer,"",2,"DJ_SUM")
+            capas.thematic_points(destination_clone,"",1,self.var_dest)
+            capas.thematic_points(vlayer,"",2,self.var_dest)
             
             if flag:
-                capas.thematic_polygons(origin_clone,"",2)
+                capas.thematic_polygons(origin_clone,"DJ_SUM",0)
                 capas.thematic_polygons(origin_SinDemanda,"",1)
             else:
-                capas.thematic_points(origin_clone,"ORI",1,self.var_origin)
+                capas.thematic_points(origin_clone,"ORI",1,"DJ_SUM")
                 capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
                 
             if self.params["EXPORTS"]["Memory"] == True:
@@ -238,8 +236,9 @@ class Main:
             gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             # instancia de los reportes   
             Reportes(values, values_dj, self.params)
+            
         elif self.params["RESTR"] == 2:
-            pass
+            estadisticas.double_restriction(matrix,self.val_rest, values_OD)
 
         messageBar.clearWidgets()
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
