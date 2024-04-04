@@ -1,4 +1,3 @@
-
 from qgis.core import *
 import numpy as np
 
@@ -85,7 +84,7 @@ class Estadisticas:
                     aux_v.append(float(matrix_T[i,j]))
             if len(aux) != 0 and len(aux_v) != 0:
                 values[str(count)] = {"DEST": values_OD["ID_DEST"][i], "ORI": aux}
-                values_oi[str(count)] = {"OI": aux_v , "OI_SUM": float(oi[i]), "OI_SUM_N": oi_n[i]}
+                values_oi[str(count)] = {"OI": aux_v , "OI_SUM": round(oi[i]), "OI_SUM_N": oi_n[i]}
                 count += 1
         
         return values, values_oi, oi.tolist(), oi_n
@@ -97,7 +96,7 @@ class Estadisticas:
         #---- second step
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
-                matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
+                matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i]
         suma = np.sum(matrix, axis = 0)
         pre_bj = 1/suma
         # convirtiendo los naN e Inf en 0
@@ -105,8 +104,9 @@ class Estadisticas:
         #------------- third step
         for i in range(0, len(values_OD["ORIGIN"])):
             for j in range(0, len(values_OD["DEST"])):
-                matrix[i,j] = matrix[i,j] * values_OD["ORIGIN"][i] * bj[j]
-        suma = np.sum(matrix,axis=0)
+                matrix[i,j] = matrix[i,j] * values_OD["DEST"][j] * bj[j]
+        
+        suma = np.sum(matrix,axis=1)
         suma_final = np.round(suma)
 
         if val_rest['R_DEST']['OPTION'] == 0:
@@ -115,18 +115,71 @@ class Estadisticas:
             suma_final = np.where(suma_final <= val_rest['R_DEST']['VALUE'][0],suma_final,0)
         elif val_rest['R_DEST']['OPTION'] == 2:
             suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
-
+        
         dj = suma_final.tolist()
+        dj_n = self.normalize(suma_final)
         indexes = np.where(suma_final == 0)
         for index in indexes[0].tolist():
-            matrix[:,index] = 0 
+            matrix[index,:] = 0
+            
         values = {}
         values_dj = {}
-        for i in range(0, len(values_OD["DEST"])):
-            values[str(i)] = {"DEST": values_OD["ID_DEST"][i], "ORI":values_OD["ID_ORI"]}
-            values_dj[str(i)] = {"DJ":matrix[:,i], "DJ_SUM":dj[i]}
-        return values, values_dj, dj
+        for i in range(0, len(values_OD["ORIGIN"])):
+            values[str(i)] = {"ORI": values_OD["ID_ORI"][i], "DEST":values_OD["ID_DEST"]}
+            values_dj[str(i)] = {"DJ":matrix[i,:], "DJ_SUM":dj[i]}
+        return values, values_dj, dj, dj_n
 
+    def double_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> None:
+        # ------------------ Model 1
+        # distance filter step 1 and step 2, 1/dji^fd
+        if val_rest['REST'][0]['R_ORIG']['OPTION'] == 0:
+            matrix = np.where(matrix >= val_rest['REST'][0]['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
+        elif val_rest['REST'][0]['R_ORIG']['OPTION'] == 1:
+            matrix = np.where(matrix <= val_rest['REST'][0]['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
+        elif val_rest['REST'][0]['R_ORIG']['OPTION'] == 2:
+            matrix = np.where((matrix >= val_rest['REST'][0]['R_ORIG']['VALUE'][0]) & (matrix <= val_rest['REST'][0]['R_ORIG']['VALUE'][1]),1/(matrix**values_OD["FD"]),0)
+        
+        matrix_o = np.copy(matrix)
+        # Wj * 1/dji^fd
+        for i in range(0, len(values_OD["ORIGIN"])):
+            for j in range(0, len(values_OD["DEST"])):
+                matrix[i,j] = matrix[i,j] * values_OD["DEST"][j]
+        
+        # ai = 1/sum(wj/dij^fd)
+        suma = np.sum(matrix, axis=1)
+        pre_ai = 1/suma
+        # naN & Inf = 0
+        ai = np.nan_to_num(pre_ai, nan=0.0, posinf=0.0, neginf=0.0)
+        
+        # ----------------- Model 2
+        matrix2 = np.copy(matrix)
+        for i in range(0, len(values_OD["ORIGIN"])):
+            for j in range(0, len(values_OD["DEST"])):
+                matrix2[i,j] = matrix2[i,j] * values_OD["DEST"][j]
+        suma = np.sum(matrix, axis = 0)
+        pre_bj = 1/suma
+        # convirtiendo los naN e Inf en 0
+        bj = np.nan_to_num(pre_bj, nan=0.0, posinf=0.0, neginf=0.0)
+        
+        # ---- final
+        for i in range(0, len(values_OD["ORIGIN"])):
+            for j in range(0, len(values_OD["DEST"])):
+                matrix_o[i,j] *=  ai[i] * bj[j] * values_OD["DEST"][j] * values_OD["ORIGIN"][i]
+        
+        suma = np.sum(matrix_o,axis=0)
+        suma_final = np.round(suma)
+        
+        if val_rest['REST'][1]['R_DEST']['OPTION'] == 0:
+            suma_final = np.where(suma_final >= val_rest['REST'][1]['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest['REST'][1]['R_DEST']['OPTION'] == 1:
+            suma_final = np.where(suma_final <= val_rest['REST'][1]['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest['REST'][1]['R_DEST']['OPTION'] == 2:
+            suma_final = np.where((suma_final >= val_rest['REST'][1]['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['REST'][1]['R_DEST']['VALUE'][1]), suma_final,0)
+        
+        indexes = np.where(suma_final == 0)
+        for index in indexes[0].tolist():
+            matrix_o[:,index] = 0 
+        
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore
         values = []

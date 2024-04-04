@@ -41,9 +41,9 @@ import sys
 import os
 import time
 from .about_dialog import Ui_DialogBase
-from pathlib import PureWindowsPath
+import webbrowser
 
-sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM/")
+sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM" + os.sep)
 from Main import Main #type:ignore
 
 class SpatialInteractionModels:
@@ -83,6 +83,7 @@ class SpatialInteractionModels:
         self.dlg = SpatialInteractionModelsDialog()
         self.dlg2 = Ui_DialogBase()
         self.connections()
+        self.manual_path = self.plugin_dir + os.sep + "SIM" + os.sep + "Manual.htm#"
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -338,7 +339,12 @@ class SpatialInteractionModels:
         # Origin -dest btns
         self.dlg.btn_origin.clicked.connect(self.load_origin)
         self.dlg.btn_dest.clicked.connect(self.load_dest)
-
+        
+        #helpers
+        self.dlg.btn_ayuda1.clicked.connect(self.input_help)
+        self.dlg.btn_ayuda2.clicked.connect(self.restrictions_help)
+        self.dlg.btn_ayuda3.clicked.connect(self.outputs_help)
+        
     # ------ TABS
     def tab_inputs(self):
         self.dlg.tabWidget.setCurrentIndex(0)
@@ -888,28 +894,30 @@ class SpatialInteractionModels:
             tipo_filt_dist = self.dlg.tipo_filt_dist.currentIndex() - 1
             if tipo_filt_dist == 0 or tipo_filt_dist == 1:
                 val1_dist = float(self.dlg.val1_dist.text())
-                rest_data={"R_ORIG":
+                rest_data1={"R_ORIG":
                                     {"OPTION": tipo_filt_dist,
                                     "VALUE":[val1_dist]}}
             elif tipo_filt_dist == 2:
                 val1_dist = float(self.dlg.val1_dist.text())
                 val2_dist = float(self.dlg.val2_dist.text())
-                rest_data={"R_ORIG":
+                rest_data1={"R_ORIG":
                                     {"OPTION": tipo_filt_dist,
                                     "VALUE":[val1_dist, val2_dist]}}
 
             tipo_filt_fluj = self.dlg.tipo_filt_fluj.currentIndex() - 1
             if tipo_filt_fluj == 0 or tipo_filt_fluj == 1:
                 val1_fluj = float(self.dlg.val1_fluj.text())
-                rest_data={"R_DEST":
+                rest_data2={"R_DEST":
                                     {"OPTION": tipo_filt_fluj,
                                     "VALUE":[val1_fluj]}}
             elif tipo_filt_fluj == 2:
                 val1_fluj = float(self.dlg.val1_fluj.text())
                 val2_fluj = float(self.dlg.val2_fluj.text())
-                rest_data={"R_DEST":
+                rest_data2={"R_DEST":
                                     {"OPTION": tipo_filt_fluj,
                                     "VALUE":[val1_fluj, val2_fluj]}}
+                
+            rest_data = {"REST": [rest_data1, rest_data2]}
             reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
 
         measure = self.dlg.measure_combobox.currentIndex() - 1
@@ -970,3 +978,15 @@ class SpatialInteractionModels:
         end = time.time()
         print(f'Tiempo de ejecución: {end - start} segundos')
 
+    def input_help(self):
+        input_p = self.manual_path + '_Toc161040182'
+        webbrowser.open(input_p)
+        print(input_p)
+    
+    def restrictions_help(self):
+        rest_p = self.manual_path + '_Toc161040183'
+        webbrowser.open_new_tab(rest_p)    
+    
+    def outputs_help(self):
+        output_p = self.manual_path + '_Toc161040184'
+        webbrowser.open_new_tab(output_p)
