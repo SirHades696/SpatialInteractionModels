@@ -208,8 +208,9 @@ class Main:
         elif self.params["RESTR"] == 1:
             destination_clone.setName(destination_clone.name()+"_RD")
             progressBar.setValue(60)
-            values, values_dj, dj = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
+            values, values_dj, dj, dj_n = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
             capas.add_index(origin_clone,dj, "DJ_SUM")
+            capas.add_index(origin_clone,dj_n, "DJ_SUM_N")
             vlayer = destination_clone.clone()
             vlayer.setName(destination_clone.name()+"_hmap")
             QgsProject.instance().addMapLayer(vlayer,False)
@@ -221,10 +222,10 @@ class Main:
             capas.thematic_points(vlayer,"",2,self.var_dest)
             
             if flag:
-                capas.thematic_polygons(origin_clone,"DJ_SUM",0)
+                capas.thematic_polygons(origin_clone,"DJ_SUM_N",0)
                 capas.thematic_polygons(origin_SinDemanda,"",1)
             else:
-                capas.thematic_points(origin_clone,"ORI",1,"DJ_SUM")
+                capas.thematic_points(origin_clone,"ORI",1,"DJ_SUM_N")
                 capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
                 
             if self.params["EXPORTS"]["Memory"] == True:

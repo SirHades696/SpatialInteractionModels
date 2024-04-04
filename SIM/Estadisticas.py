@@ -117,6 +117,7 @@ class Estadisticas:
             suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
         
         dj = suma_final.tolist()
+        dj_n = self.normalize(suma_final)
         indexes = np.where(suma_final == 0)
         for index in indexes[0].tolist():
             matrix[index,:] = 0
@@ -126,7 +127,7 @@ class Estadisticas:
         for i in range(0, len(values_OD["ORIGIN"])):
             values[str(i)] = {"ORI": values_OD["ID_ORI"][i], "DEST":values_OD["ID_DEST"]}
             values_dj[str(i)] = {"DJ":matrix[i,:], "DJ_SUM":dj[i]}
-        return values, values_dj, dj
+        return values, values_dj, dj, dj_n
 
     def double_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> None:
         # ------------------ Model 1
@@ -178,8 +179,6 @@ class Estadisticas:
         indexes = np.where(suma_final == 0)
         for index in indexes[0].tolist():
             matrix_o[:,index] = 0 
-                
-        np.savetxt('C:/Users/nonas/Desktop/Test/matrix.csv', matrix_o, delimiter=',')
         
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore
