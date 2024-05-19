@@ -206,6 +206,8 @@ class Main:
             
         #------ dest restriction
         elif self.params["RESTR"] == 1:
+            dest_n = estadisticas.normalize(np.array(dests))
+            capas.add_index(destination_clone, dest_n, self.var_dest + "_N")
             destination_clone.setName(destination_clone.name()+"_RD")
             progressBar.setValue(60)
             values, values_dj, dj, dj_n = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
@@ -218,7 +220,7 @@ class Main:
                 
             layers = [origin_SinDemanda,  destination_clone, origin_clone, vlayer]
             
-            capas.thematic_points(destination_clone,"",1,self.var_dest)
+            capas.thematic_points(destination_clone,"",1,self.var_dest + "_N")
             capas.thematic_points(vlayer,"",2,self.var_dest)
             
             if flag:

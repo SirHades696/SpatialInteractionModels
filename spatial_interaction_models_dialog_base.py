@@ -497,7 +497,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.hd_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Genera archivos Shapefile con la información creada por el modelo."))
         self.hd_check.setText(_translate("SpatialInteractionModelsDialogBase", "Guardar en Shapefile"))
         self.memory_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "<html><head/><body><p align=\"justify\">Genera capas temporales para mostrar los resultados.</p></body></html>"))
-        self.memory_check.setText(_translate("SpatialInteractionModelsDialogBase", "Visualizar capas en el espacio de trabajo"))
+        self.memory_check.setText(_translate("SpatialInteractionModelsDialogBase", "Visualizar capas en el espacio de trabajo (Temporales)"))
         self.sqlite_check_load.setText(_translate("SpatialInteractionModelsDialogBase", "Agregar a QGIS"))
         self.geojson_check_load.setText(_translate("SpatialInteractionModelsDialogBase", "Agregar a QGIS"))
         self.geopackage_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Genera un archivo Geopackage con la información creada por el modelo."))
