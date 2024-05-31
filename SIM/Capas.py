@@ -13,6 +13,25 @@ except ImportError:
         print("Error")
 
 class Capas:
+    def __init__(self):
+        color1 = QColor("#7b7b7b")  # gray
+        color2 = QColor("#b7b7b7")  # gray deg
+        color3 = QColor("#f7f7f7")  # white
+        color4 = QColor("#c2a5cf")  # purple deg
+        color5 = QColor("#7b3294")  # purple
+
+        style = QgsStyle().defaultStyle()
+        ramp = QgsStyle().defaultStyle().colorRamp("GyWtPu")
+        if ramp is None:
+            ramp = QgsGradientColorRamp(color1, color5, False)
+            stops = [
+                QgsGradientStop(0.25, color2),
+                QgsGradientStop(0.50, color3),
+                QgsGradientStop(0.75, color4)
+            ]
+            ramp.setStops(stops)
+            style.addColorRamp("GyWtPu", ramp)
+    
     def layer_filter(self, layer:QgsVectorLayer, field_name:str) -> list:
         exprs = [f'"{field_name}" > 0',f'"{field_name}" <= 0']
         layers = []
@@ -388,8 +407,8 @@ class Capas:
             clasificacion = [QgsGraduatedSymbolRenderer.Jenks] #type:ignore
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()
-            ind_c = color_ramp.index("RdYlGn")
-            ramp = style.colorRamp(color_ramp[ind_c]) #RdYlGn
+            ind_c = color_ramp.index("GyWtPu")
+            ramp = style.colorRamp(color_ramp[ind_c]) #Gray White Purple
             if l_type == "ORI":
                 ramp.invert()
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field_name, 5, clasificacion[0], symbol, ramp)
@@ -402,7 +421,7 @@ class Capas:
             values = layer.uniqueValues(layer.fields().indexFromName(field_name))
             max_v = max(values)
             heatmap = QgsHeatmapRenderer()
-            ramp = QgsStyle().defaultStyle().colorRamp('RdYlGn')
+            ramp = QgsStyle().defaultStyle().colorRamp('GyWtPu')
             heatmap.setColorRamp(ramp)
             heatmap.setMaximumValue(max_v)
             heatmap.setWeightExpression(field_name)

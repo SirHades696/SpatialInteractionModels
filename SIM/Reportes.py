@@ -23,9 +23,9 @@ except:
     
 class Reportes:
 
-    def __init__(self, IDs:dict, values:dict, params:dict) -> None:
+    def __init__(self, IDs:dict, values:dict, params:dict, data:dict) -> None:
         self.params = params
-        
+        self.data = data
         if self.params["RESTR"] == 0:
             df = pd.DataFrame.from_dict(IDs, orient='index')
             df_DEST = df.explode('ORI')
@@ -303,8 +303,8 @@ class Reportes:
         return unit, tipo_rest, tipo_filt, values_r
 
     def save_calcs(self) -> None:
-        if any(self.params["SAVE"][ext] for ext in ["XLS", "ODS", "CSV"]):
-            path_calcs = os.path.join(self.params["OUTPUT"], "Estadisticas")
+        if any(self.params["SAVE"][ext] for ext in ["XLS", "ODS", "CSV", "MATRIX"]):
+            path_calcs = os.path.join(self.params["OUTPUT"], "Estadisticas") + "/"
             if not os.path.exists(path_calcs):
                 os.makedirs(path_calcs)
                 os.chmod(path_calcs, 0o777)
@@ -339,6 +339,15 @@ class Reportes:
                     self.df.to_csv(path_csv, index=False)
                 except Exception as e:
                     print(f"Error: {e}")
+            
+            if self.params["SAVE"]["MATRIX"] == True:
+                try:
+                    path_matrix = path_calcs + self.params["PREFIJO"] + '_MatrizInteraccionE.csv'
+                    df = pd.DataFrame(self.data["matrix"], columns=self.data["id_dest"], index=self.data["id_orig"])
+                    df.to_csv(path_matrix)
+                except Exception as e:
+                    print(f"Error: {e}")
+            
                                     
     def boxplot(self, data:pd.DataFrame, column:str, plot_title:str, hv_dt:pd.DataFrame.columns, tr:str) -> str:
         path_plots = self.params["OUTPUT"] + "Graficas/"

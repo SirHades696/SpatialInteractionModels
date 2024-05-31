@@ -87,7 +87,7 @@ class Estadisticas:
                 values_oi[str(count)] = {"OI": aux_v , "OI_SUM": round(oi[i]), "OI_SUM_N": oi_n[i]}
                 count += 1
         
-        return values, values_oi, oi.tolist(), oi_n
+        return values, values_oi, oi.tolist(), oi_n, matrix
 
     def dest_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> tuple:
         #----- first step
@@ -128,12 +128,16 @@ class Estadisticas:
         for i in range(0, len(values_OD["ORIGIN"])):
             values[str(i)] = {"ORI": values_OD["ID_ORI"][i], "DEST":values_OD["ID_DEST"]}
             values_dj[str(i)] = {"DJ":matrix[i,:], "DJ_SUM":dj[i]}
-        return values, values_dj, dj, dj_n
+        return values, values_dj, dj, dj_n, matrix
 
     def doubly_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> None:
-        matrix = np.power(matrix,1)
-        matrix = 1 / matrix
-
+        if val_rest['R_ORIG']['OPTION'] == 0:
+            matrix = np.where(matrix >= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
+        elif val_rest['R_ORIG']['OPTION'] == 1:
+            matrix = np.where(matrix <= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
+        elif val_rest['R_ORIG']['OPTION'] == 2:
+            matrix = np.where((matrix >= val_rest['R_ORIG']['VALUE'][0]) & (matrix <= val_rest['R_ORIG']['VALUE'][1]),1/(matrix**values_OD["FD"]),0)
+            
         ai = np.ones(len(values_OD["ORIGIN"]))
         bj = np.ones(len(values_OD["DEST"]))
         filas, columnas = matrix.shape
@@ -189,16 +193,30 @@ class Estadisticas:
             else:
                 if error_dj_sum == error_dj_old and error_oi_sum == error_oi_old:
                     c +=1
-                    if c == 20:
+                    if c == 10:
                         break
             error_dj_old = error_dj_sum
             error_oi_old = error_oi_sum
                     
-                    
         for i in range(filas):
             for j in range(columnas):
                 matrix[i, j] *= ai[i] * bj[j] * values_OD["ORIGIN"][i] * values_OD["DEST"][j]
-        np.savetxt("Matrix_final.csv", matrix, delimiter=",")
+        
+        suma = np.sum(matrix,axis=1)
+        suma_final = np.round(suma)
+
+        if val_rest['R_DEST']['OPTION'] == 0:
+            suma_final = np.where(suma_final >= val_rest['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest['R_DEST']['OPTION'] == 1:
+            suma_final = np.where(suma_final <= val_rest['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest['R_DEST']['OPTION'] == 2:
+            suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
+            
+        indexes = np.where(suma_final == 0)
+        for index in indexes[0].tolist():
+            matrix[index,:] = 0
+        
+        return matrix
         
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore

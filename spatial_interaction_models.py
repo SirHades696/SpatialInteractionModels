@@ -379,6 +379,7 @@ class SpatialInteractionModels:
         self.dlg.val2_fluj.setStyleSheet("")
         if index != 0:
             if index == 1:
+                self.dlg.filt_combobox.setStyleSheet("")
                 self.dlg.group_reports.setVisible(True)
                 self.dlg.check_lineas.setVisible(True)
                 self.dlg.check_exe_f.setVisible(False)
@@ -394,6 +395,7 @@ class SpatialInteractionModels:
                 self.dlg.val1_fluj.setVisible(False)
                 self.dlg.val2_fluj.setVisible(False)
             elif index == 2:
+                self.dlg.filt_combobox.setStyleSheet("")
                 self.dlg.group_reports.setVisible(True)
                 self.dlg.check_lineas.setVisible(False)
                 self.dlg.check_exe_f.setVisible(True)
@@ -410,6 +412,7 @@ class SpatialInteractionModels:
                 self.dlg.val2_fluj.setVisible(False)
                 
             elif index == 3:
+                self.dlg.filt_combobox.setStyleSheet("")
                 self.dlg.group_reports.setVisible(False)
                 self.dlg.check_lineas.setVisible(False)
                 self.dlg.check_exe_f.setVisible(False)
@@ -973,6 +976,7 @@ class SpatialInteractionModels:
         xls_check = self.dlg.xls_check.isChecked()
         ods_check = self.dlg.ods_check.isChecked()
         csv_check = self.dlg.csv_check.isChecked()
+        matrix_check = self.dlg.matrix_check.isChecked()
         
         lines = self.dlg.check_lineas.isChecked()
 
@@ -1003,7 +1007,8 @@ class SpatialInteractionModels:
                 "SAVE": {
                     "XLS":xls_check,
                     "ODS":ods_check,
-                    "CSV":csv_check
+                    "CSV":csv_check,
+                    "MATRIX":matrix_check
                     },
                 "REPORTS":reports,
                 "LINES" : lines

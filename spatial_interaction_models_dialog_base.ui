@@ -1014,7 +1014,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Genera capas temporales para mostrar los resultados.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Visualizar capas en el espacio de trabajo</string>
+             <string>Solo temporales</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -1107,6 +1107,16 @@
             </property>
             <property name="text">
              <string>Generar CSV</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="matrix_check">
+            <property name="toolTip">
+             <string>Crea un CSV con la matriz de interacción espacial calculada.</string>
+            </property>
+            <property name="text">
+             <string>Guardar Matriz de Interacción Espacial</string>
             </property>
            </widget>
           </item>
