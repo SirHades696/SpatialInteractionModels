@@ -168,92 +168,60 @@ class Capas:
         epsg = matrix_OD[0][0].crs().authid()
         lines_layers_name = []
         if l_type == 0:
-            for i in range(len(matrix_OD)):
-                origin_features = matrix_OD[i][0].getFeatures()
-                destination_features = matrix_OD[i][1].getFeatures()
-                index_O = matrix_OD[i][0].fields().indexFromName(id_dest)
-                index_D = matrix_OD[i][1].fields().indexFromName(id_ori)
-                # Create a empty Linestring
+            # Preparación fuera del bucle principal
+            for i, (origin_layer, destination_layer) in enumerate(matrix_OD):
+                origin_features = origin_layer.getFeatures()
+                destination_features = destination_layer.getFeatures()
+                index_O = origin_layer.fields().indexFromName(id_dest)
+                index_D = destination_layer.fields().indexFromName(id_ori)
+                
+                # Crear capa de líneas una vez por iteración principal
                 fields = QgsFields()
                 fields.append(QgsField('ID_ORI', QVariant.String))
                 fields.append(QgsField('ID_DEST', QVariant.String))
                 fields.append(QgsField('OI_RO', QVariant.Double))
                 fields.append(QgsField('OI_SUM', QVariant.Double))
                 fields.append(QgsField('OI_SUM_N', QVariant.Double))
-                layer_name = 'Lineas_RO_' + str(i+1)
-                lines_layer = QgsVectorLayer('LineString?crs='+epsg, layer_name, 'memory')
-                #lines_layers_name.append(lines_layer.id())
+                
+                layer_name = f'Lineas_RO_{i+1}'
+                lines_layer = QgsVectorLayer(f'LineString?crs={epsg}', layer_name, 'memory')
                 lines_layers_name.append(temp_path + layer_name + ".shp")
                 lines_layer.dataProvider().addAttributes(fields)
                 lines_layer.updateFields()
+                
+                # Crear lista para almacenar características antes de añadirlas en masa
+                features_to_add = []
 
                 for origin_feature in origin_features:
-                    column = 0
-                    for destination_feature in destination_features:
-                        # get a geometry
-                        origin_geometry = origin_feature.geometry()
+                    origin_geometry = origin_feature.geometry()
+                    attr_valueO = origin_feature.attributes()[index_O]
+                    
+                    for column, destination_feature in enumerate(destination_features):
                         destination_geometry = destination_feature.geometry()
-
-                        # create a line geometry
+                        
+                        # Crear geometría de la línea
                         line_geometry = QgsGeometry.fromPolylineXY([origin_geometry.asPoint(), destination_geometry.asPoint()])
-
-                        # adding feature by feature
-                        line_feature = QgsFeature()
-                        line_feature.setGeometry(line_geometry)
-                        attr_valueO = origin_feature.attributes()[index_O]
-                        attr_valueD = destination_feature.attributes()[index_D]
-                        line_feature.setAttributes([attr_valueO, attr_valueD, values_oi[str(i)]["OI"][column], values_oi[str(i)]["OI_SUM"], values_oi[str(i)]["OI_SUM_N"]])
-
-                        # adding features
-                        lines_layer.dataProvider().addFeatures([line_feature])
-
-                        # Agregar la capa al proyecto
-                        layer_path = temp_path + layer_name + ".shp"
-                        QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
-                        column +=1
-        else:
-            for i in range(len(matrix_OD)):
-                destination_features = matrix_OD[i][0].getFeatures()
-                origin_features = matrix_OD[i][1].getFeatures()
-                index_D = matrix_OD[i][0].fields().indexFromName(id_dest)
-                index_O = matrix_OD[i][1].fields().indexFromName(id_ori)
-                # Create a empty Linestring
-                fields = QgsFields()
-                fields.append(QgsField('ID_DEST', QVariant.String))
-                fields.append(QgsField('ID_ORI', QVariant.String))
-                fields.append(QgsField('DJ_RD', QVariant.Double))
-                fields.append(QgsField('DJ_SUM', QVariant.Int))
-                layer_name = 'Lineas_RD_' + str(i+1)
-                lines_layer = QgsVectorLayer('LineString?crs='+epsg, layer_name, 'memory')
-                #lines_layers_name.append(lines_layer.id())
-                lines_layers_name.append(temp_path + layer_name + ".shp")
-                lines_layer.dataProvider().addAttributes(fields)
-                lines_layer.updateFields()
-
-                for destination_feature in destination_features:
-                    column = 0
-                    for origin_feature in origin_features:
-                        # get a geometry
-                        destination_geometry = destination_feature.geometry()
-                        origin_geometry = origin_feature.geometry()
-
-                        # create a line geometry
-                        line_geometry = QgsGeometry.fromPolylineXY([destination_geometry.asPoint(), origin_geometry.asPoint()])
-
-                        # adding feature by feature
+                        
+                        # Crear y configurar la característica de la línea
                         line_feature = QgsFeature()
                         line_feature.setGeometry(line_geometry)
                         attr_valueD = destination_feature.attributes()[index_D]
-                        attr_valueO = origin_feature.attributes()[index_O]
-                        line_feature.setAttributes([attr_valueD, attr_valueO, float(values_oi[str(i)]["DJ"][column]), values_oi[str(i)]["DJ_SUM"]])
-
-                        # adding features
-                        lines_layer.dataProvider().addFeatures([line_feature])
-
-                        # Agregar la capa al proyecto
-                        layer_path = temp_path + layer_name + ".shp"
-                        QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
-                        column +=1
+                        line_feature.setAttributes([
+                            attr_valueO, attr_valueD, 
+                            values_oi[str(i)]["OI"][column], 
+                            values_oi[str(i)]["OI_SUM"], 
+                            values_oi[str(i)]["OI_SUM_N"]
+                        ])
+                        
+                        # Añadir la característica a la lista
+                        features_to_add.append(line_feature)
+                
+                # Añadir todas las características al proveedor de datos de la capa de una sola vez
+                lines_layer.dataProvider().addFeatures(features_to_add)
+                
+                # Escribir la capa al archivo
+                layer_path = temp_path + layer_name + ".shp"
+                QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
 
         return lines_layers_name
 
@@ -407,7 +375,10 @@ class Capas:
             clasificacion = [QgsGraduatedSymbolRenderer.Jenks] #type:ignore
             style = QgsStyle().defaultStyle()
             color_ramp = style.colorRampNames()
-            ind_c = color_ramp.index("GyWtPu")
+            if l_type == "ORI":
+                ind_c = color_ramp.index("RdYlGn")
+            else:
+                ind_c = color_ramp.index("GyWtPu")
             ramp = style.colorRamp(color_ramp[ind_c]) #Gray White Purple
             if l_type == "ORI":
                 ramp.invert()

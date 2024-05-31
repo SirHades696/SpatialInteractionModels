@@ -106,7 +106,7 @@ class Main:
         lys = capas.layer_filter(origin_clone,self.var_origin)
         origin_clone = lys[0]
         origin_SinDemanda = lys[1]
-
+        
         flag = False
         if origin_clone.geometryType() == 2: #Polygon
             # calcula los centroides del archivo de origen (poligonos)
@@ -183,13 +183,21 @@ class Main:
                 hmap.setName(destination_clone.name()+"_hmap")
                 capas.thematic_points(hmap,"",2,"OI_SUM_N")
                 thematic_layers.append(hmap)
-                capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                else:
+                    thematic_layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda])
             else:
                 hmap = destination_clone.clone()
                 hmap.setName(destination_clone.name()+"_hmap")
                 capas.thematic_points(hmap,"",2,"OI_SUM_N")
                 thematic_layers.append(hmap)
-                capas.thematic_polygons(origin_SinDemanda,"",1)
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_polygons(origin_SinDemanda,"",1)
+                else:
+                    thematic_layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda]) 
                 capas.thematic_polygons(origin_clone, self.var_origin + "_N",0)
                 
             if self.params["EXPORTS"]["Memory"] == True:
@@ -231,10 +239,18 @@ class Main:
             
             if flag:
                 capas.thematic_polygons(origin_clone,"DJ_SUM_N",0)
-                capas.thematic_polygons(origin_SinDemanda,"",1)
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_polygons(origin_SinDemanda,"",1)
+                else:
+                    layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda])   
             else:
                 capas.thematic_points(origin_clone,"ORI",1,"DJ_SUM_N")
-                capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                else:
+                    layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda])                    
                 
             if self.params["EXPORTS"]["Memory"] == True:
                 root = QgsProject.instance().layerTreeRoot()
