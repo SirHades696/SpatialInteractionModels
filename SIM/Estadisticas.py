@@ -197,7 +197,7 @@ class Estadisticas:
                         break
             error_dj_old = error_dj_sum
             error_oi_old = error_oi_sum
-                    
+    
         for i in range(filas):
             for j in range(columnas):
                 matrix[i, j] *= ai[i] * bj[j] * values_OD["ORIGIN"][i] * values_OD["DEST"][j]
