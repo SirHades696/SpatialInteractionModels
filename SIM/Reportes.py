@@ -23,9 +23,9 @@ except:
     
 class Reportes:
 
-    def __init__(self, IDs:dict, values:dict, params:dict) -> None:
+    def __init__(self, IDs:dict, values:dict, params:dict, data:dict) -> None:
         self.params = params
-        
+        self.data = data
         if self.params["RESTR"] == 0:
             df = pd.DataFrame.from_dict(IDs, orient='index')
             df_DEST = df.explode('ORI')
@@ -303,34 +303,52 @@ class Reportes:
         return unit, tipo_rest, tipo_filt, values_r
 
     def save_calcs(self) -> None:
-        if any(self.params["SAVE"][ext] for ext in ["XLS", "ODS", "CSV"]):
-            path_calcs = os.path.join(self.params["OUTPUT"], "Estadisticas")
+        if any(self.params["SAVE"][ext] for ext in ["XLS", "ODS", "CSV", "MATRIX"]):
+            path_calcs = os.path.join(self.params["OUTPUT"], "Estadisticas") + "/"
             if not os.path.exists(path_calcs):
                 os.makedirs(path_calcs)
                 os.chmod(path_calcs, 0o777)
             
             if self.params["SAVE"]["XLS"] == True:
-                path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
-                chunk_size = 65500
-                chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
-                with pd.ExcelWriter(path_xls) as writer: #type:ignore
-                    for i, chunk in enumerate(chunks):
-                        chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
+                try:
+                    path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
+                    chunk_size = 65500
+                    chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
+                    with pd.ExcelWriter(path_xls) as writer: #type:ignore
+                        for i, chunk in enumerate(chunks):
+                            chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
+                except Exception as e:
+                    print(f"Error: {e}")
 
             if self.params["SAVE"]["ODS"] == True:
-                path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE.ods'
-                df = self.df.astype(str)
-                headers = list(df.columns)
-                data = OrderedDict()
-                chunks = [df[i:i+65500] for i in range(0, df.shape[0], 65500)]
-                for i, chunk in enumerate(chunks):
-                    data.update({f"Resultados_{i+1}": [headers] + chunk.values.tolist()})
-                save_data(path_ods, data)
-
+                try:
+                    path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE.ods'
+                    df = self.df.astype(str)
+                    headers = list(df.columns)
+                    data = OrderedDict()
+                    chunks = [df[i:i+65500] for i in range(0, df.shape[0], 65500)]
+                    for i, chunk in enumerate(chunks):
+                        data.update({f"Resultados_{i+1}": [headers] + chunk.values.tolist()})
+                    save_data(path_ods, data)
+                except Exception as e:
+                    print(f"Error: {e}")
+                    
             if self.params["SAVE"]["CSV"] == True:
-                path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.csv'
-                self.df.to_csv(path_csv, index=False)
-                
+                try:
+                    path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.csv'
+                    self.df.to_csv(path_csv, index=False)
+                except Exception as e:
+                    print(f"Error: {e}")
+            
+            if self.params["SAVE"]["MATRIX"] == True:
+                try:
+                    path_matrix = path_calcs + self.params["PREFIJO"] + '_MatrizInteraccionE.csv'
+                    df = pd.DataFrame(self.data["matrix"], columns=self.data["id_dest"], index=self.data["id_orig"])
+                    df.to_csv(path_matrix)
+                except Exception as e:
+                    print(f"Error: {e}")
+            
+                                    
     def boxplot(self, data:pd.DataFrame, column:str, plot_title:str, hv_dt:pd.DataFrame.columns, tr:str) -> str:
         path_plots = self.params["OUTPUT"] + "Graficas/"
         if not os.path.exists(path_plots):

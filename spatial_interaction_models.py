@@ -42,9 +42,11 @@ import os
 import time
 from .about_dialog import Ui_DialogBase
 import webbrowser
+from urllib.parse import unquote
 
 sys.path.insert(0, os.path.dirname(__file__) + os.sep + "SIM" + os.sep)
 from Main import Main #type:ignore
+from Estadisticas import Estadisticas
 
 class SpatialInteractionModels:
     """QGIS Plugin Implementation."""
@@ -83,7 +85,7 @@ class SpatialInteractionModels:
         self.dlg = SpatialInteractionModelsDialog()
         self.dlg2 = Ui_DialogBase()
         self.connections()
-        self.manual_path = self.plugin_dir + os.sep + "SIM" + os.sep + "Manual.htm#"
+        self.manual_path = self.plugin_dir + os.sep + "SIM" + os.sep + "Manual.htm"
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -216,8 +218,11 @@ class SpatialInteractionModels:
 
         #----------Restrictions
         self.dlg.filt_combobox.setCurrentIndex(0)
+        self.dlg.filt_combobox.setStyleSheet("")
         self.dlg.measure_combobox.setCurrentIndex(0)
+        self.dlg.measure_combobox.setStyleSheet("")
         self.dlg.friction_distance.clear()
+        self.dlg.friction_distance.setStyleSheet("")
         self.dlg.tipo_filt_dist.setCurrentIndex(0)
         self.dlg.tipo_filt_fluj.setCurrentIndex(0)
         self.dlg.tipo_filt_dist.setEnabled(False)
@@ -374,6 +379,7 @@ class SpatialInteractionModels:
         self.dlg.val2_fluj.setStyleSheet("")
         if index != 0:
             if index == 1:
+                self.dlg.filt_combobox.setStyleSheet("")
                 self.dlg.group_reports.setVisible(True)
                 self.dlg.check_lineas.setVisible(True)
                 self.dlg.check_exe_f.setVisible(False)
@@ -389,6 +395,7 @@ class SpatialInteractionModels:
                 self.dlg.val1_fluj.setVisible(False)
                 self.dlg.val2_fluj.setVisible(False)
             elif index == 2:
+                self.dlg.filt_combobox.setStyleSheet("")
                 self.dlg.group_reports.setVisible(True)
                 self.dlg.check_lineas.setVisible(False)
                 self.dlg.check_exe_f.setVisible(True)
@@ -405,20 +412,55 @@ class SpatialInteractionModels:
                 self.dlg.val2_fluj.setVisible(False)
                 
             elif index == 3:
-                self.dlg.group_reports.setVisible(True)
-                self.dlg.check_lineas.setVisible(True)
-                self.dlg.check_exe_f.setVisible(True)
-                self.dlg.check_exe_s.setVisible(True)
-                self.dlg.groupBox.setVisible(True)
-                self.dlg.groupBox_2.setVisible(True)
-                self.dlg.tipo_filt_dist.setEnabled(True)
+                self.dlg.filt_combobox.setStyleSheet("")
+                self.dlg.group_reports.setVisible(False)
+                self.dlg.check_lineas.setVisible(False)
+                self.dlg.check_exe_f.setVisible(False)
+                self.dlg.check_exe_s.setVisible(False)
+                self.dlg.groupBox.setVisible(False)
+                self.dlg.groupBox_2.setVisible(False)
+                self.dlg.tipo_filt_dist.setEnabled(False)
                 self.dlg.tipo_filt_dist.setCurrentIndex(0)
-                self.dlg.tipo_filt_fluj.setEnabled(True)
+                self.dlg.tipo_filt_fluj.setEnabled(False)
                 self.dlg.tipo_filt_fluj.setCurrentIndex(0)
                 self.dlg.val1_dist.setVisible(False)
                 self.dlg.val2_dist.setVisible(False)
                 self.dlg.val1_fluj.setVisible(False)
                 self.dlg.val2_fluj.setVisible(False)
+                estadisticas = Estadisticas()
+                
+                origin = self.dlg.origin_combobox.currentLayer()
+                field_origin = self.dlg.field_origin_combobox.currentField()
+                data_origin = estadisticas.extract_data(origin, field_origin)
+
+                dest = self.dlg.dest_combobox.currentLayer()
+                field_dest = self.dlg.field_dest_combobox.currentField()                
+                data_dest = estadisticas.extract_data(dest, field_dest)
+                
+                data_origin = [val for val in data_origin if val > 0]
+                
+                if len(data_origin) == len(data_dest):
+                    if sum(data_origin) == sum(data_dest):        
+                        self.dlg.group_reports.setVisible(True)
+                        self.dlg.check_lineas.setVisible(True)
+                        self.dlg.check_exe_f.setVisible(True)
+                        self.dlg.check_exe_s.setVisible(True)
+                        self.dlg.groupBox.setVisible(True)
+                        self.dlg.groupBox_2.setVisible(True)
+                        self.dlg.tipo_filt_dist.setEnabled(True)
+                        self.dlg.tipo_filt_dist.setCurrentIndex(0)
+                        self.dlg.tipo_filt_fluj.setEnabled(True)
+                        self.dlg.tipo_filt_fluj.setCurrentIndex(0)
+                        self.dlg.val1_dist.setVisible(False)
+                        self.dlg.val2_dist.setVisible(False)
+                        self.dlg.val1_fluj.setVisible(False)
+                        self.dlg.val2_fluj.setVisible(False)
+                    else:
+                        self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                        self.set_message("Error",f"La suma total de los valores de oferta y demanda deben ser iguales", QMessageBox.Critical)
+                else:
+                    self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+                    self.set_message("Error",f"Las capas vectoriales no contienen el mismo número de elementos o la capa vectorial de origen contiene datos igual a 0", QMessageBox.Critical)
         else:
             self.dlg.group_reports.setVisible(False)
             self.dlg.groupBox.setVisible(False)
@@ -623,14 +665,12 @@ class SpatialInteractionModels:
             self.set_message("Error",f"Por favor, completa todos los campos", QMessageBox.Critical)
 
     def clear_restrictions(self):
-        comboboxes = [self.dlg.filt_combobox, self.dlg.measure_combobox, self.dlg.tipo_filt_dist, self.dlg.tipo_filt_fluj]
-
+        comboboxes = [self.dlg.measure_combobox, self.dlg.tipo_filt_dist, self.dlg.tipo_filt_fluj]
         for combobox in comboboxes:
             if combobox.currentIndex() != 0:
                 combobox.setStyleSheet("")
 
         lines = [self.dlg.friction_distance, self.dlg.val1_dist, self.dlg.val2_dist, self.dlg.val1_fluj, self.dlg.val2_fluj]
-
         for line in lines:
             if line.text() != "":
                 line.setStyleSheet("")
@@ -936,6 +976,7 @@ class SpatialInteractionModels:
         xls_check = self.dlg.xls_check.isChecked()
         ods_check = self.dlg.ods_check.isChecked()
         csv_check = self.dlg.csv_check.isChecked()
+        matrix_check = self.dlg.matrix_check.isChecked()
         
         lines = self.dlg.check_lineas.isChecked()
 
@@ -966,7 +1007,8 @@ class SpatialInteractionModels:
                 "SAVE": {
                     "XLS":xls_check,
                     "ODS":ods_check,
-                    "CSV":csv_check
+                    "CSV":csv_check,
+                    "MATRIX":matrix_check
                     },
                 "REPORTS":reports,
                 "LINES" : lines
@@ -979,14 +1021,13 @@ class SpatialInteractionModels:
         print(f'Tiempo de ejecución: {end - start} segundos')
 
     def input_help(self):
-        input_p = self.manual_path + '_Toc161040182'
+        input_p = self.manual_path + unquote("%23_Toc161040182")
         webbrowser.open(input_p)
-        print(input_p)
     
     def restrictions_help(self):
-        rest_p = self.manual_path + '_Toc161040183'
+        rest_p = self.manual_path + unquote("%23_Toc161040183")
         webbrowser.open_new_tab(rest_p)    
     
     def outputs_help(self):
-        output_p = self.manual_path + '_Toc161040184'
+        output_p = self.manual_path + unquote("%23_Toc161040184")
         webbrowser.open_new_tab(output_p)

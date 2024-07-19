@@ -106,7 +106,7 @@ class Main:
         lys = capas.layer_filter(origin_clone,self.var_origin)
         origin_clone = lys[0]
         origin_SinDemanda = lys[1]
-
+        
         flag = False
         if origin_clone.geometryType() == 2: #Polygon
             # calcula los centroides del archivo de origen (poligonos)
@@ -139,7 +139,7 @@ class Main:
         # -------------------- General process finished
         if self.params["RESTR"] == 0:
             destination_clone.setName(destination_clone.name()+"_RO")
-            values, values_oi, oi, oi_n = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
+            values, values_oi, oi, oi_n, matrix = estadisticas.origin_restriction(matrix,self.val_rest, values_OD)
             data_layers = {
                 "ORIGIN":origin_centroids,
                 "DEST":destination_clone
@@ -154,10 +154,11 @@ class Main:
             progressBar.setValue(50)
 
             for_lines, or_list = capas.features_selector_OR(data_layers,values, self.id_origin, self.id_dest,0)
-            layer_RO_p = capas.merge_layers(or_list, "Centroides_evaluados")
             
             thematic_layers = []
             if self.params["LINES"] is True:
+                layer_RO_p = capas.merge_layers(or_list, "Centroides_evaluados")
+                capas.thematic_points(layer_RO_p,"ORI",0,"")
                 try: 
                     with tempfile.TemporaryDirectory() as dir:
                         temp_path = dir + "/"
@@ -182,13 +183,21 @@ class Main:
                 hmap.setName(destination_clone.name()+"_hmap")
                 capas.thematic_points(hmap,"",2,"OI_SUM_N")
                 thematic_layers.append(hmap)
-                capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                else:
+                    thematic_layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda])
             else:
                 hmap = destination_clone.clone()
                 hmap.setName(destination_clone.name()+"_hmap")
                 capas.thematic_points(hmap,"",2,"OI_SUM_N")
                 thematic_layers.append(hmap)
-                capas.thematic_polygons(origin_SinDemanda,"",1)
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_polygons(origin_SinDemanda,"",1)
+                else:
+                    thematic_layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda]) 
                 capas.thematic_polygons(origin_clone, self.var_origin + "_N",0)
                 
             if self.params["EXPORTS"]["Memory"] == True:
@@ -199,16 +208,23 @@ class Main:
 
             gestor.save_Layers(thematic_layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
             # instancia de los reportes
-            Reportes(values, values_oi, self.params)
+            data = {
+                "id_orig": id_origins,
+                "id_dest": id_dests,
+                "matrix": matrix
+            }   
+            Reportes(values, values_oi, self.params, data)
             if self.params["LINES"] is True:
                 gestor.destroy_layers(layers)
             gestor.destroy_layers(or_list)
             
         #------ dest restriction
         elif self.params["RESTR"] == 1:
+            dest_n = estadisticas.normalize(np.array(dests))
+            capas.add_index(destination_clone, dest_n, self.var_dest + "_N")
             destination_clone.setName(destination_clone.name()+"_RD")
             progressBar.setValue(60)
-            values, values_dj, dj, dj_n = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
+            values, values_dj, dj, dj_n, matrix = estadisticas.dest_restriction(matrix, self.val_rest, values_OD)
             capas.add_index(origin_clone,dj, "DJ_SUM")
             capas.add_index(origin_clone,dj_n, "DJ_SUM_N")
             vlayer = destination_clone.clone()
@@ -218,15 +234,23 @@ class Main:
                 
             layers = [origin_SinDemanda,  destination_clone, origin_clone, vlayer]
             
-            capas.thematic_points(destination_clone,"",1,self.var_dest)
+            capas.thematic_points(destination_clone,"",1,self.var_dest + "_N")
             capas.thematic_points(vlayer,"",2,self.var_dest)
             
             if flag:
                 capas.thematic_polygons(origin_clone,"DJ_SUM_N",0)
-                capas.thematic_polygons(origin_SinDemanda,"",1)
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_polygons(origin_SinDemanda,"",1)
+                else:
+                    layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda])   
             else:
                 capas.thematic_points(origin_clone,"ORI",1,"DJ_SUM_N")
-                capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                if origin_SinDemanda.featureCount() > 0:
+                    capas.thematic_points(origin_SinDemanda,"SinDemanda",0,"")
+                else:
+                    layers.remove(origin_SinDemanda)
+                    gestor.destroy_layers([origin_SinDemanda])                    
                 
             if self.params["EXPORTS"]["Memory"] == True:
                 root = QgsProject.instance().layerTreeRoot()
@@ -235,11 +259,16 @@ class Main:
                     group.insertLayer(i,layer)
                     
             gestor.save_Layers(layers,self.output,self.params["EXPORTS"], self.params["PREFIJO"])
-            # instancia de los reportes   
-            Reportes(values, values_dj, self.params)
+            # instancia de los reportes
+            data = {
+                "id_orig": id_origins,
+                "id_dest": id_dests,
+                "matrix": matrix
+            }   
+            Reportes(values, values_dj, self.params, data)
             
         elif self.params["RESTR"] == 2:
-            estadisticas.double_restriction(matrix,self.val_rest, values_OD)
+            matrix = estadisticas.double_restriction(matrix,self.val_rest, values_OD)
 
         messageBar.clearWidgets()
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore
