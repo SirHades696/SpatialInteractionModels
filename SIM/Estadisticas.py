@@ -131,12 +131,12 @@ class Estadisticas:
         return values, values_dj, dj, dj_n, matrix
 
     def doubly_restriction(self, matrix:np.ndarray, val_rest:dict, values_OD:dict) -> None:
-        if val_rest['R_ORIG']['OPTION'] == 0:
-            matrix = np.where(matrix >= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
-        elif val_rest['R_ORIG']['OPTION'] == 1:
-            matrix = np.where(matrix <= val_rest['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
-        elif val_rest['R_ORIG']['OPTION'] == 2:
-            matrix = np.where((matrix >= val_rest['R_ORIG']['VALUE'][0]) & (matrix <= val_rest['R_ORIG']['VALUE'][1]),1/(matrix**values_OD["FD"]),0)
+        if val_rest["REST"][0]['R_ORIG']['OPTION'] == 0:
+            matrix = np.where(matrix >= val_rest["REST"][0]['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
+        elif val_rest["REST"][0]['R_ORIG']['OPTION'] == 1:
+            matrix = np.where(matrix <= val_rest["REST"][0]['R_ORIG']['VALUE'][0],1/(matrix**values_OD["FD"]),0)
+        elif val_rest["REST"][0]['R_ORIG']['OPTION'] == 2:
+            matrix = np.where((matrix >= val_rest["REST"][0]['R_ORIG']['VALUE'][0]) & (matrix <= val_rest["REST"][0]['R_ORIG']['VALUE'][1]),1/(matrix**values_OD["FD"]),0)
             
         ai = np.ones(len(values_OD["ORIGIN"]))
         bj = np.ones(len(values_OD["DEST"]))
@@ -205,18 +205,60 @@ class Estadisticas:
         suma = np.sum(matrix,axis=1)
         suma_final = np.round(suma)
 
-        if val_rest['R_DEST']['OPTION'] == 0:
-            suma_final = np.where(suma_final >= val_rest['R_DEST']['VALUE'][0],suma_final,0)
-        elif val_rest['R_DEST']['OPTION'] == 1:
-            suma_final = np.where(suma_final <= val_rest['R_DEST']['VALUE'][0],suma_final,0)
-        elif val_rest['R_DEST']['OPTION'] == 2:
-            suma_final = np.where((suma_final >= val_rest['R_DEST']['VALUE'][0]) & (suma_final <= val_rest['R_DEST']['VALUE'][1]), suma_final,0)
+        if val_rest["REST"][1]['R_DEST']['OPTION'] == 0:
+            suma_final = np.where(suma_final >= val_rest["REST"][1]['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest["REST"][1]['R_DEST']['OPTION'] == 1:
+            suma_final = np.where(suma_final <= val_rest["REST"][1]['R_DEST']['VALUE'][0],suma_final,0)
+        elif val_rest["REST"][1]['R_DEST']['OPTION'] == 2:
+            suma_final = np.where((suma_final >= val_rest["REST"][1]['R_DEST']['VALUE'][0]) & (suma_final <= val_rest["REST"][1]['R_DEST']['VALUE'][1]), suma_final,0)
             
         indexes = np.where(suma_final == 0)
         for index in indexes[0].tolist():
             matrix[index,:] = 0
+
+        # --------------- AI
+        sum_ai = np.sum(matrix,axis=0)
+        ai = np.nan_to_num(sum_ai, nan=0.0,posinf=0.0, neginf=0.0)
+        ai_n = self.normalize(ai)
+        matrix_T = matrix.T
+        valuesAI = {} #IDs
+        values_ai = {} #Values of AI, total and individual
         
-        return matrix
+        count = 0
+        for i in range(0, len(values_OD["DEST"])):
+            aux = []
+            aux_v = []
+            for j in range(0, len(values_OD["ORIGIN"])):
+                if matrix_T[i,j] > 0:
+                    aux.append(values_OD["ID_ORI"][j])
+                    aux_v.append(float(matrix_T[i,j]))
+            if len(aux) != 0 and len(aux_v) != 0:
+                valuesAI[str(count)] = {"DEST": values_OD["ID_DEST"][i], "ORI": aux}
+                values_ai[str(count)] = {"AI": aux_v , "AI_SUM": round(ai[i]), "AI_SUM_N":ai_n[i]}
+                count += 1
+        
+        # ------------------- BJ
+        sum_bj = np.sum(matrix,axis=1)
+        suma_final = np.round(suma)
+        bj = np.nan_to_num(suma_final.tolist(), nan=0.0,posinf=0.0, neginf=0.0)
+        bj_n = self.normalize(bj)
+        
+        valuesBJ = {}
+        values_bj = {}
+        count = 0
+        for i in range(0, len(values_OD["ORIGIN"])):
+            aux = []
+            aux_v = []
+            for j in range(0, len(values_OD["DEST"])):
+                if matrix[i,j] > 0:
+                    aux.append(values_OD["ID_DEST"][j])
+                    aux_v.append(float(matrix[i,j]))
+            if len(aux) != 0 and len(aux_v) != 0:      
+                valuesBJ[str(count)] = {"ORI": values_OD["ID_ORI"][i], "DEST": aux}
+                values_bj[str(count)] = {"BJ": aux_v, "BJ_SUM":round(bj[i]), "BJ_SUM_N":bj_n[i]}
+                count += 1
+                        
+        return matrix, valuesAI, values_ai, ai.tolist(), valuesBJ, values_bj, bj.tolist()
         
     def extract_data(self, layer:QgsVectorLayer, name_attr: str) -> list:
         request = QgsFeatureRequest().setFlags(QgsFeatureRequest.NoGeometry) # type:ignore

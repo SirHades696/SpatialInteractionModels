@@ -145,3 +145,18 @@ class GestorArchivos:
                     ly = QgsVectorLayer(f"{out['OUTPUT']}|layername={i.GetName()}", i.GetName(), 'ogr')
                     QgsProject.instance().addMapLayer(ly, False)
                     group.addLayer(ly)
+
+    def delete_dup(self, layer:QgsVectorLayer, field:str):
+        if not layer.isEditable():
+            layer.startEditing()
+        atributos_vistos = set()
+        duplicados = []
+        for feature in layer.getFeatures():
+            atributos = tuple(feature[field])
+            if atributos in atributos_vistos:
+                duplicados.append(feature.id())
+            else:
+                atributos_vistos.add(atributos)
+        if duplicados:
+            layer.deleteFeatures(duplicados)
+        layer.commitChanges()

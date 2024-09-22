@@ -125,7 +125,6 @@ class Main:
         dests = estadisticas.extract_data(destination_clone,self.var_dest)
         id_origins = estadisticas.extract_data(origin_clone, self.id_origin)
         id_dests = estadisticas.extract_data(destination_clone, self.id_dest)
-        
         progressBar.setValue(40)
         # Construcción del dict que contiene los valores extraídos de la oferta/demanda y IDs
         values_OD = {
@@ -158,6 +157,7 @@ class Main:
             thematic_layers = []
             if self.params["LINES"] is True:
                 layer_RO_p = capas.merge_layers(or_list, "Centroides_evaluados")
+                gestor.delete_dup(layer_RO_p,self.id_origin)
                 capas.thematic_points(layer_RO_p,"ORI",0,"")
                 try: 
                     with tempfile.TemporaryDirectory() as dir:
@@ -268,7 +268,37 @@ class Main:
             Reportes(values, values_dj, self.params, data)
             
         elif self.params["RESTR"] == 2:
-            matrix = estadisticas.double_restriction(matrix,self.val_rest, values_OD)
+            matrix, valuesAI, values_ai, ai, valuesBJ, values_bj, bj = estadisticas.doubly_restriction(matrix,self.val_rest, values_OD)          
+            data_layers = {
+                "ORIGIN":origin_centroids,
+                "DEST":destination_clone
+                }
+            
+            progressBar.setValue(50)
+            # ---------------------- AI
+            for_linesAI, ai_list = capas.features_selector_OR(data_layers, valuesAI, self.id_origin, self.id_dest,0)
+
+            layer_RO_p = capas.merge_layers(ai_list, "Origenes_evaluados")
+            gestor.delete_dup(layer_RO_p,self.id_origin)
+            try: 
+                with tempfile.TemporaryDirectory() as dir:
+                    temp_path = dir + "/"
+                    layers = capas.create_lines_RO(for_linesAI, values_ai, self.id_origin, self.id_dest, temp_path,1)
+                    layer_RO = capas.merge_layers(layers, "Lineas_conectividad")
+            except Exception as e:
+                pass
+            
+            # --------------------- BJ
+            for_linesBJ, bj_list = capas.features_selector_OR(data_layers, valuesBJ, self.id_origin, self.id_dest,1)
+            layer_RD_p = capas.merge_layers(bj_list, "Destinos_evaluados")
+            gestor.delete_dup(layer_RD_p,self.id_dest)
+            
+            thematic_layers = [layer_RO, layer_RO_p, layer_RD_p]
+            root = QgsProject.instance().layerTreeRoot()
+            group = root.addGroup(aux_pref)
+            for i, layer in enumerate(thematic_layers):
+                group.insertLayer(i,layer)
+            
 
         messageBar.clearWidgets()
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore

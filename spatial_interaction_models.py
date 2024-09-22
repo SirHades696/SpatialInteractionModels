@@ -371,6 +371,9 @@ class SpatialInteractionModels:
 
     def restrictions(self):
         index = self.dlg.filt_combobox.currentIndex()
+        self.dlg.check_lineas.setStyleSheet("")
+        self.dlg.check_exe_f.setStyleSheet("")
+        self.dlg.check_exe_s.setStyleSheet("")
         self.dlg.tipo_filt_dist.setStyleSheet("")
         self.dlg.tipo_filt_fluj.setStyleSheet("")
         self.dlg.val1_dist.setStyleSheet("")
@@ -441,10 +444,10 @@ class SpatialInteractionModels:
                 
                 if len(data_origin) == len(data_dest):
                     if sum(data_origin) == sum(data_dest):        
-                        self.dlg.group_reports.setVisible(True)
-                        self.dlg.check_lineas.setVisible(True)
-                        self.dlg.check_exe_f.setVisible(True)
-                        self.dlg.check_exe_s.setVisible(True)
+                        self.dlg.group_reports.setVisible(False)
+                        self.dlg.check_lineas.setVisible(False)
+                        self.dlg.check_exe_f.setVisible(False)
+                        self.dlg.check_exe_s.setVisible(False)
                         self.dlg.groupBox.setVisible(True)
                         self.dlg.groupBox_2.setVisible(True)
                         self.dlg.tipo_filt_dist.setEnabled(True)
@@ -823,17 +826,18 @@ class SpatialInteractionModels:
 
                 if auxflag1 and auxflag2:
                     flag1 = True
-            
-            checks = [self.dlg.check_exe_f, self.dlg.check_exe_s]
-            aux = []
-            for check in checks:
-                if check.isChecked() == True:
-                    aux.append(True)
-                    flag2 = True
-                    break
-            if len(aux) == 0:
-                for check in checks:
-                    check.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+            flag2 = True
+            # fv = self.dlg.check_exe_f.setChecked(True)
+            # checks = [fv, self.dlg.check_exe_s]
+            # aux = []
+            # for check in checks:
+            #     if check.isChecked() == True:
+            #         aux.append(True)
+            #         flag2 = True
+            #         break
+            # if len(aux) == 0:
+            #     for check in checks:
+            #         check.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
 
         if flag1 and flag3 and flag4 and flag5 and flag2:
             self.dlg.tabWidget.setTabEnabled(2,True)

@@ -402,6 +402,8 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.gridLayout_15.addWidget(self.check_projects, 0, 0, 1, 1)
         self.gridLayout_14.addWidget(self.widget_4, 0, 0, 1, 2)
         self.gridLayout_6.addWidget(self.groupBox_7, 6, 0, 1, 2)
+        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_6.addItem(spacerItem5, 7, 0, 1, 1)
         self.tabWidget.addTab(self.outputs, "")
         self.gridLayout.addWidget(self.tabWidget, 0, 1, 1, 1)
 
@@ -522,7 +524,6 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.check_projects.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Utilizar la ruta de almacenamiento de un proyecto previo."))
         self.check_projects.setText(_translate("SpatialInteractionModelsDialogBase", "Seleccionar proyecto actual [Opcional]"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.outputs), _translate("SpatialInteractionModelsDialogBase", "Salidas"))
-
 from qgis import gui
 from .resources import *
 
