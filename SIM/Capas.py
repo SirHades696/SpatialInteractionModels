@@ -117,111 +117,131 @@ class Capas:
             matrix_OD = [list(par) for par in zip(origin_list, dest_list)]
             return matrix_OD, dest_list
         else:
-            # For dest
-            for field in dest_fields:
-                if field.name() == id_dest:
+            # Origin
+            for field in origin_fields:
+                if field.name() == id_ori:
                     for i in range(0,len(values)):
-                        dest.removeSelection()
+                        origin.removeSelection()
                         if field.type() == 7 or field.type() == 10: # for strings
-                            expr = f"\"{id_dest}\"=\'{values[str(i)]['DEST']}\'"
+                            expr = f"\"{id_ori}\"=\'{values[str(i)]['ORI']}\'"
                         else:
-                            expr = f"\"{id_dest}\"={values[str(i)]['DEST']}"
+                            expr = f"\"{id_ori}\"={values[str(i)]['ORI']}"
                         data = {
-                                "INPUT":dest,
+                                "INPUT":origin,
                                 "EXPRESSION":expr,
                                 "METHOD":1
                                 }
                         selected_features = processing.run("qgis:selectbyexpression",data)
                         data2 = {
                                 "INPUT":selected_features["OUTPUT"],
-                                "OUTPUT":"memory:"+str(values[str(i)]['DEST'])}
+                                "OUTPUT":"memory:"+str(values[str(i)]['ORI'])}
                         saved = processing.run("native:saveselectedfeatures",data2)
                         dest_list.append(saved["OUTPUT"])
 
-            # for origins
-            for field in origin_fields:
-                if field.name() == id_ori:
+            # Dest
+            for field in dest_fields:
+                if field.name() == id_dest:
                     for i in range(0,len(values)):
-                        origin.removeSelection()
+                        dest.removeSelection()
                         selected_features = {}
-                        for j in range(0, len(values[str(i)]["ORI"])):
+                        for j in range(0, len(values[str(i)]["DEST"])):
                             if field.type() == 7 or field.type() == 10: # for strings
-                                expr = f"\"{id_ori}\"=\'{values[str(i)]['ORI'][j]}\'"
+                                expr = f"\"{id_dest}\"=\'{values[str(i)]['DEST'][j]}\'"
                             else:
-                                expr = f"\"{id_ori}\"={values[str(i)]['ORI'][j]}"
+                                expr = f"\"{id_dest}\"={values[str(i)]['DEST'][j]}"
                             data = {
-                                    "INPUT":origin,
+                                    "INPUT":dest,
                                     "EXPRESSION":expr,
                                     "METHOD":1
                                     }
                             selected_features = processing.run("qgis:selectbyexpression",data)
                         data2 = {
                                 "INPUT":selected_features["OUTPUT"],
-                                "OUTPUT":"memory:"+dest.name()+"_"+str(i+1)}
+                                "OUTPUT":"memory:"+str(values[str(i)]['DEST'][j])}
                         saved = processing.run("native:saveselectedfeatures",data2)
                         origin_list.append(saved["OUTPUT"])
             # Matrix with Origins and Dest (filters)
             matrix_OD = [list(par) for par in zip(dest_list, origin_list)]
-            return matrix_OD, dest_list
+            return matrix_OD, origin_list
         
     def create_lines_RO(self,matrix_OD:list, values_oi:dict, id_ori: str, id_dest:str, temp_path:str, l_type:int) -> list:
         epsg = matrix_OD[0][0].crs().authid()
         lines_layers_name = []
         if l_type == 0:
-            # Preparación fuera del bucle principal
-            for i, (origin_layer, destination_layer) in enumerate(matrix_OD):
-                origin_features = origin_layer.getFeatures()
-                destination_features = destination_layer.getFeatures()
-                index_O = origin_layer.fields().indexFromName(id_dest)
-                index_D = destination_layer.fields().indexFromName(id_ori)
-                
-                # Crear capa de líneas una vez por iteración principal
-                fields = QgsFields()
-                fields.append(QgsField('ID_ORI', QVariant.String))
-                fields.append(QgsField('ID_DEST', QVariant.String))
-                fields.append(QgsField('OI_RO', QVariant.Double))
-                fields.append(QgsField('OI_SUM', QVariant.Double))
-                fields.append(QgsField('OI_SUM_N', QVariant.Double))
-                
-                layer_name = f'Lineas_RO_{i+1}'
-                lines_layer = QgsVectorLayer(f'LineString?crs={epsg}', layer_name, 'memory')
-                lines_layers_name.append(temp_path + layer_name + ".shp")
-                lines_layer.dataProvider().addAttributes(fields)
-                lines_layer.updateFields()
-                
-                # Crear lista para almacenar características antes de añadirlas en masa
-                features_to_add = []
+            qf_id1 = "ID_ORI"
+            qf_id2 = "ID_DEST"
+            qf_var1 = "OI_RO"
+            qf_var2 = "OI_SUM"
+            qf_var3 = "OI_SUM_N"
+            ly_nme = "RO"
+            hd1 = "OI"
+            hd2 = "OI_SUM"
+            hd3 = "OI_SUM_N"
+        elif l_type == 1:
+            qf_id1 = "ID_ORI"
+            qf_id2 = "ID_DEST"
+            qf_var1 = "AI_DR"
+            qf_var2 = "AI_SUM"
+            qf_var3 = "AI_SUM_N"
+            ly_nme = "DRO"
+            hd1 = "AI"
+            hd2 = "AI_SUM"
+            hd3 = "AI_SUM_N"
+            
+        # Preparación fuera del bucle principal
+        for i, (origin_layer, destination_layer) in enumerate(matrix_OD):
+            origin_features = origin_layer.getFeatures()
+            destination_features = destination_layer.getFeatures()
+            index_O = origin_layer.fields().indexFromName(id_dest)
+            index_D = destination_layer.fields().indexFromName(id_ori)
+            
+            # Crear capa de líneas una vez por iteración principal
+            fields = QgsFields()
+            fields.append(QgsField(qf_id1, QVariant.String))
+            fields.append(QgsField(qf_id2, QVariant.String))
+            fields.append(QgsField(qf_var1, QVariant.Double))
+            fields.append(QgsField(qf_var2, QVariant.Double))
+            fields.append(QgsField(qf_var3, QVariant.Double))
+            
+            layer_name = 'Lineas_' + ly_nme + f'_{i+1}'
+            lines_layer = QgsVectorLayer(f'LineString?crs={epsg}', layer_name, 'memory')
+            lines_layers_name.append(temp_path + layer_name + ".shp")
+            lines_layer.dataProvider().addAttributes(fields)
+            lines_layer.updateFields()
+            
+            # Crear lista para almacenar características antes de añadirlas en masa
+            features_to_add = []
 
-                for origin_feature in origin_features:
-                    origin_geometry = origin_feature.geometry()
-                    attr_valueO = origin_feature.attributes()[index_O]
+            for origin_feature in origin_features:
+                origin_geometry = origin_feature.geometry()
+                attr_valueO = origin_feature.attributes()[index_O]
+                
+                for column, destination_feature in enumerate(destination_features):
+                    destination_geometry = destination_feature.geometry()
                     
-                    for column, destination_feature in enumerate(destination_features):
-                        destination_geometry = destination_feature.geometry()
-                        
-                        # Crear geometría de la línea
-                        line_geometry = QgsGeometry.fromPolylineXY([origin_geometry.asPoint(), destination_geometry.asPoint()])
-                        
-                        # Crear y configurar la característica de la línea
-                        line_feature = QgsFeature()
-                        line_feature.setGeometry(line_geometry)
-                        attr_valueD = destination_feature.attributes()[index_D]
-                        line_feature.setAttributes([
-                            attr_valueO, attr_valueD, 
-                            values_oi[str(i)]["OI"][column], 
-                            values_oi[str(i)]["OI_SUM"], 
-                            values_oi[str(i)]["OI_SUM_N"]
-                        ])
-                        
-                        # Añadir la característica a la lista
-                        features_to_add.append(line_feature)
-                
-                # Añadir todas las características al proveedor de datos de la capa de una sola vez
-                lines_layer.dataProvider().addFeatures(features_to_add)
-                
-                # Escribir la capa al archivo
-                layer_path = temp_path + layer_name + ".shp"
-                QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
+                    # Crear geometría de la línea
+                    line_geometry = QgsGeometry.fromPolylineXY([origin_geometry.asPoint(), destination_geometry.asPoint()])
+                    
+                    # Crear y configurar la característica de la línea
+                    line_feature = QgsFeature()
+                    line_feature.setGeometry(line_geometry)
+                    attr_valueD = destination_feature.attributes()[index_D]
+                    line_feature.setAttributes([
+                        attr_valueO, attr_valueD, 
+                        values_oi[str(i)][hd1][column], 
+                        values_oi[str(i)][hd2], 
+                        values_oi[str(i)][hd3]
+                    ])
+                    
+                    # Añadir la característica a la lista
+                    features_to_add.append(line_feature)
+            
+            # Añadir todas las características al proveedor de datos de la capa de una sola vez
+            lines_layer.dataProvider().addFeatures(features_to_add)
+            
+            # Escribir la capa al archivo
+            layer_path = temp_path + layer_name + ".shp"
+            QgsVectorFileWriter.writeAsVectorFormat(lines_layer, layer_path, "UTF-8", lines_layer.crs(), "ESRI Shapefile")
 
         return lines_layers_name
 
@@ -322,12 +342,20 @@ class Capas:
                 outline_color = '255,255,255,255'
                 outline_width = '0.4'
                 scale_method = 'diameter'
-                size = '1.5'
+                size = '4'
                 name = 'circle'
                 angle = '0'
             elif l_type == "SinDemanda":
                 color = '83,83,83,255'
                 outline_color = '247,247,247,255'
+                outline_width = '0.4'
+                scale_method = 'diameter'
+                size = '4'
+                name = 'circle'
+                angle = '0'
+            elif l_type == "DR":
+                color = '219,30,42,255'
+                outline_color = '128,17,25,255'
                 outline_width = '0.4'
                 scale_method = 'diameter'
                 size = '4'
@@ -383,7 +411,6 @@ class Capas:
             if l_type == "ORI":
                 ramp.invert()
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field_name, 5, clasificacion[0], symbol, ramp)
-            # pendiente para agregar el contorno blanco
             layer.setRenderer(renderer)
             layer.triggerRepaint()
             QgsProject.instance().reloadAllLayers()

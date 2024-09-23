@@ -11,21 +11,25 @@ try:
     from pyexcel_ods3 import save_data
     from bs4 import BeautifulSoup
     import plotly.express as px
+    import openpyxl
 except:
     subprocess.call(["pip", "install", "pandas"])
     subprocess.call(["pip", "install", "pyexcel-ods3"])
     subprocess.call(["pip", "install", "beautifulsoup4"])
     subprocess.call(["pip", "install", "plotly"])
+    subprocess.call(["pip", "install", "openpyxl"])
     import pandas as pd
     from pyexcel_ods3 import save_data
     from bs4 import BeautifulSoup
     import plotly.express as px
+    import openpyxl 
     
 class Reportes:
 
-    def __init__(self, IDs:dict, values:dict, params:dict, data:dict) -> None:
+    def __init__(self, IDs:dict, values:dict, params:dict, data:dict, val:str = None) -> None:
         self.params = params
         self.data = data
+        self.val = val
         if self.params["RESTR"] == 0:
             df = pd.DataFrame.from_dict(IDs, orient='index')
             df_DEST = df.explode('ORI')
@@ -46,6 +50,9 @@ class Reportes:
             self.df['ACC_PROM'] = self.df['ACC_PROM'].astype(float).round(4)
             self.df['ACC_STD'] = self.df['ACC_STD'].astype(float).round(4)
             pd.set_option('colheader_justify', 'center')
+            
+            self.report_HTML()
+            self.save_calcs()
             
         elif self.params["RESTR"] == 1:
             if self.params["REPORTS"][0] == True:
@@ -83,8 +90,57 @@ class Reportes:
                 self.df2 = pd.DataFrame(conteo).reset_index()
                 self.df2.columns = ['Flujos', 'Total']
             
-        self.report_HTML()
-        self.save_calcs()
+            self.report_HTML()
+            self.save_calcs() 
+            
+        elif self.params["RESTR"] == 2:
+            if val == "RO":
+                df = pd.DataFrame.from_dict(IDs, orient='index')
+                df_DEST = df.explode('ORI')
+                new_df = pd.DataFrame.from_dict(values, orient='index')
+                new_df_OI = new_df.explode('AI')
+                new_df_OI['ACC_PROM'] = new_df.apply(lambda row: row['AI_SUM']/len(row['AI']), axis=1)
+                new_df_OI['ACC_STD'] = new_df['AI'].apply(lambda x: np.std(x))
+                self.df = pd.concat([df_DEST.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
+                self.df['TOT_DEST'] = self.df.groupby('DEST')['ORI'].transform('count')
+                self.df.rename(columns={'ORI': 'CVE_ORI',
+                                'DEST': 'CVE_DEST',
+                                'AI':'ACC_IND',
+                                'AI_SUM':'ACC_TOT'}, inplace=True)
+                self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
+                self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+                self.df['ACC_IND'] = self.df['ACC_IND'].astype(float).round(4)
+                self.df['ACC_TOT'] = self.df['ACC_TOT'].astype(float).round(4)
+                self.df['ACC_PROM'] = self.df['ACC_PROM'].astype(float).round(4)
+                self.df['ACC_STD'] = self.df['ACC_STD'].astype(float).round(4)
+                pd.set_option('colheader_justify', 'center')
+                
+                self.report_HTML()
+                self.save_calcs("_RO") 
+
+            if val == "RD":
+                df = pd.DataFrame.from_dict(IDs, orient='index')
+                df_ORI = df.explode('DEST')
+                new_df = pd.DataFrame.from_dict(values, orient='index')
+                new_df_OI = new_df.explode('BJ')
+                new_df_OI['FLUJ_PROM'] = new_df.apply(lambda row: row['BJ_SUM']/len(row['BJ']), axis=1)
+                new_df_OI['FLUJ_STD'] = new_df['BJ'].apply(lambda x: np.std(x))
+                self.df = pd.concat([df_ORI.reset_index(drop=True), new_df_OI.reset_index(drop=True)], axis=1)
+                self.df['TOT_ORI'] = self.df.groupby('ORI')['DEST'].transform('count')
+                self.df.rename(columns={'DEST': 'CVE_DEST',
+                                'ORI': 'CVE_ORI',
+                                'BJ':'FLUJ_IND',
+                                'BJ_SUM':'FLUJ_TOT'}, inplace=True)
+                self.df['CVE_ORI'] = self.df['CVE_ORI'].astype(str)
+                self.df['CVE_DEST'] = self.df['CVE_DEST'].astype(str)
+                self.df['FLUJ_IND'] = self.df['FLUJ_IND'].astype(float).round(4)
+                self.df['FLUJ_TOT'] = self.df['FLUJ_TOT'].astype(int)
+                self.df['FLUJ_PROM'] = self.df['FLUJ_PROM'].astype(float).round(4)
+                self.df['FLUJ_STD'] = self.df['FLUJ_STD'].astype(float).round(4)
+                pd.set_option('colheader_justify', 'center')
+                
+                self.report_HTML()
+                self.save_calcs("_RD") 
 
     def report_HTML(self) -> None:
         path_file = os.path.dirname(os.path.abspath(__file__))
@@ -96,7 +152,7 @@ class Reportes:
             os.makedirs(path_reports)
             os.chmod(path_reports, 0o777)
         
-        if self.params["RESTR"] == 0:
+        if self.params["RESTR"] == 0 or (self.params["RESTR"] == 2 and self.val == "RO"):
             path = path_reports + self.params["PREFIJO"] + '_ReporteMIE_RO.html'
             html = self.df.to_html(classes='content-table" id="tabla',index=False)
             soup = BeautifulSoup(html, 'html.parser')
@@ -154,7 +210,7 @@ class Reportes:
             if os.path.isfile(bp_path):
                 webbrowser.open_new_tab(bp_path)
                 
-        elif self.params["RESTR"] == 1:
+        elif self.params["RESTR"] == 1 or (self.params["RESTR"] == 2 and self.val == "RD"):
             if self.params["REPORTS"][0] == True:
                 path = path_reports + self.params["PREFIJO"] + '_ReporteMIE_RD.html'
                 html = self.df.to_html(classes='content-table" id="tabla',index=False)
@@ -274,7 +330,7 @@ class Reportes:
 
         tipo_rest, tipo_filt, values_r = "","",""
         if self.params["RESTR"] == 0:
-            tipo_rest = "Restricción en el orígen"
+            tipo_rest = "Restricción en el origen"
             if self.params["VAL_REST"]["R_ORIG"]["OPTION"] == 0:
                 tipo_filt = "Mayor que..."
                 values_r = str(self.params["VAL_REST"]["R_ORIG"]["VALUE"][0])
@@ -297,12 +353,33 @@ class Reportes:
                 tipo_filt = "Rango"
                 values_r = "Entre " + str(self.params["VAL_REST"]["R_DEST"]["VALUE"][0]) + " y " + str(self.params["VAL_REST"]["R_DEST"]["VALUE"][1])
         else:
-            tipo_rest = "Doblemente restrictivo"
-            #Pendiente
-            #Agregar cada unas de las  caracteristicas de los modelos doblemente restrictivos
+            
+            if self.params["RESTR"] == 2 and self.val == "RO":
+                tipo_rest = "Restricción en el origen"
+                if self.params["VAL_REST"]["REST"][0]["R_ORIG"]["OPTION"] == 0:
+                    tipo_filt = "Mayor que..."
+                    values_r = str(self.params["VAL_REST"]["REST"][0]["R_ORIG"]["VALUE"][0])
+                elif self.params["VAL_REST"]["REST"][0]["R_ORIG"]["OPTION"] == 1:
+                    tipo_filt = "Menor que..."
+                    values_r = str(self.params["VAL_REST"]["REST"][0]["R_ORIG"]["VALUE"][0])
+                else:
+                    tipo_filt = "Rango"
+                    values_r = "Entre " + str(self.params["VAL_REST"]["REST"][0]["R_ORIG"]["VALUE"][0]) + " y " + str(self.params["VAL_REST"]["REST"][0]["R_ORIG"]["VALUE"][1])
+            
+            elif self.params["RESTR"] == 2 and self.val == "RD":
+                tipo_rest = "Restricción en el destino"
+                if self.params["VAL_REST"]["REST"][1]["R_DEST"]["OPTION"] == 0:
+                    tipo_filt = "Mayor que..."
+                    values_r = str(self.params["VAL_REST"]["REST"][1]["R_DEST"]["VALUE"][0])
+                elif self.params["VAL_REST"]["REST"][1]["R_DEST"]["OPTION"] == 1:
+                    tipo_filt = "Menor que..."
+                    values_r = str(self.params["VAL_REST"]["REST"][1]["R_DEST"]["VALUE"][0])
+                else:
+                    tipo_filt = "Rango"
+                    values_r = "Entre " + str(self.params["VAL_REST"]["REST"][1]["R_DEST"]["VALUE"][0]) + " y " + str(self.params["VAL_REST"]["REST"][1]["R_DEST"]["VALUE"][1])
         return unit, tipo_rest, tipo_filt, values_r
 
-    def save_calcs(self) -> None:
+    def save_calcs(self, val:str = None) -> None:
         if any(self.params["SAVE"][ext] for ext in ["XLS", "ODS", "CSV", "MATRIX"]):
             path_calcs = os.path.join(self.params["OUTPUT"], "Estadisticas") + "/"
             if not os.path.exists(path_calcs):
@@ -311,10 +388,10 @@ class Reportes:
             
             if self.params["SAVE"]["XLS"] == True:
                 try:
-                    path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.xls'
+                    path_xls = path_calcs + self.params["PREFIJO"] + '_ReporteMIE' + val + '.xlsx'
                     chunk_size = 65500
                     chunks = [self.df[i:i+chunk_size] for i in range(0, self.df.shape[0], chunk_size)]
-                    with pd.ExcelWriter(path_xls) as writer: #type:ignore
+                    with pd.ExcelWriter(path_xls, engine='openpyxl') as writer: #type:ignore
                         for i, chunk in enumerate(chunks):
                             chunk.to_excel(writer, sheet_name='Resultados'+str(i), index=False)
                 except Exception as e:
@@ -322,7 +399,7 @@ class Reportes:
 
             if self.params["SAVE"]["ODS"] == True:
                 try:
-                    path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE.ods'
+                    path_ods = path_calcs + self.params["PREFIJO"] +'_ReporteMIE' + val + '.ods'
                     df = self.df.astype(str)
                     headers = list(df.columns)
                     data = OrderedDict()
@@ -335,7 +412,7 @@ class Reportes:
                     
             if self.params["SAVE"]["CSV"] == True:
                 try:
-                    path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE.csv'
+                    path_csv = path_calcs + self.params["PREFIJO"] + '_ReporteMIE' + val + '.csv'
                     self.df.to_csv(path_csv, index=False)
                 except Exception as e:
                     print(f"Error: {e}")

@@ -130,7 +130,7 @@ class SpatialInteractionModels:
         self.dlg.exec_()
     
     def load_origin(self):
-        path_layer = QFileDialog.getOpenFileName(self.dlg, "Selecciona un archivo vectorial de orígen", "", "*.shp")
+        path_layer = QFileDialog.getOpenFileName(self.dlg, "Selecciona un archivo vectorial de origen", "", "*.shp")
         if(path_layer[0] != ""):
             sp = path_layer[0].split("/")
             name = sp[-1].split(".shp")[0]
@@ -276,6 +276,7 @@ class SpatialInteractionModels:
         self.dlg.csv_check.setChecked(False)
         self.dlg.ods_check.setChecked(False)
         self.dlg.xls_check.setChecked(False)
+        self.dlg.matrix_check.setChecked(False)
         
         self.dlg.prefijo.clear()
         self.dlg.output.clear()
@@ -371,6 +372,9 @@ class SpatialInteractionModels:
 
     def restrictions(self):
         index = self.dlg.filt_combobox.currentIndex()
+        self.dlg.check_lineas.setStyleSheet("")
+        self.dlg.check_exe_f.setStyleSheet("")
+        self.dlg.check_exe_s.setStyleSheet("")
         self.dlg.tipo_filt_dist.setStyleSheet("")
         self.dlg.tipo_filt_fluj.setStyleSheet("")
         self.dlg.val1_dist.setStyleSheet("")
@@ -441,10 +445,10 @@ class SpatialInteractionModels:
                 
                 if len(data_origin) == len(data_dest):
                     if sum(data_origin) == sum(data_dest):        
-                        self.dlg.group_reports.setVisible(True)
-                        self.dlg.check_lineas.setVisible(True)
-                        self.dlg.check_exe_f.setVisible(True)
-                        self.dlg.check_exe_s.setVisible(True)
+                        self.dlg.group_reports.setVisible(False)
+                        self.dlg.check_lineas.setVisible(False)
+                        self.dlg.check_exe_f.setVisible(False)
+                        self.dlg.check_exe_s.setVisible(False)
                         self.dlg.groupBox.setVisible(True)
                         self.dlg.groupBox_2.setVisible(True)
                         self.dlg.tipo_filt_dist.setEnabled(True)
@@ -458,9 +462,11 @@ class SpatialInteractionModels:
                     else:
                         self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                         self.set_message("Error",f"La suma total de los valores de oferta y demanda deben ser iguales", QMessageBox.Critical)
+                        self.dlg.filt_combobox.setCurrentIndex(0)
                 else:
                     self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                     self.set_message("Error",f"Las capas vectoriales no contienen el mismo número de elementos o la capa vectorial de origen contiene datos igual a 0", QMessageBox.Critical)
+                    self.dlg.filt_combobox.setCurrentIndex(0)
         else:
             self.dlg.group_reports.setVisible(False)
             self.dlg.groupBox.setVisible(False)
@@ -648,14 +654,14 @@ class SpatialInteractionModels:
                 flags[3] = False
                 comboboxes[0].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                 comboboxes[3].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-                self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen: EPSG:{epsg1}\nDestino:EPSG:{epsg2}", QMessageBox.Critical)
+                self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrigen: EPSG:{epsg1}\nDestino:EPSG:{epsg2}", QMessageBox.Critical)
             else:
                 if epsg1 != epsg2:
                     flags[0] = False
                     flags[3] = False
                     comboboxes[0].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                     comboboxes[3].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-                    self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen:   EPSG:{epsg1}\nDestino: EPSG:{epsg2}", QMessageBox.Critical)
+                    self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrigen:   EPSG:{epsg1}\nDestino: EPSG:{epsg2}", QMessageBox.Critical)
                 else:
                     self.dlg.tabWidget.setTabEnabled(1,True)
                     self.dlg.tabWidget.setTabEnabled(0,False)
@@ -823,17 +829,18 @@ class SpatialInteractionModels:
 
                 if auxflag1 and auxflag2:
                     flag1 = True
-            
-            checks = [self.dlg.check_exe_f, self.dlg.check_exe_s]
-            aux = []
-            for check in checks:
-                if check.isChecked() == True:
-                    aux.append(True)
-                    flag2 = True
-                    break
-            if len(aux) == 0:
-                for check in checks:
-                    check.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
+            flag2 = True
+            # fv = self.dlg.check_exe_f.setChecked(True)
+            # checks = [fv, self.dlg.check_exe_s]
+            # aux = []
+            # for check in checks:
+            #     if check.isChecked() == True:
+            #         aux.append(True)
+            #         flag2 = True
+            #         break
+            # if len(aux) == 0:
+            #     for check in checks:
+            #         check.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
 
         if flag1 and flag3 and flag4 and flag5 and flag2:
             self.dlg.tabWidget.setTabEnabled(2,True)
@@ -956,9 +963,10 @@ class SpatialInteractionModels:
                 rest_data2={"R_DEST":
                                     {"OPTION": tipo_filt_fluj,
                                     "VALUE":[val1_fluj, val2_fluj]}}
+            reports = [True, False]
                 
             rest_data = {"REST": [rest_data1, rest_data2]}
-            reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
+            # reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
 
         measure = self.dlg.measure_combobox.currentIndex() - 1
         friction_distance = float(self.dlg.friction_distance.text())
