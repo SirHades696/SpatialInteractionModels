@@ -130,7 +130,7 @@ class SpatialInteractionModels:
         self.dlg.exec_()
     
     def load_origin(self):
-        path_layer = QFileDialog.getOpenFileName(self.dlg, "Selecciona un archivo vectorial de orígen", "", "*.shp")
+        path_layer = QFileDialog.getOpenFileName(self.dlg, "Selecciona un archivo vectorial de origen", "", "*.shp")
         if(path_layer[0] != ""):
             sp = path_layer[0].split("/")
             name = sp[-1].split(".shp")[0]
@@ -276,6 +276,7 @@ class SpatialInteractionModels:
         self.dlg.csv_check.setChecked(False)
         self.dlg.ods_check.setChecked(False)
         self.dlg.xls_check.setChecked(False)
+        self.dlg.matrix_check.setChecked(False)
         
         self.dlg.prefijo.clear()
         self.dlg.output.clear()
@@ -461,9 +462,11 @@ class SpatialInteractionModels:
                     else:
                         self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                         self.set_message("Error",f"La suma total de los valores de oferta y demanda deben ser iguales", QMessageBox.Critical)
+                        self.dlg.filt_combobox.setCurrentIndex(0)
                 else:
                     self.dlg.filt_combobox.setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                     self.set_message("Error",f"Las capas vectoriales no contienen el mismo número de elementos o la capa vectorial de origen contiene datos igual a 0", QMessageBox.Critical)
+                    self.dlg.filt_combobox.setCurrentIndex(0)
         else:
             self.dlg.group_reports.setVisible(False)
             self.dlg.groupBox.setVisible(False)
@@ -651,14 +654,14 @@ class SpatialInteractionModels:
                 flags[3] = False
                 comboboxes[0].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                 comboboxes[3].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-                self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen: EPSG:{epsg1}\nDestino:EPSG:{epsg2}", QMessageBox.Critical)
+                self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrigen: EPSG:{epsg1}\nDestino:EPSG:{epsg2}", QMessageBox.Critical)
             else:
                 if epsg1 != epsg2:
                     flags[0] = False
                     flags[3] = False
                     comboboxes[0].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
                     comboboxes[3].setStyleSheet("background-color: rgba(255, 107, 107, 150);")
-                    self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrígen:   EPSG:{epsg1}\nDestino: EPSG:{epsg2}", QMessageBox.Critical)
+                    self.set_message("Error",f"Las capas no tienen la misma proyección.\nOrigen:   EPSG:{epsg1}\nDestino: EPSG:{epsg2}", QMessageBox.Critical)
                 else:
                     self.dlg.tabWidget.setTabEnabled(1,True)
                     self.dlg.tabWidget.setTabEnabled(0,False)
@@ -960,9 +963,10 @@ class SpatialInteractionModels:
                 rest_data2={"R_DEST":
                                     {"OPTION": tipo_filt_fluj,
                                     "VALUE":[val1_fluj, val2_fluj]}}
+            reports = [True, False]
                 
             rest_data = {"REST": [rest_data1, rest_data2]}
-            reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
+            # reports = [self.dlg.check_exe_s.isChecked(), self.dlg.check_exe_f.isChecked()]
 
         measure = self.dlg.measure_combobox.currentIndex() - 1
         friction_distance = float(self.dlg.friction_distance.text())

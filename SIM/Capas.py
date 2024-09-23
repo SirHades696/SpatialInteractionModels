@@ -342,12 +342,20 @@ class Capas:
                 outline_color = '255,255,255,255'
                 outline_width = '0.4'
                 scale_method = 'diameter'
-                size = '1.5'
+                size = '4'
                 name = 'circle'
                 angle = '0'
             elif l_type == "SinDemanda":
                 color = '83,83,83,255'
                 outline_color = '247,247,247,255'
+                outline_width = '0.4'
+                scale_method = 'diameter'
+                size = '4'
+                name = 'circle'
+                angle = '0'
+            elif l_type == "DR":
+                color = '219,30,42,255'
+                outline_color = '128,17,25,255'
                 outline_width = '0.4'
                 scale_method = 'diameter'
                 size = '4'
@@ -403,7 +411,6 @@ class Capas:
             if l_type == "ORI":
                 ramp.invert()
             renderer = QgsGraduatedSymbolRenderer.createRenderer(layer, field_name, 5, clasificacion[0], symbol, ramp)
-            # pendiente para agregar el contorno blanco
             layer.setRenderer(renderer)
             layer.triggerRepaint()
             QgsProject.instance().reloadAllLayers()

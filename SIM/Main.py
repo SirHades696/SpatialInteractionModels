@@ -251,7 +251,7 @@ class Main:
                 else:
                     layers.remove(origin_SinDemanda)
                     gestor.destroy_layers([origin_SinDemanda])                    
-                
+            progressBar.setValue(80) 
             if self.params["EXPORTS"]["Memory"] == True:
                 root = QgsProject.instance().layerTreeRoot()
                 group = root.addGroup(aux_pref)
@@ -266,6 +266,7 @@ class Main:
                 "matrix": matrix
             }   
             Reportes(values, values_dj, self.params, data)
+            progressBar.setValue(90)
             
         elif self.params["RESTR"] == 2:
             matrix, valuesAI, values_ai, ai, valuesBJ, values_bj, bj = estadisticas.doubly_restriction(matrix,self.val_rest, values_OD)          
@@ -280,6 +281,7 @@ class Main:
 
             layer_RO_p = capas.merge_layers(ai_list, "Origenes_evaluados")
             gestor.delete_dup(layer_RO_p,self.id_origin)
+            capas.thematic_points(layer_RO_p,"ORI",0,"")
             try: 
                 with tempfile.TemporaryDirectory() as dir:
                     temp_path = dir + "/"
@@ -287,18 +289,37 @@ class Main:
                     layer_RO = capas.merge_layers(layers, "Lineas_conectividad")
             except Exception as e:
                 pass
-            
+            capas.thematic_lines(layer_RO, "AI_SUM_N")
+            progressBar.setValue(70)
             # --------------------- BJ
             for_linesBJ, bj_list = capas.features_selector_OR(data_layers, valuesBJ, self.id_origin, self.id_dest,1)
             layer_RD_p = capas.merge_layers(bj_list, "Destinos_evaluados")
             gestor.delete_dup(layer_RD_p,self.id_dest)
             
-            thematic_layers = [layer_RO, layer_RO_p, layer_RD_p]
-            root = QgsProject.instance().layerTreeRoot()
-            group = root.addGroup(aux_pref)
-            for i, layer in enumerate(thematic_layers):
-                group.insertLayer(i,layer)
+            capas.thematic_points(layer_RD_p,"DR",0,"")
             
-
+            thematic_layers = [layer_RO_p, layer_RD_p, layer_RO]
+            
+            if self.params["EXPORTS"]["Memory"] == True:
+                root = QgsProject.instance().layerTreeRoot()
+                group = root.addGroup(aux_pref)
+                for i, layer in enumerate(thematic_layers):
+                    group.insertLayer(i,layer)
+            progressBar.setValue(80)
+            gestor.save_Layers(thematic_layers, self.output, self.params["EXPORTS"], self.params["PREFIJO"])
+            
+            data = {
+                "id_orig": id_origins,
+                "id_dest": id_dests,
+                "matrix": matrix
+            } 
+            
+            Reportes(valuesAI, values_ai, self.params, data, "RO")
+            Reportes(valuesBJ, values_bj, self.params, data, "RD")
+            
+            gestor.destroy_layers(ai_list + bj_list + [origin_SinDemanda, origin_clone])
+            progressBar.setValue(90)
+            
+        progressBar.setValue(100)
         messageBar.clearWidgets()
         messageBar.pushMessage("Info","Se completo la ejecución...",level=Qgis.Success) #type:ignore

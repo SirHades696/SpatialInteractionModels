@@ -510,7 +510,7 @@ class Ui_SpatialInteractionModelsDialogBase(object):
         self.hd_check_load.setText(_translate("SpatialInteractionModelsDialogBase", "Agregar a QGIS"))
         self.groupBox_4.setTitle(_translate("SpatialInteractionModelsDialogBase", "Estadísticas [Opcional]"))
         self.xls_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Crea archivo de Excel."))
-        self.xls_check.setText(_translate("SpatialInteractionModelsDialogBase", "Generar XLS"))
+        self.xls_check.setText(_translate("SpatialInteractionModelsDialogBase", "Generar XLSX"))
         self.ods_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Crea archivo de OpenOffice."))
         self.ods_check.setText(_translate("SpatialInteractionModelsDialogBase", "Generar ODS"))
         self.csv_check.setToolTip(_translate("SpatialInteractionModelsDialogBase", "Crea archivo separado por comas. "))
