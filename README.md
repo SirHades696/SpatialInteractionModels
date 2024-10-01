@@ -5,6 +5,8 @@ Toda la información documental se encuentra en la carpeta [`Docs`](docs/)
  - Documentación de usuario
  - Documentación de instalación
 
+Los resultados que se generaron con la herramienta se encuentran disponibles en: [`Datos - Modelos de Interacción Espacial`](https://sirhades696.github.io/SIM-data/)
+
  ---
 
 Para consultar el manual de usuario dar clic en el siguiente enlace: [`Manual de usuario`](docs/ManualUsuarioMIE.pdf)
